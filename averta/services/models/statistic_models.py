@@ -40,7 +40,7 @@ class Statistic(models.Model):
         max_length=255,
         blank=True,
         verbose_name='2-ci kart — alt yazı (AZ)',
-        help_text='Məs: Məhsul növü',
+        help_text='Məs: Xidmət növü',
     )
     caption_two_en = models.CharField(
         max_length=255,

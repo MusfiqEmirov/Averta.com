@@ -9,6 +9,8 @@ ADMIN_MODEL_ORDER = [
     'about',
     'contact',
     'appealcontact',
+    'servicecategory',
+    'service',
     'partner',
     'blog',
     'faq',
@@ -22,7 +24,7 @@ def patch_admin_site_order():
     def get_app_list(request, app_label=None):
         app_list = original_get_app_list(request, app_label)
         for app in app_list:
-            if app.get('app_label') != 'projects':
+            if app.get('app_label') != 'services':
                 continue
             order_map = {name: idx for idx, name in enumerate(ADMIN_MODEL_ORDER)}
 
@@ -73,7 +75,7 @@ MOTTO_HELP = (
     '<strong>Bu nədir?</strong> Saytın müxtəlif yerlərində görünən qısa deviz cümlələri.<br>'
     '<strong>Harada dəyişir?</strong><br>'
     '• <strong>Ana səhifə karuseli</strong> — yuxarıdakı böyük şəkil slayderində mətn.<br>'
-    '• <strong>Daxili səhifələrin banneri</strong> — Haqqımızda, Əlaqə, Məhsullar, Bloq səhifələrinin '
+    '• <strong>Daxili səhifələrin banneri</strong> — Haqqımızda, Əlaqə, Xidmətlər, Bloq səhifələrinin '
     'yuxarı fon şəklinin üstündə (deviz varsa). Deviz yoxdursa banner boş qalır.<br>'
     '<strong>Qeyd:</strong> Hər səhifə üçün bir deviz kifayətdir.'
 )
@@ -99,9 +101,16 @@ APPEAL_HELP = (
 )
 
 CATEGORY_HELP = (
-    '<strong>Bu nədir?</strong> Məhsulların qrupları (məs: Toxumlar, Gübrələr).<br>'
-    '<strong>Harada dəyişir?</strong> Menyu → Məhsullar dropdown; Məhsullar səhifəsi; ana səhifə məhsul panelləri.<br>'
+    '<strong>Bu nədir?</strong> Xidmətlərin qrupları (məs: Tur paketləri, Transfer).<br>'
+    '<strong>Harada dəyişir?</strong> Menyu → Xidmətlər dropdown; Xidmətlər səhifəsi; ana səhifə xidmət panelləri.<br>'
     '<strong>Qeyd:</strong> «Slug» avtomatik yaranır — link üçün istifadə olunur, adətən dəyişdirməyin.'
+)
+
+SERVICE_HELP = (
+    '<strong>Bu nədir?</strong> Saytda təqdim olunan xidmətlər (tur, transfer, bələdçilik və s.).<br>'
+    '<strong>Harada dəyişir?</strong> Menyu → Xidmətlər; ana səhifə xidmət blokları; kateqoriya səhifələri.<br>'
+    '<strong>Şəkillər:</strong> Aşağıdakı «Xidmət şəkilləri» bölməsindən yükləyin. '
+    '«Ana səhifədə göstərilsin?» — hər kateqoriyada ən çox 6 xidmət.'
 )
 
 PARTNER_HELP = (
@@ -126,6 +135,6 @@ FAQ_HELP = (
 MEDIA_HELP = (
     '<strong>Bu nədir?</strong> Daxili səhifələrin yuxarı banner fon şəkilləri (Haqqımızda, Bloq və s.).<br>'
     '<strong>Harada dəyişir?</strong> Ana səhifə xaric bütün səhifələrin yuxarı geniş şəkil zolağı.<br>'
-    '<strong>Qeyd:</strong> Məhsul, tərəfdaş və qalereya şəkilləri burada deyil — həmin bölmələrin '
+    '<strong>Qeyd:</strong> Xidmət, tərəfdaş və qalereya şəkilləri burada deyil — həmin bölmələrin '
     'öz səhifəsindən yüklənir. Hər səhifə üçün yalnız <strong>bir</strong> fon şəkli işarələyin.'
 )

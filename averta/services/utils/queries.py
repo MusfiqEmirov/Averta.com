@@ -6,12 +6,12 @@ from django.utils.translation import gettext as _
 from django.templatetags.static import static
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-from projects.models.media_models import media_not_marked_as_background_q
-from projects.models import (
-    Product, ProductCategory, Partner, About,
+from services.models.media_models import media_not_marked_as_background_q
+from services.models import (
+    Service, ServiceCategory, Partner, About,
     Contact, Media, Motto, Statistic, Blog, FAQ,
 )
-from projects.utils.cache_utils import cached_query, get_query_cache_key, cached_page_data
+from services.utils.cache_utils import cached_query, get_query_cache_key, cached_page_data
 from django.core.cache import cache
 
 
@@ -72,16 +72,16 @@ def _localized_with_az_fallback(instance, lang, base):
 
 
 # ---------------------------------------------------------------------------
-# Product / ProductCategory
+# Service / ServiceCategory
 # ---------------------------------------------------------------------------
 
 @cached_query(timeout='CACHE_TIMEOUT_LONG')
-def get_product_categories(lang='az'):
-    return ProductCategory.objects.all().order_by('id')
+def get_service_categories(lang='az'):
+    return ServiceCategory.objects.all().order_by('id')
 
 
-def get_products(lang='az', category_slug=None, is_active=True, on_main_page=None):
-    queryset = Product.objects.select_related('category').prefetch_related(
+def get_services(lang='az', category_slug=None, is_active=True, on_main_page=None):
+    queryset = Service.objects.select_related('category').prefetch_related(
         Prefetch(
             'medias',
             queryset=Media.objects.filter(image__isnull=False).filter(
@@ -103,9 +103,9 @@ def get_products(lang='az', category_slug=None, is_active=True, on_main_page=Non
 
 
 @cached_query(timeout='CACHE_TIMEOUT_MEDIUM')
-def get_product_by_slug(slug, lang='az'):
+def get_service_by_slug(slug, lang='az'):
     try:
-        return Product.objects.select_related('category').prefetch_related(
+        return Service.objects.select_related('category').prefetch_related(
             Prefetch(
                 'medias',
                 queryset=Media.objects.filter(image__isnull=False).filter(
@@ -113,7 +113,7 @@ def get_product_by_slug(slug, lang='az'):
                 ),
             )
         ).get(slug=slug, is_active=True)
-    except Product.DoesNotExist:
+    except Service.DoesNotExist:
         return None
 
 
@@ -170,7 +170,7 @@ def get_background_image(page_type):
         'home': 'is_home_page_background_image',
         'about': 'is_about_page_background_image',
         'contact': 'is_contact_page_background_image',
-        'product': 'is_product_page_background_image',
+        'service': 'is_service_page_background_image',
         'blog': 'is_blog_page_background_image',
     }
 
@@ -206,7 +206,7 @@ HERO_FALLBACK_IMAGE_PATHS = (
 PAGE_MOTTO_FLAGS = {
     'about': 'is_about_page',
     'contact': 'is_contact_page',
-    'product': 'is_product_page',
+    'service': 'is_service_page',
     'blog': 'is_blog_page',
 }
 
@@ -317,8 +317,8 @@ def get_other_blogs(blog_id, lang='az', limit=12):
 # Serializers
 # ---------------------------------------------------------------------------
 
-def serialize_product(product, lang='az'):
-    if product is None:
+def serialize_service(service, lang='az'):
+    if service is None:
         return None
 
     name_field = get_localized_field_name('name', lang)
@@ -326,17 +326,17 @@ def serialize_product(product, lang='az'):
     cat_name_field = get_localized_field_name('name', lang)
 
     return {
-        'id': product.id,
-        'slug': product.slug,
-        'name': getattr(product, name_field, product.name_az),
-        'description': getattr(product, desc_field, product.description_az),
-        'is_active': product.is_active,
-        'on_main_page': product.on_main_page,
-        'created_at': product.created_at,
+        'id': service.id,
+        'slug': service.slug,
+        'name': getattr(service, name_field, service.name_az),
+        'description': getattr(service, desc_field, service.description_az),
+        'is_active': service.is_active,
+        'on_main_page': service.on_main_page,
+        'created_at': service.created_at,
         'category': {
-            'id': product.category.id,
-            'slug': product.category.slug,
-            'name': getattr(product.category, cat_name_field, product.category.name_az),
+            'id': service.category.id,
+            'slug': service.category.slug,
+            'name': getattr(service.category, cat_name_field, service.category.name_az),
         },
         'medias': [
             {
@@ -344,12 +344,12 @@ def serialize_product(product, lang='az'):
                 'image': media.image.url if media.image else None,
                 'video': media.video.url if media.video else None,
             }
-            for media in product.medias.all()
+            for media in service.medias.all()
         ]
     }
 
 
-def serialize_product_category(category, lang='az'):
+def serialize_service_category(category, lang='az'):
     name_field = get_localized_field_name('name', lang)
     return {
         'id': category.id,
@@ -485,52 +485,52 @@ def get_home_page_data(request, lang):
     special_filter = request.GET.get('special')
 
     if special_filter == 'true':
-        products = get_products(
+        services = get_services(
             lang=lang,
             is_active=is_active,
             on_main_page=True,
         )[:9]
     else:
-        all_main_page_products = get_products(
+        all_main_page_services = get_services(
             lang=lang,
             is_active=is_active,
             on_main_page=True,
         )
 
         from collections import defaultdict
-        products_by_category = defaultdict(list)
-        for product in all_main_page_products:
-            cat_id = product.category_id
-            if len(products_by_category[cat_id]) < 6:
-                products_by_category[cat_id].append(product)
+        services_by_category = defaultdict(list)
+        for service in all_main_page_services:
+            cat_id = service.category_id
+            if len(services_by_category[cat_id]) < 6:
+                services_by_category[cat_id].append(service)
 
-        products = []
-        for cat_id in sorted(products_by_category.keys()):
-            products.extend(products_by_category[cat_id])
+        services = []
+        for cat_id in sorted(services_by_category.keys()):
+            services.extend(services_by_category[cat_id])
 
-    serialized_products = [serialize_product(p, lang) for p in products]
+    serialized_services = [serialize_service(s, lang) for s in services]
 
-    categories = get_product_categories(lang)
-    serialized_categories = [serialize_product_category(c, lang) for c in categories]
+    categories = get_service_categories(lang)
+    serialized_categories = [serialize_service_category(c, lang) for c in categories]
 
-    # Attach cover image to each category from on_main_page products (no extra DB hit)
+    # Attach cover image to each category from on_main_page services (no extra DB hit)
     cat_cover = {}
-    for p in serialized_products:
-        cid = p['category']['id']
-        if cid not in cat_cover and p['medias']:
-            cat_cover[cid] = p['medias'][0]['image']
+    for s in serialized_services:
+        cid = s['category']['id']
+        if cid not in cat_cover and s['medias']:
+            cat_cover[cid] = s['medias'][0]['image']
     for cat in serialized_categories:
         cat['cover_image'] = cat_cover.get(cat['id'])
 
     # Build per-category panels for the home page split layout
     from collections import defaultdict as _dd
-    _cat_prods = _dd(list)
-    for p in serialized_products:
-        _cat_prods[p['category']['id']].append(p)
+    _cat_services = _dd(list)
+    for s in serialized_services:
+        _cat_services[s['category']['id']].append(s)
     category_panels = [
-        {'category': cat, 'products': _cat_prods[cat['id']][:6]}
+        {'category': cat, 'services': _cat_services[cat['id']][:6]}
         for cat in serialized_categories
-        if _cat_prods.get(cat['id'])
+        if _cat_services.get(cat['id'])
     ]
 
     all_partners = get_partners(lang=lang, is_active=True)
@@ -550,7 +550,7 @@ def get_home_page_data(request, lang):
     home_faqs = [serialize_faq(f, lang) for f in faq_list]
 
     return {
-        'products': serialized_products,
+        'services': serialized_services,
         'categories': serialized_categories,
         'partners': serialized_partners,
         'about': about_data,
@@ -569,13 +569,13 @@ def get_home_page_data(request, lang):
 
 
 @cached_page_data(timeout='CACHE_TIMEOUT_MEDIUM')
-def get_product_list_data(request, lang):
+def get_service_list_data(request, lang):
     category_slug = request.GET.get('slug')
     is_active = request.GET.get('is_active', 'true').lower() == 'true'
     page = request.GET.get('page', 1)
     per_page_param = request.GET.get('per_page')
 
-    products = get_products(
+    services = get_services(
         lang=lang,
         category_slug=category_slug,
         is_active=is_active,
@@ -586,37 +586,37 @@ def get_product_list_data(request, lang):
     else:
         per_page = int(per_page_param)
 
-    products_page_obj, products_paginator = paginate_queryset(products, page, per_page)
-    serialized_products = [serialize_product(p, lang) for p in products_page_obj]
+    services_page_obj, services_paginator = paginate_queryset(services, page, per_page)
+    serialized_services = [serialize_service(s, lang) for s in services_page_obj]
 
-    categories = get_product_categories(lang)
-    serialized_categories = [serialize_product_category(c, lang) for c in categories]
+    categories = get_service_categories(lang)
+    serialized_categories = [serialize_service_category(c, lang) for c in categories]
 
     selected_category = None
     if category_slug:
         category_obj = next((c for c in categories if c.slug == category_slug), None)
         if category_obj:
-            selected_category = serialize_product_category(category_obj, lang)
+            selected_category = serialize_service_category(category_obj, lang)
 
     contact = get_contact(lang)
 
     page_heading = selected_category['name'] if selected_category else None
     if not page_heading:
-        page_heading = _('Products')
+        page_heading = _('Services')
 
     return {
-        'products': serialized_products,
+        'services': serialized_services,
         'categories': serialized_categories,
         'selected_category': selected_category,
         'contact': serialize_contact(contact, lang) if contact else None,
-        'pagination': get_pagination_data(products_page_obj, products_paginator),
+        'pagination': get_pagination_data(services_page_obj, services_paginator),
         'filters': {
             'slug': category_slug,
             'is_active': is_active,
         },
-        'background_image': get_background_image('product'),
+        'background_image': get_background_image('service'),
         'page_heading': page_heading,
-        'page_motto': get_page_motto('product', lang),
+        'page_motto': get_page_motto('service', lang),
     }
 
 

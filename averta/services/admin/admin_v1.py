@@ -4,7 +4,7 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from ckeditor.widgets import CKEditorWidget
 
-from projects.admin.admin_help import (
+from services.admin.admin_help import (
     AdminPageHelpMixin,
     ABOUT_HELP,
     APPEAL_HELP,
@@ -15,11 +15,12 @@ from projects.admin.admin_help import (
     MEDIA_HELP,
     MOTTO_HELP,
     PARTNER_HELP,
+    SERVICE_HELP,
     STATISTIC_HELP,
     patch_admin_site_order,
 )
 
-from projects.models import (
+from services.models import (
     Media,
     Partner,
     About,
@@ -29,6 +30,8 @@ from projects.models import (
     Statistic,
     Blog,
     FAQ,
+    Service,
+    ServiceCategory,
 )
 
 admin.site.site_header = 'Averta — Sayt idarəetməsi'
@@ -80,6 +83,7 @@ class MediaAdminForm(forms.ModelForm):
             'is_home_page_background_image',
             'is_about_page_background_image',
             'is_contact_page_background_image',
+            'is_service_page_background_image',
             'is_blog_page_background_image',
         )
 
@@ -112,6 +116,13 @@ class PartnerMediaInline(ContentMediaInline):
     readonly_fields = ('image_preview',)
 
 
+class ServiceMediaInline(ContentMediaInline):
+    fk_name = 'service'
+    verbose_name = 'Şəkil'
+    verbose_name_plural = 'Xidmət şəkilləri'
+    extra = 1
+
+
 class AboutMediaInline(admin.StackedInline):
     """Haqqımızda qalereyası — yalnız şəkillər."""
 
@@ -139,6 +150,50 @@ class AboutMediaInline(admin.StackedInline):
         return '—'
 
     image_preview.short_description = _('Önizləmə')
+
+
+# ---------------------------------------------------------------------------
+# Service category & Service
+# ---------------------------------------------------------------------------
+
+@admin.register(ServiceCategory)
+class ServiceCategoryAdmin(AdminPageHelpMixin, admin.ModelAdmin):
+    admin_page_help = CATEGORY_HELP
+    list_display = ('name_az', 'slug')
+    search_fields = ('name_az', 'name_en', 'name_ru', 'slug')
+    readonly_fields = ('slug',)
+    ordering = ('id',)
+    fieldsets = (
+        (_('Azərbaycan'), {'fields': ('name_az',)}),
+        (_('English'), {'fields': ('name_en',), 'classes': ('wide', 'g-lang-en')}),
+        (_('Русский'), {'fields': ('name_ru',), 'classes': ('wide', 'g-lang-ru')}),
+        (_('Sistem'), {'fields': ('slug',)}),
+    )
+
+
+@admin.register(Service)
+class ServiceAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin):
+    admin_page_help = SERVICE_HELP
+    list_display = ('name_az', 'category', 'is_active', 'on_main_page', 'created_at')
+    list_filter = ('is_active', 'on_main_page', 'category')
+    search_fields = ('name_az', 'name_en', 'name_ru', 'slug')
+    list_editable = ('is_active', 'on_main_page')
+    ordering = ('-created_at',)
+    readonly_fields = ('slug', 'created_at')
+    inlines = [ServiceMediaInline]
+    fieldsets = (
+        (_('Azərbaycan'), {'fields': ('name_az', 'description_az'), 'classes': ('wide',)}),
+        (_('English'), {'fields': ('name_en', 'description_en'), 'classes': ('wide', 'g-lang-en')}),
+        (_('Русский'), {'fields': ('name_ru', 'description_ru'), 'classes': ('wide', 'g-lang-ru')}),
+        (_('Kateqoriya'), {'fields': ('category',)}),
+        (_('Parametrlər'), {
+            'fields': ('is_active', 'on_main_page', 'slug', 'created_at'),
+            'description': _(
+                '«Saytda göstərilsin?» söndürülərsə xidmət saytda gizlənir. '
+                '«Ana səhifədə göstərilsin?» — hər kateqoriyada max 6 xidmət.'
+            ),
+        }),
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -268,12 +323,14 @@ class MottoAdmin(AdminPageHelpMixin, admin.ModelAdmin):
         'show_on_home_hero',
         'is_about_page',
         'is_contact_page',
+        'is_service_page',
         'is_blog_page',
     )
     list_filter = (
         'show_on_home_hero',
         'is_about_page',
         'is_contact_page',
+        'is_service_page',
         'is_blog_page',
     )
     fieldsets = (
@@ -285,7 +342,7 @@ class MottoAdmin(AdminPageHelpMixin, admin.ModelAdmin):
                 'show_on_home_hero',
                 'is_about_page',
                 'is_contact_page',
-    
+                'is_service_page',
                 'is_blog_page',
             ),
             'description': _(
@@ -359,7 +416,7 @@ class StatisticAdmin(AdminPageHelpMixin, admin.ModelAdmin):
 @admin.register(Media)
 class MediaAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin):
     admin_page_help = MEDIA_HELP
-    """Yalnız səhifə fon şəkilləri: məhsul/partnyor/Haqqımızda inlaynlərində yaradılan media burada görünmür."""
+    """Yalnız səhifə fon şəkilləri: xidmət/partnyor/Haqqımızda inlaynlərində yaradılan media burada görünmür."""
 
     form = MediaAdminForm
     list_display = (
@@ -367,6 +424,7 @@ class MediaAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin):
         'is_home_page_background_image',
         'is_about_page_background_image',
         'is_contact_page_background_image',
+        'is_service_page_background_image',
         'is_blog_page_background_image',
         'created_at',
     )
@@ -374,6 +432,7 @@ class MediaAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin):
         'is_home_page_background_image',
         'is_about_page_background_image',
         'is_contact_page_background_image',
+        'is_service_page_background_image',
         'is_blog_page_background_image',
     )
     ordering = ('-created_at',)
@@ -386,6 +445,7 @@ class MediaAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin):
                 'is_home_page_background_image',
                 'is_about_page_background_image',
                 'is_contact_page_background_image',
+                'is_service_page_background_image',
                 'is_blog_page_background_image',
             ),
             'description': _(
@@ -409,11 +469,13 @@ class MediaAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin):
         return qs.filter(
             about__isnull=True,
             partner__isnull=True,
+            service__isnull=True,
         )
 
     def save_model(self, request, obj, form, change):
         obj.about = None
         obj.partner = None
+        obj.service = None
         obj.video = None
         super().save_model(request, obj, form, change)
 
