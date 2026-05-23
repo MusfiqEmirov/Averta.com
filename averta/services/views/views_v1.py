@@ -40,6 +40,7 @@ class HomePageView(View):
         lang = get_language_from_request(request)
         context = get_home_page_data(request, lang)
         context['language'] = lang
+        context['active_nav'] = 'home'
         return render(request, self.template_name, context)
 
 
@@ -51,6 +52,7 @@ class ServicePageView(View):
         context = get_service_list_data(request, lang)
         context['background_image'] = get_background_image('service')
         context['language'] = lang
+        context['active_nav'] = 'services'
         return render(request, self.template_name, context)
 
 
@@ -61,6 +63,7 @@ class PackagePageView(View):
         lang = get_language_from_request(request)
         context = get_package_list_data(request, lang)
         context['language'] = lang
+        context['active_nav'] = 'packages'
         return render(request, self.template_name, context)
 
 
@@ -85,6 +88,7 @@ class AboutPageView(View):
             'background_image': get_background_image('about'),
             'page_heading': page_heading,
             'page_motto': get_page_motto('about', lang),
+            'active_nav': 'about',
         }
         return render(request, self.template_name, context)
 
@@ -105,6 +109,7 @@ class ContactPageView(View):
             'form': form,
             'page_heading': page_heading,
             'page_motto': get_page_motto('contact', lang),
+            'active_nav': 'contact',
         }
         return render(request, self.template_name, context)
 
@@ -137,6 +142,7 @@ class ContactPageView(View):
             'form': form,
             'page_heading': page_heading,
             'page_motto': get_page_motto('contact', lang),
+            'active_nav': 'contact',
         }
         return render(request, self.template_name, context)
 
@@ -147,14 +153,17 @@ class FAQPageView(View):
     def get(self, request):
         lang = get_language_from_request(request)
         faqs = get_faqs(lang)
+        contact = get_contact(lang)
         page_heading = _('Tez-tez verilən suallar')
 
         context = {
             'faqs': [serialize_faq(f, lang) for f in faqs],
+            'contact': serialize_contact(contact, lang) if contact else None,
             'language': lang,
             'background_image': get_background_image('contact'),
             'page_heading': page_heading,
             'page_motto': get_page_motto('contact', lang),
+            'active_nav': 'faq',
         }
         return render(request, self.template_name, context)
 
@@ -167,6 +176,7 @@ class BlogPageView(View):
         context = get_blog_list_data(request, lang)
         context['language'] = lang
         context['background_image'] = get_background_image('blog')
+        context['active_nav'] = 'blog'
         return render(request, self.template_name, context)
 
 
@@ -184,12 +194,15 @@ class BlogDetailPageView(View):
 
         blog_data = serialize_blog(blog, lang)
 
+        contact = get_contact(lang)
         context = {
             'blog': blog_data,
             'other_blogs': get_other_blogs(blog_id, lang),
+            'contact': serialize_contact(contact, lang) if contact else None,
             'language': lang,
             'background_image': get_background_image('blog'),
             'page_motto': get_page_motto('blog', lang),
+            'active_nav': 'blog',
         }
         return render(request, self.template_name, context)
 

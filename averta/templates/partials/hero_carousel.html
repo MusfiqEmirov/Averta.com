@@ -1,0 +1,46 @@
+{% load static %}
+<div class="carousel-header">
+    <div id="carouselId" class="carousel slide" data-bs-ride="carousel">
+        {% if hero_carousel|length > 1 %}
+        <ol class="carousel-indicators">
+            {% for slide in hero_carousel %}
+            <li data-bs-target="#carouselId" data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></li>
+            {% endfor %}
+        </ol>
+        {% endif %}
+        <div class="carousel-inner" role="listbox">
+            {% for slide in hero_carousel %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <img src="{{ slide.image_url }}" class="img-fluid" alt="">
+                <div class="carousel-caption">
+                    <div class="p-3" style="max-width: 900px;">
+                        {% if slide.motto %}
+                        <h1 class="display-4 text-capitalize text-white mb-4">{{ slide.motto }}</h1>
+                        {% endif %}
+                        <div class="d-flex align-items-center justify-content-center">
+                            <a class="btn-hover-bg btn btn-primary rounded-pill text-white py-3 px-5" href="{% url 'services:package-page' %}">Paketlər</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="carousel-item active">
+                <img src="{% static 'assets/img/carousel-2.jpg' %}" class="img-fluid" alt="">
+                <div class="carousel-caption">
+                    <h1 class="display-4 text-white">Averta</h1>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% if hero_carousel|length > 1 %}
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselId" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon btn bg-primary" aria-hidden="false"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselId" data-bs-slide="next">
+            <span class="carousel-control-next-icon btn bg-primary" aria-hidden="false"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+        {% endif %}
+    </div>
+</div>

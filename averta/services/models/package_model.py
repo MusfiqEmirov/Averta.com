@@ -8,7 +8,9 @@ class Package(SluggedModel):
         related_name='packages',  
         verbose_name='Xidmətlər',
         help_text='Bu paketə daxil olan xidmətləri seçin. Saytda paketlər xidmətlər ilə birlikdə göstəriləcək, ona görə də ən azı bir xidmət seçmək tövsiyə olunur.'
-    )     
+        null=True,
+        blank=True,
+    )  
     name_az = models.CharField(
         max_length=250,
         verbose_name='Paket adı (AZ)',

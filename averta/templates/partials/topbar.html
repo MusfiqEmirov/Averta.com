@@ -1,0 +1,33 @@
+<div class="container-fluid bg-primary px-5 d-none d-lg-block">
+    <div class="row gx-0">
+        <div class="col-lg-8 text-center text-lg-start mb-2 mb-lg-0">
+            <div class="d-inline-flex align-items-center" style="height: 45px;">
+                {% if contact.facebook %}
+                <a class="btn btn-sm btn-outline-light btn-sm-square rounded-circle me-2" href="{{ contact.facebook }}" target="_blank" rel="noopener"><i class="fab fa-facebook-f fw-normal"></i></a>
+                {% endif %}
+                {% if contact.instagram %}
+                <a class="btn btn-sm btn-outline-light btn-sm-square rounded-circle me-2" href="{{ contact.instagram }}" target="_blank" rel="noopener"><i class="fab fa-instagram fw-normal"></i></a>
+                {% endif %}
+                {% if contact.linkedn %}
+                <a class="btn btn-sm btn-outline-light btn-sm-square rounded-circle me-2" href="{{ contact.linkedn }}" target="_blank" rel="noopener"><i class="fab fa-linkedin-in fw-normal"></i></a>
+                {% endif %}
+                {% if contact.youtube %}
+                <a class="btn btn-sm btn-outline-light btn-sm-square rounded-circle" href="{{ contact.youtube }}" target="_blank" rel="noopener"><i class="fab fa-youtube fw-normal"></i></a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-lg-4 text-center text-lg-end">
+            <div class="d-inline-flex align-items-center" style="height: 45px;">
+                <form action="{% url 'set_language' %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <select name="language" class="form-select form-select-sm bg-primary text-light border-light" onchange="this.form.submit()">
+                        <option value="az" {% if language == 'az' %}selected{% endif %}>AZ</option>
+                        <option value="en" {% if language == 'en' %}selected{% endif %}>EN</option>
+                        <option value="ru" {% if language == 'ru' %}selected{% endif %}>RU</option>
+                    </select>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
