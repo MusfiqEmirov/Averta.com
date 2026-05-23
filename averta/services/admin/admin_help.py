@@ -9,8 +9,8 @@ ADMIN_MODEL_ORDER = [
     'about',
     'contact',
     'appealcontact',
-    'servicecategory',
     'service',
+    'package',
     'partner',
     'blog',
     'faq',
@@ -100,17 +100,18 @@ APPEAL_HELP = (
     'yalnız saytdan gəlir.'
 )
 
-CATEGORY_HELP = (
-    '<strong>Bu nədir?</strong> Xidmətlərin qrupları (məs: Tur paketləri, Transfer).<br>'
-    '<strong>Harada dəyişir?</strong> Menyu → Xidmətlər dropdown; Xidmətlər səhifəsi; ana səhifə xidmət panelləri.<br>'
-    '<strong>Qeyd:</strong> «Slug» avtomatik yaranır — link üçün istifadə olunur, adətən dəyişdirməyin.'
-)
-
 SERVICE_HELP = (
     '<strong>Bu nədir?</strong> Saytda təqdim olunan xidmətlər (tur, transfer, bələdçilik və s.).<br>'
-    '<strong>Harada dəyişir?</strong> Menyu → Xidmətlər; ana səhifə xidmət blokları; kateqoriya səhifələri.<br>'
+    '<strong>Harada dəyişir?</strong> Menyu → Xidmətlər; ana səhifə xidmət blokları.<br>'
     '<strong>Şəkillər:</strong> Aşağıdakı «Xidmət şəkilləri» bölməsindən yükləyin. '
-    '«Ana səhifədə göstərilsin?» — hər kateqoriyada ən çox 6 xidmət.'
+    '«Ana səhifədə göstərilsin?» — ən çox 6 xidmət.'
+)
+
+PACKAGE_HELP = (
+    '<strong>Bu nədir?</strong> Tur paketləri — qiymət, bitiş tarixi və daxil olan xidmətlərlə.<br>'
+    '<strong>Harada dəyişir?</strong> Menyu → Paketlər; ana səhifə paket kartları (aktiv, vaxtı keçməyən).<br>'
+    '<strong>Xidmətlər:</strong> Paketə hansı xidmətlərin daxil olduğunu «Xidmətlər» sahəsindən seçin.<br>'
+    '<strong>Şəkillər:</strong> «Paket şəkilləri» bölməsindən yükləyin.'
 )
 
 PARTNER_HELP = (
@@ -135,6 +136,6 @@ FAQ_HELP = (
 MEDIA_HELP = (
     '<strong>Bu nədir?</strong> Daxili səhifələrin yuxarı banner fon şəkilləri (Haqqımızda, Bloq və s.).<br>'
     '<strong>Harada dəyişir?</strong> Ana səhifə xaric bütün səhifələrin yuxarı geniş şəkil zolağı.<br>'
-    '<strong>Qeyd:</strong> Xidmət, tərəfdaş və qalereya şəkilləri burada deyil — həmin bölmələrin '
+    '<strong>Qeyd:</strong> Xidmət, paket, tərəfdaş və qalereya şəkilləri burada deyil — həmin bölmələrin '
     'öz səhifəsindən yüklənir. Hər səhifə üçün yalnız <strong>bir</strong> fon şəkli işarələyin.'
 )

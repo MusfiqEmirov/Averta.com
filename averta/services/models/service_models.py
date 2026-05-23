@@ -4,43 +4,7 @@ from django.core.validators import MaxLengthValidator
 from services.utils import SluggedModel
 
 
-class ServiceCategory(SluggedModel):
-    name_az = models.CharField(
-        max_length=250,
-        verbose_name='Kateqoriya adı (AZ)',
-    )
-    name_en = models.CharField(
-        max_length=250,
-        null=True,
-        blank=True,
-        verbose_name='Kateqoriya adı (EN)',
-    )
-    name_ru = models.CharField(
-        max_length=250,
-        null=True,
-        blank=True,
-        verbose_name='Kateqoriya adı (RU)',
-    )
-
-    def get_slug_source(self) -> str:
-        return self.name_az
-
-    class Meta:
-        verbose_name = 'Xidmət kateqoriyası'
-        verbose_name_plural = 'Xidmət kateqoriyaları'
-        ordering = ['id']
-
-    def __str__(self):
-        return self.name_az
-
-
 class Service(SluggedModel):
-    category = models.ForeignKey(
-        ServiceCategory,
-        related_name='services',
-        on_delete=models.CASCADE,
-        verbose_name='Kateqoriya',
-    )
     name_az = models.CharField(
         max_length=250,
         verbose_name='Xidmət adı (AZ)',
@@ -85,7 +49,7 @@ class Service(SluggedModel):
         null=True,
         blank=True,
         verbose_name='Ana səhifədə göstərilsin?',
-        help_text='Hər kateqoriyada ana səhifədə ən çox 6 xidmət ola bilər.',
+        help_text='Ana səhifədə ən çox 6 xidmət göstərilir.',
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
@@ -101,3 +65,4 @@ class Service(SluggedModel):
 
     def __str__(self):
         return self.name_az
+

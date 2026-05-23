@@ -38,6 +38,10 @@ class Motto(models.Model):
         default=False,
         verbose_name='Xidmətlər səhifəsinin banneri',
     )
+    is_package_page = models.BooleanField(
+        default=False,
+        verbose_name='Paketlər səhifəsinin banneri',
+    )
     is_blog_page = models.BooleanField(
         default=False,
         verbose_name='Bloq səhifəsinin banneri',
@@ -56,5 +60,6 @@ class Motto(models.Model):
             self.is_about_page,
             self.is_contact_page,
             self.is_service_page,
+            self.is_package_page,
             self.is_blog_page,
         ])

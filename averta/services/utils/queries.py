@@ -8,7 +8,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from services.models.media_models import media_not_marked_as_background_q
 from services.models import (
-    Service, ServiceCategory, Partner, About,
+    Service, Package, Partner, About,
     Contact, Media, Motto, Statistic, Blog, FAQ,
 )
 from services.utils.cache_utils import cached_query, get_query_cache_key, cached_page_data
@@ -72,16 +72,11 @@ def _localized_with_az_fallback(instance, lang, base):
 
 
 # ---------------------------------------------------------------------------
-# Service / ServiceCategory
+# Service
 # ---------------------------------------------------------------------------
 
-@cached_query(timeout='CACHE_TIMEOUT_LONG')
-def get_service_categories(lang='az'):
-    return ServiceCategory.objects.all().order_by('id')
-
-
-def get_services(lang='az', category_slug=None, is_active=True, on_main_page=None):
-    queryset = Service.objects.select_related('category').prefetch_related(
+def get_services(lang='az', is_active=True, on_main_page=None):
+    queryset = Service.objects.prefetch_related(
         Prefetch(
             'medias',
             queryset=Media.objects.filter(image__isnull=False).filter(
@@ -93,9 +88,6 @@ def get_services(lang='az', category_slug=None, is_active=True, on_main_page=Non
     if is_active is not None:
         queryset = queryset.filter(is_active=is_active)
 
-    if category_slug:
-        queryset = queryset.filter(category__slug=category_slug)
-
     if on_main_page is not None:
         queryset = queryset.filter(on_main_page=on_main_page)
 
@@ -105,7 +97,7 @@ def get_services(lang='az', category_slug=None, is_active=True, on_main_page=Non
 @cached_query(timeout='CACHE_TIMEOUT_MEDIUM')
 def get_service_by_slug(slug, lang='az'):
     try:
-        return Service.objects.select_related('category').prefetch_related(
+        return Service.objects.prefetch_related(
             Prefetch(
                 'medias',
                 queryset=Media.objects.filter(image__isnull=False).filter(
@@ -114,6 +106,50 @@ def get_service_by_slug(slug, lang='az'):
             )
         ).get(slug=slug, is_active=True)
     except Service.DoesNotExist:
+        return None
+
+
+# ---------------------------------------------------------------------------
+# Package
+# ---------------------------------------------------------------------------
+
+def get_packages(lang='az', is_active=True):
+    from django.utils import timezone
+
+    queryset = Package.objects.prefetch_related(
+        'service',
+        Prefetch(
+            'medias',
+            queryset=Media.objects.filter(image__isnull=False).filter(
+                media_not_marked_as_background_q(),
+            ),
+        ),
+    )
+
+    if is_active is not None:
+        queryset = queryset.filter(is_active=is_active)
+
+    today = timezone.now().date()
+    queryset = queryset.filter(
+        Q(end_date__isnull=True) | Q(end_date__gte=today)
+    )
+
+    return queryset.order_by('-created_at')
+
+
+@cached_query(timeout='CACHE_TIMEOUT_MEDIUM')
+def get_package_by_slug(slug, lang='az'):
+    try:
+        return Package.objects.prefetch_related(
+            'service',
+            Prefetch(
+                'medias',
+                queryset=Media.objects.filter(image__isnull=False).filter(
+                    media_not_marked_as_background_q(),
+                ),
+            ),
+        ).get(slug=slug, is_active=True)
+    except Package.DoesNotExist:
         return None
 
 
@@ -207,6 +243,7 @@ PAGE_MOTTO_FLAGS = {
     'about': 'is_about_page',
     'contact': 'is_contact_page',
     'service': 'is_service_page',
+    'package': 'is_package_page',
     'blog': 'is_blog_page',
 }
 
@@ -323,7 +360,6 @@ def serialize_service(service, lang='az'):
 
     name_field = get_localized_field_name('name', lang)
     desc_field = get_localized_field_name('description', lang)
-    cat_name_field = get_localized_field_name('name', lang)
 
     return {
         'id': service.id,
@@ -333,11 +369,6 @@ def serialize_service(service, lang='az'):
         'is_active': service.is_active,
         'on_main_page': service.on_main_page,
         'created_at': service.created_at,
-        'category': {
-            'id': service.category.id,
-            'slug': service.category.slug,
-            'name': getattr(service.category, cat_name_field, service.category.name_az),
-        },
         'medias': [
             {
                 'id': media.id,
@@ -349,12 +380,33 @@ def serialize_service(service, lang='az'):
     }
 
 
-def serialize_service_category(category, lang='az'):
+def serialize_package(package, lang='az'):
+    if package is None:
+        return None
+
     name_field = get_localized_field_name('name', lang)
+    desc_field = get_localized_field_name('description', lang)
+
+    services = package.service.filter(is_active=True)
+
     return {
-        'id': category.id,
-        'slug': category.slug,
-        'name': getattr(category, name_field, category.name_az),
+        'id': package.id,
+        'slug': package.slug,
+        'name': getattr(package, name_field, package.name_az),
+        'description': getattr(package, desc_field, package.description_az),
+        'price': package.price,
+        'end_date': package.end_date,
+        'is_active': package.is_active,
+        'created_at': package.created_at,
+        'services': [serialize_service(s, lang) for s in services],
+        'medias': [
+            {
+                'id': media.id,
+                'image': media.image.url if media.image else None,
+                'video': media.video.url if media.video else None,
+            }
+            for media in package.medias.all()
+        ],
     }
 
 
@@ -480,58 +532,14 @@ def get_pagination_data(page_obj, paginator):
 
 @cached_page_data(timeout='CACHE_TIMEOUT_MEDIUM')
 def get_home_page_data(request, lang):
-    category_slug = request.GET.get('slug')
     is_active = request.GET.get('is_active', 'true').lower() == 'true'
-    special_filter = request.GET.get('special')
 
-    if special_filter == 'true':
-        services = get_services(
-            lang=lang,
-            is_active=is_active,
-            on_main_page=True,
-        )[:9]
-    else:
-        all_main_page_services = get_services(
-            lang=lang,
-            is_active=is_active,
-            on_main_page=True,
-        )
-
-        from collections import defaultdict
-        services_by_category = defaultdict(list)
-        for service in all_main_page_services:
-            cat_id = service.category_id
-            if len(services_by_category[cat_id]) < 6:
-                services_by_category[cat_id].append(service)
-
-        services = []
-        for cat_id in sorted(services_by_category.keys()):
-            services.extend(services_by_category[cat_id])
-
+    services = list(
+        get_services(lang=lang, is_active=is_active, on_main_page=True)[:6]
+    )
+    packages = list(get_packages(lang=lang, is_active=is_active)[:6])
     serialized_services = [serialize_service(s, lang) for s in services]
-
-    categories = get_service_categories(lang)
-    serialized_categories = [serialize_service_category(c, lang) for c in categories]
-
-    # Attach cover image to each category from on_main_page services (no extra DB hit)
-    cat_cover = {}
-    for s in serialized_services:
-        cid = s['category']['id']
-        if cid not in cat_cover and s['medias']:
-            cat_cover[cid] = s['medias'][0]['image']
-    for cat in serialized_categories:
-        cat['cover_image'] = cat_cover.get(cat['id'])
-
-    # Build per-category panels for the home page split layout
-    from collections import defaultdict as _dd
-    _cat_services = _dd(list)
-    for s in serialized_services:
-        _cat_services[s['category']['id']].append(s)
-    category_panels = [
-        {'category': cat, 'services': _cat_services[cat['id']][:6]}
-        for cat in serialized_categories
-        if _cat_services.get(cat['id'])
-    ]
+    serialized_packages = [serialize_package(p, lang) for p in packages]
 
     all_partners = get_partners(lang=lang, is_active=True)
     serialized_partners = [serialize_partner(p, lang) for p in all_partners]
@@ -551,18 +559,16 @@ def get_home_page_data(request, lang):
 
     return {
         'services': serialized_services,
-        'categories': serialized_categories,
+        'packages': serialized_packages,
         'partners': serialized_partners,
         'about': about_data,
         'contact': serialize_contact(contact, lang) if contact else None,
         'filters': {
-            'slug': category_slug,
             'is_active': is_active,
         },
         'background_image': get_background_image('home'),
         'hero_carousel': hero_carousel,
         'statistics': get_statistics(lang),
-        'category_panels': category_panels,
         'home_blogs': home_blogs,
         'faqs': home_faqs,
     }
@@ -570,16 +576,11 @@ def get_home_page_data(request, lang):
 
 @cached_page_data(timeout='CACHE_TIMEOUT_MEDIUM')
 def get_service_list_data(request, lang):
-    category_slug = request.GET.get('slug')
     is_active = request.GET.get('is_active', 'true').lower() == 'true'
     page = request.GET.get('page', 1)
     per_page_param = request.GET.get('per_page')
 
-    services = get_services(
-        lang=lang,
-        category_slug=category_slug,
-        is_active=is_active,
-    )
+    services = get_services(lang=lang, is_active=is_active)
 
     if per_page_param is None:
         per_page = 9
@@ -589,34 +590,42 @@ def get_service_list_data(request, lang):
     services_page_obj, services_paginator = paginate_queryset(services, page, per_page)
     serialized_services = [serialize_service(s, lang) for s in services_page_obj]
 
-    categories = get_service_categories(lang)
-    serialized_categories = [serialize_service_category(c, lang) for c in categories]
-
-    selected_category = None
-    if category_slug:
-        category_obj = next((c for c in categories if c.slug == category_slug), None)
-        if category_obj:
-            selected_category = serialize_service_category(category_obj, lang)
-
     contact = get_contact(lang)
-
-    page_heading = selected_category['name'] if selected_category else None
-    if not page_heading:
-        page_heading = _('Services')
 
     return {
         'services': serialized_services,
-        'categories': serialized_categories,
-        'selected_category': selected_category,
         'contact': serialize_contact(contact, lang) if contact else None,
         'pagination': get_pagination_data(services_page_obj, services_paginator),
         'filters': {
-            'slug': category_slug,
             'is_active': is_active,
         },
         'background_image': get_background_image('service'),
-        'page_heading': page_heading,
+        'page_heading': _('Services'),
         'page_motto': get_page_motto('service', lang),
+    }
+
+
+@cached_page_data(timeout='CACHE_TIMEOUT_MEDIUM')
+def get_package_list_data(request, lang):
+    is_active = request.GET.get('is_active', 'true').lower() == 'true'
+    page = request.GET.get('page', 1)
+    per_page = 9
+
+    packages = get_packages(lang=lang, is_active=is_active)
+    packages_page_obj, packages_paginator = paginate_queryset(packages, page, per_page)
+    serialized_packages = [serialize_package(p, lang) for p in packages_page_obj]
+
+    contact = get_contact(lang)
+
+    return {
+        'packages': serialized_packages,
+        'contact': serialize_contact(contact, lang) if contact else None,
+        'pagination': get_pagination_data(packages_page_obj, packages_paginator),
+        'filters': {
+            'is_active': is_active,
+        },
+        'page_heading': _('Packages'),
+        'page_motto': get_page_motto('package', lang),
     }
 
 

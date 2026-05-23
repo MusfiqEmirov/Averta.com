@@ -14,6 +14,7 @@ from services.utils.queries import (
     get_language_from_request,
     get_home_page_data,
     get_service_list_data,
+    get_package_list_data,
     get_background_image,
     get_about,
     serialize_about,
@@ -22,8 +23,6 @@ from services.utils.queries import (
     get_contact,
     serialize_contact,
     get_statistics,
-    get_service_categories,
-    serialize_service_category,
     get_blog_list_data,
     get_blog_by_id,
     serialize_blog,
@@ -47,16 +46,20 @@ class HomePageView(View):
 class ServicePageView(View):
     template_name = 'services.html'
 
-    def get(self, request, category_slug=None):
+    def get(self, request):
         lang = get_language_from_request(request)
-        slug = category_slug or request.GET.get('slug')
-        if not slug:
-            return redirect('services:home-page')
-        if category_slug:
-            request.GET = request.GET.copy()
-            request.GET['slug'] = category_slug
         context = get_service_list_data(request, lang)
         context['background_image'] = get_background_image('service')
+        context['language'] = lang
+        return render(request, self.template_name, context)
+
+
+class PackagePageView(View):
+    template_name = 'packages.html'
+
+    def get(self, request):
+        lang = get_language_from_request(request)
+        context = get_package_list_data(request, lang)
         context['language'] = lang
         return render(request, self.template_name, context)
 
@@ -71,14 +74,12 @@ class AboutPageView(View):
         partners = get_partners(lang=lang, is_active=is_active)
         contact = get_contact(lang)
         statistics = get_statistics(lang)
-        categories = get_service_categories(lang)
         page_heading = _('About us')
 
         context = {
             'about': serialize_about(about, lang) if about else None,
             'partners': [serialize_partner(p, lang) for p in partners],
             'contact': serialize_contact(contact, lang) if contact else None,
-            'categories': [serialize_service_category(c, lang) for c in categories],
             'statistics': statistics,
             'language': lang,
             'background_image': get_background_image('about'),
@@ -94,13 +95,11 @@ class ContactPageView(View):
     def get(self, request):
         lang = get_language_from_request(request)
         contact = get_contact(lang)
-        categories = get_service_categories(lang)
         form = AppealContactForm()
         page_heading = _('Contact')
 
         context = {
             'contact': serialize_contact(contact, lang) if contact else None,
-            'categories': [serialize_service_category(c, lang) for c in categories],
             'language': lang,
             'background_image': get_background_image('contact'),
             'form': form,
@@ -129,12 +128,10 @@ class ContactPageView(View):
             messages.error(request, _('Please correct the errors in the form.'))
 
         contact = get_contact(lang)
-        categories = get_service_categories(lang)
         page_heading = _('Contact')
 
         context = {
             'contact': serialize_contact(contact, lang) if contact else None,
-            'categories': [serialize_service_category(c, lang) for c in categories],
             'language': lang,
             'background_image': get_background_image('contact'),
             'form': form,
@@ -150,12 +147,10 @@ class FAQPageView(View):
     def get(self, request):
         lang = get_language_from_request(request)
         faqs = get_faqs(lang)
-        categories = get_service_categories(lang)
         page_heading = _('Tez-tez verilən suallar')
 
         context = {
             'faqs': [serialize_faq(f, lang) for f in faqs],
-            'categories': [serialize_service_category(c, lang) for c in categories],
             'language': lang,
             'background_image': get_background_image('contact'),
             'page_heading': page_heading,
@@ -172,8 +167,6 @@ class BlogPageView(View):
         context = get_blog_list_data(request, lang)
         context['language'] = lang
         context['background_image'] = get_background_image('blog')
-        categories = get_service_categories(lang)
-        context['categories'] = [serialize_service_category(c, lang) for c in categories]
         return render(request, self.template_name, context)
 
 
@@ -190,13 +183,11 @@ class BlogDetailPageView(View):
         blog.refresh_from_db()
 
         blog_data = serialize_blog(blog, lang)
-        categories = get_service_categories(lang)
 
         context = {
             'blog': blog_data,
             'other_blogs': get_other_blogs(blog_id, lang),
             'language': lang,
-            'categories': [serialize_service_category(c, lang) for c in categories],
             'background_image': get_background_image('blog'),
             'page_motto': get_page_motto('blog', lang),
         }

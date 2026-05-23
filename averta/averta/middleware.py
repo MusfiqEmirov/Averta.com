@@ -32,7 +32,12 @@ class CustomLocaleMiddleware:
     def __call__(self, request):
         admin_prefix = f'/{settings.ADMIN_URL.strip("/")}'
         if request.path.startswith(admin_prefix):
-            admin_lang = getattr(settings, 'ADMIN_LANGUAGE_CODE', 'en')
+            admin_lang = (
+                request.session.get('admin_language')
+                or getattr(settings, 'ADMIN_LANGUAGE_CODE', 'az')
+            )
+            if admin_lang not in self.LANGUAGES:
+                admin_lang = getattr(settings, 'ADMIN_LANGUAGE_CODE', 'az')
             translation.activate(admin_lang)
             request.LANGUAGE_CODE = admin_lang
             return self.get_response(request)
