@@ -1,18 +1,74 @@
 from django.db import models
 
 
+STAT_ICON_CHOICES = [
+    ('fas fa-calendar-check', 'Təqvim / təcrübə'),
+    ('fas fa-route', 'Marşrut / tur'),
+    ('fas fa-users', 'Müştərilər / qrup'),
+    ('fas fa-globe-americas', 'Beynəlxalq / dünya'),
+    ('fas fa-plane', 'Uçuş / səyahət'),
+    ('fas fa-hotel', 'Otel / qonaqlama'),
+    ('fas fa-map-marked-alt', 'Xəritə / məkan'),
+    ('fas fa-handshake', 'Tərəfdaşlıq'),
+    ('fas fa-award', 'Mükafat / keyfiyyət'),
+    ('fas fa-star', 'Ulduz / reytinq'),
+    ('fas fa-heart', 'Məmnuniyyət'),
+    ('fas fa-camera', 'Foto / xatirə'),
+    ('fas fa-bus', 'Nəqliyyat'),
+    ('fas fa-ship', 'Gəmi / kruiz'),
+    ('fas fa-mountain', 'Təbiət / macəra'),
+    ('fas fa-umbrella-beach', 'Çimərlik / istirahət'),
+    ('fas fa-passport', 'Viza / sənəd'),
+    ('fas fa-headset', 'Dəstək / xidmət'),
+    ('fas fa-chart-line', 'Artım / statistika'),
+    ('fas fa-thumbs-up', 'Tövsiyə'),
+]
+
+STAT_ICON_DEFAULTS = (
+    'fas fa-calendar-check',
+    'fas fa-route',
+    'fas fa-users',
+    'fas fa-globe-americas',
+)
+
+
 class Statistic(models.Model):
+    icon_one = models.CharField(
+        max_length=64,
+        choices=STAT_ICON_CHOICES,
+        default=STAT_ICON_DEFAULTS[0],
+        verbose_name='1-ci kart — ikon',
+        help_text='Kartda görünən Font Awesome ikonu.',
+    )
     value_one = models.PositiveIntegerField(
         verbose_name='1-ci kart — böyük rəqəm',
         help_text='Məsələn: 25. Ana səhifə və Haqqımızda səhifəsində sol tərəfdəki birinci rəqəm.',
+    )
+    icon_two = models.CharField(
+        max_length=64,
+        choices=STAT_ICON_CHOICES,
+        default=STAT_ICON_DEFAULTS[1],
+        verbose_name='2-ci kart — ikon',
     )
     value_two = models.PositiveIntegerField(
         verbose_name='2-ci kart — böyük rəqəm',
         help_text='Məsələn: 150. İkinci statistika kartındakı rəqəm.',
     )
+    icon_three = models.CharField(
+        max_length=64,
+        choices=STAT_ICON_CHOICES,
+        default=STAT_ICON_DEFAULTS[2],
+        verbose_name='3-cü kart — ikon',
+    )
     value_three = models.PositiveIntegerField(
         verbose_name='3-cü kart — böyük rəqəm',
         help_text='Məsələn: 500. Üçüncü statistika kartındakı rəqəm.',
+    )
+    icon_four = models.CharField(
+        max_length=64,
+        choices=STAT_ICON_CHOICES,
+        default=STAT_ICON_DEFAULTS[3],
+        verbose_name='4-cü kart — ikon',
     )
     value_four = models.PositiveIntegerField(
         verbose_name='4-cü kart — böyük rəqəm',

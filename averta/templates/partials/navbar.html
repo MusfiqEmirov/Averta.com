@@ -2,9 +2,12 @@
     <a href="{% url 'services:home-page' %}" class="navbar-brand p-0">
         <h1 class="m-0"><i class="fa fa-map-marker-alt me-3"></i>Averta</h1>
     </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-        <span class="fa fa-bars"></span>
-    </button>
+    <div class="d-flex align-items-center ms-auto d-lg-none navbar-mobile-actions">
+        {% include 'partials/lang_switcher.html' with mobile=True %}
+        <button class="navbar-toggler ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-label="Menyu">
+            <span class="fa fa-bars"></span>
+        </button>
+    </div>
     <div class="collapse navbar-collapse" id="navbarCollapse">
         <div class="navbar-nav ms-auto py-0">
             <a href="{% url 'services:home-page' %}" class="nav-item nav-link {% if active_nav == 'home' %}active{% endif %}">Ana səhifə</a>
@@ -12,7 +15,6 @@
             <a href="{% url 'services:service-page' %}" class="nav-item nav-link {% if active_nav == 'services' %}active{% endif %}">Xidmətlər</a>
             <a href="{% url 'services:package-page' %}" class="nav-item nav-link {% if active_nav == 'packages' %}active{% endif %}">Paketlər</a>
             <a href="{% url 'services:blog-page' %}" class="nav-item nav-link {% if active_nav == 'blog' %}active{% endif %}">Bloq</a>
-            <a href="{% url 'services:faq-page' %}" class="nav-item nav-link {% if active_nav == 'faq' %}active{% endif %}">FAQ</a>
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Səhifələr</a>
                 <div class="dropdown-menu m-0">

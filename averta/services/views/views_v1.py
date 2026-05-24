@@ -163,7 +163,6 @@ class FAQPageView(View):
             'background_image': get_background_image('contact'),
             'page_heading': page_heading,
             'page_motto': get_page_motto('contact', lang),
-            'active_nav': 'faq',
         }
         return render(request, self.template_name, context)
 

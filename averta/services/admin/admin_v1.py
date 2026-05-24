@@ -134,22 +134,18 @@ class PackageMediaInline(ContentMediaInline):
 
 
 class AboutMediaInline(admin.StackedInline):
-    """Haqqımızda qalereyası — yalnız şəkillər."""
+    """Haqqımızda — yalnız bir şəkil."""
 
     model = Media
     fk_name = 'about'
-    extra = 1
-    verbose_name = 'Qalereya şəkli'
-    verbose_name_plural = 'Qalereya şəkilləri'
+    max_num = 1
+    min_num = 0
+    extra = 0
+    verbose_name = 'Şəkil'
+    verbose_name_plural = 'Səhifə şəkli'
     classes = ('wide',)
+    fields = ('image_preview', 'image')
     readonly_fields = ('image_preview',)
-
-    fieldsets = (
-        (_('Şəkil'), {'fields': ('image_preview', 'image')}),
-        (_('Azərbaycan'), {'fields': ('name_az', 'short_description_az'), 'classes': ('wide',)}),
-        (_('English'), {'fields': ('name_en', 'short_description_en'), 'classes': ('wide', 'g-lang-en')}),
-        (_('Русский'), {'fields': ('name_ru', 'short_description_ru'), 'classes': ('wide', 'g-lang-ru')}),
-    )
 
     def image_preview(self, obj):
         if obj.image:
@@ -289,8 +285,8 @@ class AboutAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin):
         (_('Əsas tanıtım videosu (yalnız 1)'), {
             'fields': ('video', 'video_poster'),
             'description': _(
-                'Haqqımızda və ana səhifədə mətnin yanında göstərilən yeganə video. '
-                'Aşağıdakı «Qalereya şəkilləri» bölməsində yalnız şəkil əlavə edilir — video yox.'
+                'Haqqımızda səhifəsində play düyməsi ilə açılan video. '
+                'Aşağıda yalnız bir səhifə şəkli əlavə edə bilərsiniz.'
             ),
         }),
     )
@@ -417,15 +413,17 @@ class StatisticAdmin(AdminPageHelpMixin, admin.ModelAdmin):
     fieldsets = (
         (_('1-ci statistika kartı (soldan birinci)'), {
             'fields': (
+                'icon_one',
                 'value_one',
                 'caption_one_az',
                 'caption_one_en',
                 'caption_one_ru',
             ),
-            'description': _('Böyük rəqəm + altında qısa izah. Məs: 25 — İllik təcrübə'),
+            'description': _('İkon, böyük rəqəm və alt yazı. Məs: 25 — İllik təcrübə'),
         }),
         (_('2-ci statistika kartı'), {
             'fields': (
+                'icon_two',
                 'value_two',
                 'caption_two_az',
                 'caption_two_en',
@@ -434,6 +432,7 @@ class StatisticAdmin(AdminPageHelpMixin, admin.ModelAdmin):
         }),
         (_('3-cü statistika kartı'), {
             'fields': (
+                'icon_three',
                 'value_three',
                 'caption_three_az',
                 'caption_three_en',
@@ -442,6 +441,7 @@ class StatisticAdmin(AdminPageHelpMixin, admin.ModelAdmin):
         }),
         (_('4-cü statistika kartı (sağdan sonuncu)'), {
             'fields': (
+                'icon_four',
                 'value_four',
                 'caption_four_az',
                 'caption_four_en',
@@ -542,8 +542,9 @@ class MediaAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin):
 @admin.register(FAQ)
 class FAQAdmin(AdminPageHelpMixin, admin.ModelAdmin):
     admin_page_help = FAQ_HELP
-    list_display = ('question_az', 'sort_order', 'is_active', 'created_at')
-    list_editable = ('sort_order', 'is_active')
+    list_display = ('question_az', 'sort_order', 'is_active', 'on_main_page', 'created_at')
+    list_editable = ('sort_order', 'is_active', 'on_main_page')
+    list_filter = ('is_active', 'on_main_page')
     search_fields = ('question_az', 'question_en', 'question_ru', 'answer_az')
     ordering = ('sort_order', 'id')
     fieldsets = (
@@ -551,8 +552,12 @@ class FAQAdmin(AdminPageHelpMixin, admin.ModelAdmin):
         (_('English'), {'fields': ('question_en', 'answer_en'), 'classes': ('wide', 'g-lang-en')}),
         (_('Русский'), {'fields': ('question_ru', 'answer_ru'), 'classes': ('wide', 'g-lang-ru')}),
         (_('Parametrlər'), {
-            'fields': ('sort_order', 'is_active'),
-            'description': _('Sıra nömrəsi kiçik olanda sual yuxarıda görünür. «Saytda göstərilsin?» söndürülərsə gizlənir.'),
+            'fields': ('sort_order', 'is_active', 'on_main_page'),
+            'description': _(
+                'Sıra nömrəsi kiçik olanda sual yuxarıda görünür. '
+                '«Saytda göstərilsin?» söndürülərsə tam gizlənir. '
+                '«Ana səhifədə göstərilsin?» yalnız ana səhifə FAQ blokuna təsir edir (ən çox 6).'
+            ),
         }),
     )
 

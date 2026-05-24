@@ -1,0 +1,46 @@
+{% load static %}
+<form action="{% url 'set_language' %}" method="post" class="lang-switcher-form{% if mobile %} lang-switcher-form--mobile{% endif %}">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+    <div class="dropdown lang-switcher-dropdown">
+        <button type="button"
+                class="btn btn-sm dropdown-toggle lang-switcher-toggle d-inline-flex align-items-center gap-2{% if mobile %} btn-outline-primary lang-switcher-toggle--mobile{% else %} btn-outline-light{% endif %}"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                aria-label="Dil seçimi">
+            {% if language == 'en' %}
+            <img src="{% static 'assets/img/flag-en.png' %}" alt="EN" class="lang-flag" width="24" height="18">
+            <span class="lang-code">EN</span>
+            {% elif language == 'ru' %}
+            <img src="{% static 'assets/img/flag-ru.png' %}" alt="RU" class="lang-flag" width="24" height="18">
+            <span class="lang-code">RU</span>
+            {% else %}
+            <img src="{% static 'assets/img/flag-az.png' %}" alt="AZ" class="lang-flag" width="24" height="18">
+            <span class="lang-code">AZ</span>
+            {% endif %}
+        </button>
+        <ul class="dropdown-menu lang-switcher-menu shadow-sm py-2">
+            <li>
+                <button type="submit" name="language" value="az"
+                        class="dropdown-item lang-switcher-item d-flex align-items-center gap-2{% if language == 'az' or not language %} active{% endif %}">
+                    <img src="{% static 'assets/img/flag-az.png' %}" alt="" class="lang-flag" width="24" height="18">
+                    <span class="lang-code">AZ</span>
+                </button>
+            </li>
+            <li>
+                <button type="submit" name="language" value="en"
+                        class="dropdown-item lang-switcher-item d-flex align-items-center gap-2{% if language == 'en' %} active{% endif %}">
+                    <img src="{% static 'assets/img/flag-en.png' %}" alt="" class="lang-flag" width="24" height="18">
+                    <span class="lang-code">EN</span>
+                </button>
+            </li>
+            <li>
+                <button type="submit" name="language" value="ru"
+                        class="dropdown-item lang-switcher-item d-flex align-items-center gap-2{% if language == 'ru' %} active{% endif %}">
+                    <img src="{% static 'assets/img/flag-ru.png' %}" alt="" class="lang-flag" width="24" height="18">
+                    <span class="lang-code">RU</span>
+                </button>
+            </li>
+        </ul>
+    </div>
+</form>

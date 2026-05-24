@@ -5,30 +5,31 @@
 {% block content %}
 {% include 'partials/page_header.html' %}
 
-<div class="container-fluid py-5">
-    <div class="container py-5">
-        <div class="mx-auto text-center mb-5" style="max-width: 900px;">
+<section class="home-faq faq-page">
+    <div class="home-faq-bg" aria-hidden="true"></div>
+    <div class="container position-relative py-5">
+        <div class="mx-auto text-center mb-5" style="max-width: 720px;">
             <h5 class="section-title px-3">FAQ</h5>
-            <h1 class="mb-0">{{ page_heading }}</h1>
+            <h1 class="home-faq-title mb-3">{{ page_heading }}</h1>
+            <p class="home-faq-lead text-muted mb-0">
+                Sualınıza cavab tapmadınızsa, bizimlə əlaqə saxlayın — komandamız sizə kömək etməyə hazırdır.
+            </p>
         </div>
         {% if faqs %}
-        <div class="accordion mx-auto" id="faqPage" style="max-width: 900px;">
-            {% for faq in faqs %}
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#faq-p-{{ forloop.counter }}">
-                        {{ faq.question }}
-                    </button>
-                </h2>
-                <div id="faq-p-{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" data-bs-parent="#faqPage">
-                    <div class="accordion-body">{{ faq.answer|linebreaks }}</div>
-                </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-9">
+                {% include 'partials/faq_accordion.html' with accordion_id='faqPage' %}
             </div>
-            {% endfor %}
+        </div>
+        <div class="text-center mt-5">
+            <a href="{% url 'services:contact-page' %}" class="btn btn-primary rounded-pill py-3 px-5">Əlaqə saxla</a>
         </div>
         {% else %}
-        <p class="text-center text-muted">Hələ sual əlavə edilməyib.</p>
+        <p class="text-center text-muted mb-4">Hələ sual əlavə edilməyib.</p>
+        <div class="text-center">
+            <a href="{% url 'services:contact-page' %}" class="btn btn-primary rounded-pill py-3 px-5">Əlaqə saxla</a>
+        </div>
         {% endif %}
     </div>
-</div>
+</section>
 {% endblock %}

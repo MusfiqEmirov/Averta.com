@@ -67,7 +67,7 @@ STATISTIC_HELP = (
     '<strong>Bu nədir?</strong> Ana səhifədə və Haqqımızda səhifəsində görünən 4 rəqəmli statistika bloku '
     '(məs: <em>25 — İllik təcrübə</em>).<br>'
     '<strong>Harada dəyişir?</strong> Sayt → Ana səhifə (aşağı hissə) və Haqqımızda səhifəsi.<br>'
-    '<strong>Necə doldurulur?</strong> Hər kart üçün böyük rəqəm yazın, altına qısa izahı 3 dildə əlavə edin. '
+    '<strong>Necə doldurulur?</strong> Hər kart üçün ikon seçin, böyük rəqəm yazın, altına qısa izahı 3 dildə əlavə edin. '
     'Adətən yalnız <strong>1 qeyd</strong> saxlanılır — mövcud olanı redaktə edin.'
 )
 
@@ -77,14 +77,16 @@ MOTTO_HELP = (
     '• <strong>Ana səhifə karuseli</strong> — yuxarıdakı böyük şəkil slayderində mətn.<br>'
     '• <strong>Daxili səhifələrin banneri</strong> — Haqqımızda, Əlaqə, Xidmətlər, Bloq səhifələrinin '
     'yuxarı fon şəklinin üstündə (deviz varsa). Deviz yoxdursa banner boş qalır.<br>'
-    '<strong>Qeyd:</strong> Hər səhifə üçün bir deviz kifayətdir.'
+    '<strong>Qeyd:</strong> Ana səhifə üçün bir neçə deviz əlavə edə bilərsiniz — '
+    '«Ana səhifə karuselində göstər?» işarələnmiş hər deviz növbəti slaydda görünür. '
+    'Daxili səhifə banneri üçün hər səhifədə bir deviz kifayətdir.'
 )
 
 ABOUT_HELP = (
     '<strong>Bu nədir?</strong> «Haqqımızda» səhifəsinin və ana səhifədəki qısa «Haqqımızda» blokunun məzmunu.<br>'
     '<strong>Harada dəyişir?</strong> Menyu → Haqqımızda; ana səhifədə «Haqqımızda» bölməsi.<br>'
-    '<strong>Əlavə:</strong> «Qalereya şəkilləri» bölməsindən yalnız şəkil yükləyin. '
-    'Əsas tanıtım videosu yuxarıdakı «Əsas tanıtım videosu» bölməsindədir — yalnız bir video.'
+    '<strong>Əlavə:</strong> «Səhifə şəkli» — yalnız bir şəkil. '
+    'Video yuxarıdakı «Əsas tanıtım videosu» bölməsindədir.'
 )
 
 CONTACT_HELP = (
@@ -129,8 +131,9 @@ BLOG_HELP = (
 
 FAQ_HELP = (
     '<strong>Bu nədir?</strong> Tez-tez verilən suallar və cavabları.<br>'
-    '<strong>Harada dəyişir?</strong> Menyu → FAQ səhifəsi; ana səhifədə qısa FAQ bloku.<br>'
-    '<strong>Sıra:</strong> Kiçik rəqəm = yuxarıda göstərilir. «Aktiv» söndürülərsə gizlənir.'
+    '<strong>Harada dəyişir?</strong> Footer → FAQ səhifəsi (bütün aktiv suallar); '
+    'ana səhifə FAQ bloku (yalnız «Ana səhifədə göstərilsin?» işarələnənlər, ən çox 6).<br>'
+    '<strong>Sıra:</strong> Kiçik rəqəm = yuxarıda göstərilir. «Saytda göstərilsin?» söndürülərsə tam gizlənir.'
 )
 
 MEDIA_HELP = (

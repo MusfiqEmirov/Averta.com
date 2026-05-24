@@ -7,42 +7,7 @@
 {% include 'partials/page_header.html' %}
 
 {% if about %}
-<div class="container-fluid about py-5">
-    <div class="container py-5">
-        <div class="row g-5 align-items-center">
-            <div class="col-lg-5">
-                <div class="h-100" style="border: 50px solid; border-color: transparent #13357B transparent #13357B;">
-                    {% if about.medias.0.image %}
-                    <img src="{{ about.medias.0.image }}" class="img-fluid w-100 h-100" alt="">
-                    {% else %}
-                    <img src="{% static 'assets/img/about-img.jpg' %}" class="img-fluid w-100 h-100" alt="">
-                    {% endif %}
-                </div>
-            </div>
-            <div class="col-lg-7">
-                <h5 class="section-about-title pe-3">Haqqımızda</h5>
-                <h1 class="mb-4">{{ about.main_title }}</h1>
-                {% if about.second_title %}<h4 class="text-primary mb-3">{{ about.second_title }}</h4>{% endif %}
-                <div class="mb-4">{{ about.description|safe }}</div>
-                {% if about.video %}
-                <video class="w-100 rounded mt-3" controls {% if about.video_poster %}poster="{{ about.video_poster }}"{% endif %}>
-                    <source src="{{ about.video }}">
-                </video>
-                {% endif %}
-            </div>
-        </div>
-        {% if about.medias %}
-        <div class="row g-3 mt-5">
-            {% for media in about.medias %}
-            <div class="col-md-4">
-                <img src="{{ media.image }}" class="img-fluid rounded" alt="{{ media.name }}">
-                {% if media.name %}<p class="mt-2 mb-0"><strong>{{ media.name }}</strong></p>{% endif %}
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-    </div>
-</div>
+{% include 'partials/about_intro.html' with show_read_more=False show_video=True about_page_layout=True %}
 {% else %}
 <div class="container-fluid about py-5">
     <div class="container py-5">
@@ -60,28 +25,7 @@
 {% endif %}
 
 {% if statistics %}
-<div class="container-fluid counter bg-primary py-5">
-    <div class="container py-5">
-        <div class="row g-4">
-            <div class="col-md-6 col-lg-3 text-center text-white">
-                <h1 class="display-4 text-white">{{ statistics.value_one }}</h1>
-                <p class="mb-0">{{ statistics.caption_one }}</p>
-            </div>
-            <div class="col-md-6 col-lg-3 text-center text-white">
-                <h1 class="display-4 text-white">{{ statistics.value_two }}</h1>
-                <p class="mb-0">{{ statistics.caption_two }}</p>
-            </div>
-            <div class="col-md-6 col-lg-3 text-center text-white">
-                <h1 class="display-4 text-white">{{ statistics.value_three }}</h1>
-                <p class="mb-0">{{ statistics.caption_three }}</p>
-            </div>
-            <div class="col-md-6 col-lg-3 text-center text-white">
-                <h1 class="display-4 text-white">{{ statistics.value_four }}</h1>
-                <p class="mb-0">{{ statistics.caption_four }}</p>
-            </div>
-        </div>
-    </div>
-</div>
+{% include 'partials/about_statistics.html' %}
 {% endif %}
 
 {% if partners %}
@@ -102,4 +46,67 @@
     </div>
 </div>
 {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    var statValues = document.querySelectorAll('.about-stats-value[data-count]');
+    if (statValues.length) {
+        var easeOut = function (t) { return 1 - Math.pow(1 - t, 3); };
+        var animateValue = function (el) {
+            var target = parseInt(el.getAttribute('data-count'), 10) || 0;
+            var duration = 1600;
+            var start = null;
+            var step = function (ts) {
+                if (!start) start = ts;
+                var p = Math.min((ts - start) / duration, 1);
+                el.textContent = Math.floor(easeOut(p) * target).toLocaleString('az-Latn');
+                if (p < 1) requestAnimationFrame(step);
+                else el.textContent = target.toLocaleString('az-Latn');
+            };
+            requestAnimationFrame(step);
+        };
+        if ('IntersectionObserver' in window) {
+            var obs = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (!entry.isIntersecting) return;
+                    var el = entry.target;
+                    if (el.dataset.animated) return;
+                    el.dataset.animated = '1';
+                    animateValue(el);
+                    obs.unobserve(el);
+                });
+            }, { threshold: 0.35 });
+            statValues.forEach(function (el) { obs.observe(el); });
+        } else {
+            statValues.forEach(animateValue);
+        }
+    }
+
+    var modalEl = document.getElementById('aboutVideoModal');
+    if (!modalEl) return;
+    var video = document.getElementById('aboutVideoPlayer');
+    modalEl.addEventListener('hidden.bs.modal', function () {
+        if (video) {
+            video.pause();
+            video.currentTime = 0;
+        }
+    });
+    modalEl.addEventListener('shown.bs.modal', function () {
+        if (video) {
+            video.play().catch(function () {});
+        }
+    });
+    var poster = document.querySelector('.about-video-poster');
+    if (poster) {
+        poster.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                poster.click();
+            }
+        });
+    }
+})();
+</script>
 {% endblock %}

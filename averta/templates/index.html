@@ -16,30 +16,9 @@
 {% endblock %}
 
 {% block content %}
-{# ——— Dinamik: Haqqımızda ——— #}
+{# ——— Dinamik: Haqqımızda (admin panel → About) ——— #}
 {% if about %}
-<div class="container-fluid about py-5">
-    <div class="container py-5">
-        <div class="row g-5 align-items-center">
-            <div class="col-lg-5">
-                <div class="h-100" style="border: 50px solid; border-color: transparent #13357B transparent #13357B;">
-                    {% if about.medias.0.image %}
-                    <img src="{{ about.medias.0.image }}" class="img-fluid w-100 h-100" alt="">
-                    {% else %}
-                    <img src="{% static 'assets/img/about-img.jpg' %}" class="img-fluid w-100 h-100" alt="">
-                    {% endif %}
-                </div>
-            </div>
-            <div class="col-lg-7">
-                <h5 class="section-about-title pe-3">Haqqımızda</h5>
-                <h1 class="mb-4">{{ about.main_title }}</h1>
-                {% if about.second_title %}<h4 class="text-primary mb-3">{{ about.second_title }}</h4>{% endif %}
-                <div class="mb-4">{{ about.description|safe }}</div>
-                <a class="btn btn-primary rounded-pill py-3 px-5 mt-2" href="{% url 'services:about-page' %}">Ətraflı</a>
-            </div>
-        </div>
-    </div>
-</div>
+{% include 'partials/about_intro.html' with show_read_more=True show_video=False %}
 {% else %}
 <div class="container-fluid about py-5">
     <div class="container py-5">
@@ -208,31 +187,7 @@
 
 {# ——— Dinamik: FAQ ——— #}
 {% if faqs %}
-<div class="container-fluid py-5">
-    <div class="container py-5">
-        <div class="mx-auto text-center mb-5" style="max-width: 900px;">
-            <h5 class="section-title px-3">FAQ</h5>
-            <h1 class="mb-0">Tez-tez verilən suallar</h1>
-        </div>
-        <div class="accordion" id="homeFaq">
-            {% for faq in faqs %}
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="faq-h-{{ forloop.counter }}">
-                    <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#faq-c-{{ forloop.counter }}">
-                        {{ faq.question }}
-                    </button>
-                </h2>
-                <div id="faq-c-{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" data-bs-parent="#homeFaq">
-                    <div class="accordion-body">{{ faq.answer|linebreaks }}</div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        <div class="text-center mt-4">
-            <a href="{% url 'services:faq-page' %}" class="btn btn-outline-primary rounded-pill py-2 px-4">Bütün suallar</a>
-        </div>
-    </div>
-</div>
+{% include 'partials/home_faq.html' %}
 {% endif %}
 
 {# ——— Statik: Subscribe (şablondan) ——— #}

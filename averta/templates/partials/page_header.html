@@ -1,12 +1,9 @@
 <div class="container-fluid bg-breadcrumb"{% if background_image %} style="background: linear-gradient(rgba(19, 53, 123, 0.7), rgba(19, 53, 123, 0.7)), url({{ background_image }}); background-position: center center; background-repeat: no-repeat; background-size: cover;"{% endif %}>
     <div class="container text-center py-5" style="max-width: 900px;">
-        <h3 class="text-white display-3 mb-4">{{ page_heading }}</h3>
         {% if page_motto %}
-        <p class="text-white fs-5 mb-4">{{ page_motto }}</p>
+        <p class="page-banner-motto text-white mb-0">{{ page_motto }}</p>
+        {% else %}
+        <div class="bg-breadcrumb-spacer" aria-hidden="true"></div>
         {% endif %}
-        <ol class="breadcrumb justify-content-center mb-0">
-            <li class="breadcrumb-item"><a href="{% url 'services:home-page' %}" class="text-white">Ana səhifə</a></li>
-            <li class="breadcrumb-item active text-white">{{ page_heading }}</li>
-        </ol>
     </div>
 </div>

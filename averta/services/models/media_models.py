@@ -55,39 +55,6 @@ class Media(models.Model):
         blank=True,
         verbose_name='Tərəfdaş'
     )
-    name_az = models.CharField(
-        max_length=120,
-        null=True,
-        blank=True,
-        verbose_name='Ad (AZ)',
-    )
-    name_en = models.CharField(
-        max_length=120,
-        null=True,
-        blank=True,
-        verbose_name='Ad (EN)',
-    )
-    name_ru = models.CharField(
-        max_length=120,
-        null=True,
-        blank=True,
-        verbose_name='Ad (RU)',
-    )
-    short_description_az = models.TextField(
-        null=True,
-        blank=True,
-        verbose_name='Qısa məlumat (AZ)',
-    )
-    short_description_en = models.TextField(
-        null=True,
-        blank=True,
-        verbose_name='Qısa məlumat (EN)',
-    )
-    short_description_ru = models.TextField(
-        null=True,
-        blank=True,
-        verbose_name='Qısa məlumat (RU)',
-    )
     image = models.ImageField(
         upload_to='images/',
         verbose_name='Şəkil'

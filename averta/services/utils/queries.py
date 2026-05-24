@@ -1,8 +1,11 @@
 import html as html_lib
+import re
 
 from django.db.models import Q, Prefetch
 from django.utils import translation
 from django.utils.translation import gettext as _
+from django.utils.safestring import mark_safe
+from django.template.defaultfilters import truncatewords_html
 from django.templatetags.static import static
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
@@ -69,6 +72,26 @@ def _localized_with_az_fallback(instance, lang, base):
     if str(primary).strip():
         return primary
     return getattr(instance, get_localized_field_name(base, 'az'), None) or ''
+
+
+def prepare_rich_html(value):
+    """CKEditor HTML — decode entities, normalize empty paragraphs."""
+    if not value:
+        return ''
+    text = html_lib.unescape(str(value))
+    if '&lt;' in text or '&amp;lt;' in text:
+        text = html_lib.unescape(text)
+    text = re.sub(r'<p>(\s|&nbsp;|<br\s*/?>)*</p>', '', text, flags=re.IGNORECASE)
+    return text.strip()
+
+
+def build_about_description_preview(html, word_count=45):
+    """Ana səhifə üçün qısa HTML preview (bağlı teqlər saxlanır)."""
+    html = prepare_rich_html(html)
+    if not html:
+        return ''
+    html = re.sub(r'<(script|style|iframe)[^>]*>.*?</\1>', '', html, flags=re.IGNORECASE | re.DOTALL)
+    return truncatewords_html(html, word_count)
 
 
 # ---------------------------------------------------------------------------
@@ -164,7 +187,7 @@ def get_about(lang='az'):
             'medias',
             queryset=Media.objects.filter(
                 image__isnull=False,
-            ).filter(media_not_marked_as_background_q()),
+            ).filter(media_not_marked_as_background_q()).order_by('id'),
         )
     ).first()
 
@@ -262,24 +285,35 @@ def get_page_motto(page_key, lang='az'):
 
 def get_motto_texts(lang='az'):
     text_field = get_localized_field_name('text', lang)
-    return [
-        getattr(m, text_field, m.text_az)
-        for m in Motto.objects.filter(show_on_home_hero=True).order_by('id')
-    ]
+    texts = []
+    for m in Motto.objects.filter(show_on_home_hero=True).order_by('id'):
+        text = (getattr(m, text_field, m.text_az) or m.text_az or '').strip()
+        if text:
+            texts.append(text)
+    return texts
 
 
 def build_hero_carousel(lang):
+    """
+    Hər slayd üçün fon şəkli + (varsa) öz devizi.
+    Next/prev ilə növbəti slayda növbəti motto göstərilir.
+    """
     motto_texts = get_motto_texts(lang)
-    n_mottos = len(motto_texts)
     urls = list(get_home_background_images(limit=6))
     if not urls:
         urls = [static(p) for p in HERO_FALLBACK_IMAGE_PATHS]
+    if not urls:
+        return []
+
+    n_images = len(urls)
+    n_mottos = len(motto_texts)
+    n_slides = max(n_images, n_mottos) if n_mottos else n_images
+
     slides = []
-    for i, url in enumerate(urls):
-        motto = motto_texts[i % n_mottos] if n_mottos else None
+    for i in range(n_slides):
         slides.append({
-            'image_url': url,
-            'motto': motto,
+            'image_url': urls[i % n_images],
+            'motto': motto_texts[i] if i < n_mottos else None,
         })
     return slides
 
@@ -288,13 +322,31 @@ def build_hero_carousel(lang):
 # Statistics
 # ---------------------------------------------------------------------------
 
+def _stat_icon(value, default):
+    from services.models.statistic_models import STAT_ICON_CHOICES
+
+    allowed = {choice[0] for choice in STAT_ICON_CHOICES}
+    if value in allowed:
+        return value
+    return default
+
+
 @cached_query(timeout='CACHE_TIMEOUT_LONG')
 def get_statistics(lang='az'):
+    from services.models.statistic_models import STAT_ICON_DEFAULTS
+
     statistic = Statistic.objects.first()
     if statistic:
 
         def caption(base):
             return (_localized_with_az_fallback(statistic, lang, base) or '').strip()
+
+        icons = (
+            _stat_icon(statistic.icon_one, STAT_ICON_DEFAULTS[0]),
+            _stat_icon(statistic.icon_two, STAT_ICON_DEFAULTS[1]),
+            _stat_icon(statistic.icon_three, STAT_ICON_DEFAULTS[2]),
+            _stat_icon(statistic.icon_four, STAT_ICON_DEFAULTS[3]),
+        )
 
         return {
             'value_one': statistic.value_one,
@@ -305,6 +357,36 @@ def get_statistics(lang='az'):
             'caption_two': caption('caption_two'),
             'caption_three': caption('caption_three'),
             'caption_four': caption('caption_four'),
+            'icon_one': icons[0],
+            'icon_two': icons[1],
+            'icon_three': icons[2],
+            'icon_four': icons[3],
+            'cards': [
+                {
+                    'value': statistic.value_one,
+                    'caption': caption('caption_one'),
+                    'icon': icons[0],
+                    'variant': 1,
+                },
+                {
+                    'value': statistic.value_two,
+                    'caption': caption('caption_two'),
+                    'icon': icons[1],
+                    'variant': 2,
+                },
+                {
+                    'value': statistic.value_three,
+                    'caption': caption('caption_three'),
+                    'icon': icons[2],
+                    'variant': 3,
+                },
+                {
+                    'value': statistic.value_four,
+                    'caption': caption('caption_four'),
+                    'icon': icons[3],
+                    'variant': 4,
+                },
+            ],
         }
     return {}
 
@@ -314,8 +396,11 @@ def get_statistics(lang='az'):
 # ---------------------------------------------------------------------------
 
 @cached_query(timeout='CACHE_TIMEOUT_MEDIUM')
-def get_faqs(lang='az'):
-    return FAQ.objects.filter(is_active=True).order_by('sort_order', 'id')
+def get_faqs(lang='az', on_main_page=None):
+    queryset = FAQ.objects.filter(is_active=True)
+    if on_main_page is not None:
+        queryset = queryset.filter(on_main_page=on_main_page)
+    return queryset.order_by('sort_order', 'id')
 
 
 def serialize_faq(faq, lang='az'):
@@ -418,25 +503,30 @@ def serialize_about(about, lang='az'):
     second_title_field = get_localized_field_name('second_title', lang)
     desc_field = get_localized_field_name('description', lang)
 
+    first_media = None
+    for media in about.medias.all():
+        if media.image:
+            first_media = media
+            break
+
+    first_image = first_media.image.url if first_media else None
+    if not first_image and about.video_poster:
+        first_image = about.video_poster.url
+
+    description_html = prepare_rich_html(
+        getattr(about, desc_field, about.description_az) or ''
+    )
+    description_preview_html = build_about_description_preview(description_html)
+
     return {
         'id': about.id,
         'main_title': getattr(about, main_title_field, about.main_title_az),
         'second_title': getattr(about, second_title_field, about.second_title_az),
-        'description': html_lib.unescape(getattr(about, desc_field, about.description_az) or ''),
+        'description': mark_safe(description_html),
+        'description_preview': mark_safe(description_preview_html),
         'video': about.video.url if about.video else None,
         'video_poster': about.video_poster.url if about.video_poster else None,
-        'medias': [
-            {
-                'id': media.id,
-                'name': _localized_with_az_fallback(media, lang, 'name'),
-                'short_description': _localized_with_az_fallback(
-                    media, lang, 'short_description'
-                ),
-                'image': media.image.url if media.image else None,
-            }
-            for media in about.medias.all()
-            if media.image
-        ]
+        'first_image': first_image,
     }
 
 
@@ -554,7 +644,7 @@ def get_home_page_data(request, lang):
     )
     home_blogs = [serialize_blog(b, lang) for b in blog_list]
 
-    faq_list = get_faqs(lang)
+    faq_list = list(get_faqs(lang, on_main_page=True)[:6])
     home_faqs = [serialize_faq(f, lang) for f in faq_list]
 
     return {

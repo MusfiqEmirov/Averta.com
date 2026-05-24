@@ -5,3 +5,6 @@ class ServicesConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'services'
     verbose_name = 'Sayt məzmunu'
+
+    def ready(self):
+        import services.signals  # noqa: F401

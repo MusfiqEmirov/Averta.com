@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 
 
@@ -40,6 +41,11 @@ class FAQ(models.Model):
         default=True,
         verbose_name='Saytda göstərilsin?',
     )
+    on_main_page = models.BooleanField(
+        default=False,
+        verbose_name='Ana səhifədə göstərilsin?',
+        help_text='Yalnız işarələnən suallar ana səhifə FAQ blokunda görünür (ən çox 6).',
+    )
     created_at = models.DateTimeField(
         auto_now_add=True,
     )
@@ -48,6 +54,20 @@ class FAQ(models.Model):
         verbose_name = 'Tez-tez verilən sual'
         verbose_name_plural = 'Tez-tez verilən suallar'
         ordering = ['sort_order', 'id']
+
+    def clean(self):
+        super().clean()
+        if self.on_main_page:
+            qs = FAQ.objects.filter(on_main_page=True, is_active=True)
+            if self.pk:
+                qs = qs.exclude(pk=self.pk)
+            if qs.count() >= 6:
+                raise ValidationError({
+                    'on_main_page': (
+                        'Ana səhifədə ən çox 6 sual ola bilər. '
+                        'Yenisini əlavə etmək üçün əvvəl mövcud sıradan birini söndürün.'
+                    ),
+                })
 
     def __str__(self):
         return self.question_az
