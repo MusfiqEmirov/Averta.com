@@ -126,6 +126,8 @@ BLOG_HELP = (
     '<strong>Bu nədir?</strong> Bloq yazıları — xəbər və məqalələr.<br>'
     '<strong>Harada dəyişir?</strong> Menyu → Bloq siyahısı; hər yazının ayrıca səhifəsi; ana səhifə '
     '(«Ana səhifədə olsun» — max 6 yazı).<br>'
+    '<strong>Mövzu:</strong> Qısa kateqoriya və ya etiket — kartda və detail səhifəsində başlığın üstündə.<br>'
+    '<strong>Slug:</strong> URL üçün avtomatik yaradılır (məs: /blog/yazi-basligi/).<br>'
     '<strong>Şəkil:</strong> Yazının üz qabığı — kartlarda və yazı səhifəsində görünür.'
 )
 

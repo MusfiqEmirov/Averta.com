@@ -12,7 +12,7 @@ class AppealContactForm(forms.ModelForm):
     )
     full_name = forms.CharField(
         widget=forms.TextInput(attrs={
-            'class': 'form-control',
+            'class': 'form-control form-control-lg',
             'placeholder': _('Your full name')
         }),
         required=True,
@@ -20,7 +20,7 @@ class AppealContactForm(forms.ModelForm):
     )
     email = forms.EmailField(
         widget=forms.EmailInput(attrs={
-            'class': 'form-control',
+            'class': 'form-control form-control-lg',
             'placeholder': _('Email address')
         }),
         required=True,
@@ -30,7 +30,7 @@ class AppealContactForm(forms.ModelForm):
         max_length=40,
         required=False,
         widget=forms.TextInput(attrs={
-            'class': 'form-control',
+            'class': 'form-control form-control-lg',
             'placeholder': _('Mobile number'),
             'inputmode': 'tel',
             'autocomplete': 'tel',
@@ -39,7 +39,7 @@ class AppealContactForm(forms.ModelForm):
     )
     subject = forms.CharField(
         widget=forms.TextInput(attrs={
-            'class': 'form-control',
+            'class': 'form-control form-control-lg',
             'placeholder': _('Subject')
         }),
         required=True,
@@ -48,8 +48,8 @@ class AppealContactForm(forms.ModelForm):
     )
     info = forms.CharField(
         widget=forms.Textarea(attrs={
-            'class': 'form-control',
-            'rows': 5,
+            'class': 'form-control form-control-lg contact-message-field',
+            'rows': 8,
             'placeholder': _('Your message')
         }),
         required=True,

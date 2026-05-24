@@ -570,21 +570,22 @@ class FAQAdmin(AdminPageHelpMixin, admin.ModelAdmin):
 class BlogAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin):
     admin_page_help = BLOG_HELP
     form = BlogAdminForm
-    list_display = ('image_preview', 'name_az', 'date', 'on_main_page', 'view_count', 'created_at')
-    search_fields = ('name_az', 'name_en', 'name_ru')
+    list_display = ('image_preview', 'topic_az', 'name_az', 'slug', 'date', 'on_main_page', 'view_count', 'created_at')
+    search_fields = ('name_az', 'name_en', 'name_ru', 'topic_az', 'topic_en', 'topic_ru', 'slug')
     list_filter = ('on_main_page',)
     ordering = ('-date', '-created_at')
-    readonly_fields = ('image_preview', 'view_count', 'created_at')
+    readonly_fields = ('image_preview', 'slug', 'view_count', 'created_at')
     fieldsets = (
-        (_('Azərbaycan'), {'fields': ('name_az', 'description_az'), 'classes': ('wide',)}),
-        (_('English'), {'fields': ('name_en', 'description_en'), 'classes': ('wide', 'g-lang-en')}),
-        (_('Русский'), {'fields': ('name_ru', 'description_ru'), 'classes': ('wide', 'g-lang-ru')}),
+        (_('Azərbaycan'), {'fields': ('topic_az', 'name_az', 'description_az'), 'classes': ('wide',)}),
+        (_('English'), {'fields': ('topic_en', 'name_en', 'description_en'), 'classes': ('wide', 'g-lang-en')}),
+        (_('Русский'), {'fields': ('topic_ru', 'name_ru', 'description_ru'), 'classes': ('wide', 'g-lang-ru')}),
         (_('Media'), {'fields': ('image_preview', 'image')}),
         (_('Parametrlər'), {
-            'fields': ('date', 'on_main_page', 'view_count', 'created_at'),
+            'fields': ('date', 'on_main_page', 'slug', 'view_count', 'created_at'),
             'description': _(
                 'Tarix — yazının dərc tarixi. '
                 '«Ana səhifədə göstərilsin?» — ana səhifə bloq bölməsində (max 6). '
+                'Slug avtomatik yaradılır (başlıqdan); URL: /blog/slug/. '
                 'Baxış sayı avtomatik sayılır.'
             ),
         }),

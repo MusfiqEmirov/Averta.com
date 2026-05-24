@@ -39,40 +39,7 @@
 </div>
 {% endif %}
 
-{# ——— Dinamik: Xidmətlər ——— #}
-<div class="container-fluid bg-light service py-5">
-    <div class="container py-5">
-        <div class="mx-auto text-center mb-5" style="max-width: 900px;">
-            <h5 class="section-title px-3">Xidmətlər</h5>
-            <h1 class="mb-0">Xidmətlərimiz</h1>
-        </div>
-        {% if services %}
-        <div class="row g-4">
-            {% for service in services %}
-            {% include 'partials/service_card.html' %}
-            {% endfor %}
-        </div>
-        <div class="text-center mt-4">
-            <a class="btn btn-primary rounded-pill py-3 px-5" href="{% url 'services:service-page' %}">Bütün xidmətlər</a>
-        </div>
-        {% else %}
-        {# Statik şablon məzmunu — backend boş olanda #}
-        <div class="row g-4">
-            <div class="col-lg-6">
-                <div class="service-content-inner d-flex align-items-center bg-white border border-primary rounded p-4 pe-0 mb-3">
-                    <div class="service-content text-end flex-grow-1">
-                        <h5 class="mb-4">WorldWide Tours</h5>
-                        <p class="mb-0">Dolor sit amet consectetur adipisicing elit.</p>
-                    </div>
-                    <div class="service-icon p-4"><i class="fa fa-globe fa-4x text-primary"></i></div>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-    </div>
-</div>
-
-{# ——— Statik: Destination, Explore Tour (şablondan) ——— #}
+{# ——— Statik: Destination; dinamik: Xidmətlər (Explore Tour kartları) ——— #}
 {% include 'partials/static/home_destination_tours.html' %}
 
 {# ——— Dinamik: Paketlər ——— #}
@@ -104,40 +71,6 @@
         {% endif %}
     </div>
 </div>
-
-{# ——— Dinamik: Statistika ——— #}
-{% if statistics %}
-<div class="container-fluid counter bg-primary py-5">
-    <div class="container py-5">
-        <div class="row g-4">
-            <div class="col-md-6 col-lg-3">
-                <div class="counter-item text-center text-white">
-                    <h1 class="display-4 text-white">{{ statistics.value_one }}</h1>
-                    <p class="mb-0">{{ statistics.caption_one }}</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="counter-item text-center text-white">
-                    <h1 class="display-4 text-white">{{ statistics.value_two }}</h1>
-                    <p class="mb-0">{{ statistics.caption_two }}</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="counter-item text-center text-white">
-                    <h1 class="display-4 text-white">{{ statistics.value_three }}</h1>
-                    <p class="mb-0">{{ statistics.caption_three }}</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="counter-item text-center text-white">
-                    <h1 class="display-4 text-white">{{ statistics.value_four }}</h1>
-                    <p class="mb-0">{{ statistics.caption_four }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endif %}
 
 {# ——— Dinamik: Tərəfdaşlar ——— #}
 {% if partners %}
@@ -171,9 +104,8 @@
     <div class="container py-5">
         <div class="mx-auto text-center mb-5" style="max-width: 900px;">
             <h5 class="section-title px-3">Bloq</h5>
-            <h1 class="mb-4">Son yazılar</h1>
         </div>
-        <div class="row g-4 justify-content-center">
+        <div class="row g-4">
             {% for blog in home_blogs %}
             {% include 'partials/blog_card.html' %}
             {% endfor %}

@@ -429,7 +429,15 @@ def get_blog_by_id(blog_id):
         return None
 
 
-def get_other_blogs(blog_id, lang='az', limit=12):
+@cached_query(timeout='CACHE_TIMEOUT_MEDIUM')
+def get_blog_by_slug(slug):
+    try:
+        return Blog.objects.get(slug=slug)
+    except Blog.DoesNotExist:
+        return None
+
+
+def get_other_blogs(blog_id, lang='az', limit=6):
     """Other posts for detail sidebar (newest first), excluding the current post."""
     qs = Blog.objects.exclude(pk=blog_id).order_by('-date', '-created_at')[:limit]
     return [serialize_blog(b, lang) for b in qs]
@@ -549,17 +557,34 @@ def serialize_partner(partner, lang='az'):
     }
 
 
+def _build_whatsapp_url(number):
+    if not number:
+        return None
+    digits = re.sub(r'\D', '', str(number).strip())
+    if not digits:
+        return None
+    if digits.startswith('994'):
+        pass
+    elif digits.startswith('0'):
+        digits = '994' + digits[1:]
+    elif len(digits) == 9:
+        digits = '994' + digits
+    return f'https://wa.me/{digits}'
+
+
 def serialize_contact(contact, lang='az'):
     if contact is None:
         return None
 
     address_field = get_localized_field_name('address', lang)
+    whatsapp_raw = (contact.whatsapp_number or '').strip()
 
     return {
         'id': contact.id,
         'address': getattr(contact, address_field, contact.address_az),
         'phone': contact.phone,
-        'whatsapp_number': contact.whatsapp_number,
+        'whatsapp_number': whatsapp_raw,
+        'whatsapp_url': _build_whatsapp_url(whatsapp_raw),
         'email': contact.email,
         'email_two': contact.email_two,
         'instagram': contact.instagram,
@@ -577,11 +602,17 @@ def serialize_blog(blog, lang='az'):
 
     name_field = get_localized_field_name('name', lang)
     desc_field = get_localized_field_name('description', lang)
+    raw_description = getattr(blog, desc_field, None) or blog.description_az or ''
+    description_html = prepare_rich_html(raw_description)
+    description_preview_html = build_about_description_preview(description_html, word_count=25)
 
     return {
         'id': blog.id,
+        'slug': blog.slug,
         'name': getattr(blog, name_field, blog.name_az),
-        'description': getattr(blog, desc_field, blog.description_az),
+        'topic': _localized_with_az_fallback(blog, lang, 'topic'),
+        'description': mark_safe(description_html),
+        'description_preview': mark_safe(description_preview_html),
         'image': blog.image.url if blog.image else None,
         'date': blog.date,
         'view_count': blog.view_count,
@@ -722,7 +753,7 @@ def get_package_list_data(request, lang):
 @cached_page_data(timeout='CACHE_TIMEOUT_MEDIUM')
 def get_blog_list_data(request, lang):
     page = request.GET.get('page', 1)
-    per_page = 9
+    per_page = 6
 
     blogs = get_blogs(lang=lang)
     blogs_page_obj, blogs_paginator = paginate_queryset(blogs, page, per_page)

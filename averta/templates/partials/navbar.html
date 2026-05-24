@@ -3,6 +3,7 @@
         <h1 class="m-0"><i class="fa fa-map-marker-alt me-3"></i>Averta</h1>
     </a>
     <div class="d-flex align-items-center ms-auto d-lg-none navbar-mobile-actions">
+        <a href="{% url 'services:contact-page' %}" class="btn btn-primary rounded-pill py-2 px-4 navbar-contact-btn">Əlaqə</a>
         {% include 'partials/lang_switcher.html' with mobile=True %}
         <button class="navbar-toggler ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-label="Menyu">
             <span class="fa fa-bars"></span>
@@ -26,8 +27,7 @@
                     <a href="testimonial.html" class="dropdown-item">Testimonial</a>
                 </div>
             </div>
-            <a href="{% url 'services:contact-page' %}" class="nav-item nav-link {% if active_nav == 'contact' %}active{% endif %}">Əlaqə</a>
         </div>
-        <a href="{% url 'services:contact-page' %}" class="btn btn-primary rounded-pill py-2 px-4 ms-lg-4">Əlaqə</a>
+        <a href="{% url 'services:contact-page' %}" class="btn btn-primary rounded-pill py-2 px-4 ms-lg-4 navbar-contact-btn d-none d-lg-inline-block">Əlaqə</a>
     </div>
 </nav>

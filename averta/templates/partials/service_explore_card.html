@@ -1,0 +1,20 @@
+{% load static %}
+<div class="col-md-6 col-lg-4">
+    <div class="national-item">
+        {% if service.medias.0.image %}
+        <img src="{{ service.medias.0.image }}" class="img-fluid w-100 rounded" alt="{{ service.name }}" loading="lazy">
+        {% else %}
+        <img src="{% static 'assets/img/explore-tour-1.jpg' %}" class="img-fluid w-100 rounded" alt="{{ service.name }}" loading="lazy">
+        {% endif %}
+        <div class="national-content">
+            <div class="national-info">
+                <h5 class="text-white text-uppercase mb-2">{{ service.name }}</h5>
+                <span class="btn-hover text-white">Ətraflı <i class="fa fa-arrow-right ms-2"></i></span>
+            </div>
+        </div>
+        <div class="national-plus-icon" aria-hidden="true">
+            <span class="my-auto"><i class="fas fa-link fa-2x text-white"></i></span>
+        </div>
+        <a href="{% url 'services:service-page' %}" class="national-item-link stretched-link" aria-label="{{ service.name }}"></a>
+    </div>
+</div>

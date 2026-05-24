@@ -57,7 +57,7 @@ urlpatterns = [
         name='blog-view-counts',
     ),
     path(
-        'blog/<int:blog_id>/',
+        'blog/<slug:blog_slug>/',
         BlogDetailPageView.as_view(),
         name='blog-detail',
     ),

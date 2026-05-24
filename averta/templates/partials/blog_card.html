@@ -1,26 +1,24 @@
 {% load static %}
-<div class="col-lg-4 col-md-6">
-    <div class="blog-item">
-        <div class="blog-img">
+<div class="col-lg-4 col-md-6 d-flex">
+    <div class="blog-item w-100">
+        <a href="{% url 'services:blog-detail' blog.slug %}" class="blog-img blog-img-link d-block" aria-label="{{ blog.name }}">
             <div class="blog-img-inner">
                 {% if blog.image %}
-                <img class="img-fluid w-100 rounded-top" src="{{ blog.image }}" alt="{{ blog.name }}">
+                <img src="{{ blog.image }}" alt="{{ blog.name }}" loading="lazy">
                 {% else %}
-                <img class="img-fluid w-100 rounded-top" src="{% static 'assets/img/blog-1.jpg' %}" alt="{{ blog.name }}">
+                <img src="{% static 'assets/img/blog-1.jpg' %}" alt="{{ blog.name }}" loading="lazy">
                 {% endif %}
-                <div class="blog-icon">
-                    <a href="{% url 'services:blog-detail' blog.id %}" class="my-auto"><i class="fas fa-link fa-2x text-white"></i></a>
-                </div>
             </div>
-            <div class="blog-info d-flex align-items-center border border-start-0 border-end-0">
-                <small class="flex-fill text-center border-end py-2"><i class="fa fa-calendar-alt text-primary me-2"></i>{{ blog.date }}</small>
-                <small class="flex-fill text-center py-2"><i class="fa fa-eye text-primary me-2"></i>{{ blog.view_count }}</small>
-            </div>
-        </div>
+        </a>
         <div class="blog-content border border-top-0 rounded-bottom p-4">
-            <a href="{% url 'services:blog-detail' blog.id %}" class="h4 d-block">{{ blog.name }}</a>
-            <p class="my-3">{{ blog.description|truncatewords:20 }}</p>
-            <a href="{% url 'services:blog-detail' blog.id %}" class="btn btn-primary rounded-pill py-2 px-4">Ətraflı</a>
+            {% if blog.topic %}
+            <p class="blog-card-topic mb-2">{{ blog.topic }}</p>
+            {% endif %}
+            <a href="{% url 'services:blog-detail' blog.slug %}" class="h4 d-block blog-card-title">{{ blog.name }}</a>
+            {% if blog.description_preview %}
+            <div class="blog-card-excerpt my-3">{{ blog.description_preview }}</div>
+            {% endif %}
+            <a href="{% url 'services:blog-detail' blog.slug %}" class="btn btn-primary rounded-pill py-2 px-4">Ətraflı</a>
         </div>
     </div>
 </div>

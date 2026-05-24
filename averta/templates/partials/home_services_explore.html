@@ -1,0 +1,19 @@
+{# Ana səhifə — Explore Tour kartları ilə dinamik xidmətlər #}
+{% if services %}
+<div class="container-fluid ExploreTour py-5">
+    <div class="container py-5">
+        <div class="mx-auto text-center mb-5" style="max-width: 900px;">
+            <h5 class="section-title px-3">Xidmətlər</h5>
+            <h1 class="mb-0">Xidmətlərimiz</h1>
+        </div>
+        <div class="row g-4 home-services-grid">
+            {% for service in services %}
+            {% include 'partials/service_explore_card.html' %}
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a class="btn btn-primary rounded-pill py-3 px-5" href="{% url 'services:service-page' %}">Bütün xidmətlər</a>
+        </div>
+    </div>
+</div>
+{% endif %}
