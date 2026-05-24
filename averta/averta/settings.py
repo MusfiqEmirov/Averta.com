@@ -121,6 +121,9 @@ CACHE_TIMEOUT_SHORT = 1800  # 30 minutes for occasionally changing data
 CACHE_TIMEOUT_MEDIUM = 7200  # 2 hours for normal pages (services, blog lists)
 CACHE_TIMEOUT_LONG = 86400  # 24 hours for stable data (about, contact, background images)
 
+# Bump when serialized cache payload shape changes (e.g. new Package.currency field).
+CACHE_SCHEMA_VERSION = 3
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

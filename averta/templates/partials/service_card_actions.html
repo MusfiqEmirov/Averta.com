@@ -1,0 +1,9 @@
+{# Sifariş et (sol) + Ətraflı (sağ) #}
+<div class="service-card-actions">
+    <a href="{% url 'services:contact-page' %}" class="service-card-actions__order btn btn-primary rounded-pill">
+        Sifariş et
+    </a>
+    <a href="{% url 'services:service-detail' service.slug %}" class="service-card-actions__detail" aria-label="{{ service.name }} — ətraflı">
+        {% include 'partials/card_link_action.html' with label='Ətraflı' %}
+    </a>
+</div>

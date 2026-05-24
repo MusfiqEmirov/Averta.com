@@ -1,22 +1,56 @@
 {% if service.gallery_images %}
-<section class="service-detail-panel service-detail-panel--gallery" aria-labelledby="service-gallery-heading">
-    <div class="service-detail-panel__head">
-        <h2 id="service-gallery-heading" class="service-detail-panel__title">Şəkil qalereyası</h2>
-    </div>
-    <div class="service-detail-gallery-grid">
+<section class="sdp-gallery" aria-label="Qalereya">
+
+    {# Hidden lightbox triggers — carousel klonlarından fərqli olaraq bu DOM-da əsl elementlərdir #}
+    <div class="sdp-gallery__triggers" aria-hidden="true">
         {% for image in service.gallery_images %}
-        <a
-            href="{{ image }}"
-            class="service-detail-gallery-card"
-            data-lightbox="service-{{ service.slug }}"
-            aria-label="{{ service.name }} — şəkil {{ forloop.counter }}"
-        >
-            <img src="{{ image }}" alt="" loading="lazy">
-            <span class="service-detail-gallery-card__overlay" aria-hidden="true">
-                <i class="fas fa-search-plus"></i>
-            </span>
-        </a>
+        <a href="{{ image }}" data-lightbox="service-{{ service.slug }}" tabindex="-1"></a>
         {% endfor %}
     </div>
+
+    {# Header: etiket + say + nav düymələri #}
+    <div class="sdp-gallery__header">
+        <h2 class="sdp-gallery__title">Qalereya</h2>
+        <div class="sdp-gallery__controls">
+            <span class="sdp-gallery__count">{{ service.gallery_images|length }} şəkil</span>
+            <button class="sdp-gallery-btn sdp-gallery-btn--prev" aria-label="Əvvəlki şəkil" type="button">
+                <i class="fas fa-chevron-left" aria-hidden="true"></i>
+            </button>
+            <button class="sdp-gallery-btn sdp-gallery-btn--next" aria-label="Növbəti şəkil" type="button">
+                <i class="fas fa-chevron-right" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+
+    {# Carousel — mobil tam en (sdp-gallery__stage) #}
+    <div class="sdp-gallery__stage">
+    <div class="sdp-gallery__carousel owl-carousel" id="sdpGalleryCarousel">
+        {% for image in service.gallery_images %}
+        <div
+            class="sdp-gallery-card"
+            data-gallery-index="{{ forloop.counter0 }}"
+            role="button"
+            tabindex="0"
+            aria-label="{{ service.name }} — şəkil {{ forloop.counter }}"
+        >
+            <div class="sdp-gallery-card__frame">
+                <img
+                    src="{{ image }}"
+                    alt="{{ service.name }} — {{ forloop.counter }}"
+                    loading="lazy"
+                    class="sdp-gallery-card__img"
+                >
+                <div class="sdp-gallery-card__overlay" aria-hidden="true">
+                    <span class="sdp-gallery-card__zoom">
+                        <i class="fas fa-expand-alt"></i>
+                    </span>
+                </div>
+                <span class="sdp-gallery-card__num" aria-hidden="true">{{ forloop.counter|stringformat:"02d" }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    </div>
+
 </section>
 {% endif %}

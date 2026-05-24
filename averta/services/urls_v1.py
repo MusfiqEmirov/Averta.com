@@ -4,7 +4,6 @@ from services.views.views_v1 import (
     HomePageView,
     ServicePageView,
     ServiceDetailPageView,
-    PackagePageView,
     AboutPageView,
     ContactPageView,
     FAQPageView,
@@ -31,11 +30,6 @@ urlpatterns = [
         'services/<slug:service_slug>/',
         ServiceDetailPageView.as_view(),
         name='service-detail',
-    ),
-    path(
-        'packages/',
-        PackagePageView.as_view(),
-        name='package-page',
     ),
     path(
         'about/',

@@ -14,7 +14,6 @@ from services.utils.queries import (
     get_language_from_request,
     get_home_page_data,
     get_service_list_data,
-    get_package_list_data,
     get_background_image,
     get_about,
     serialize_about,
@@ -78,17 +77,6 @@ class ServiceDetailPageView(View):
             'page_motto': get_page_motto('service', lang),
             'active_nav': 'services',
         }
-        return render(request, self.template_name, context)
-
-
-class PackagePageView(View):
-    template_name = 'packages.html'
-
-    def get(self, request):
-        lang = get_language_from_request(request)
-        context = get_package_list_data(request, lang)
-        context['language'] = lang
-        context['active_nav'] = 'packages'
         return render(request, self.template_name, context)
 
 

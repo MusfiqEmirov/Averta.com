@@ -1,0 +1,47 @@
+{% if other_services %}
+<section class="sdp-related-widget" aria-labelledby="sdp-related-heading">
+    <div class="sdp-related-widget__head">
+        <h2 id="sdp-related-heading" class="sdp-related-widget__title">Digər xidmətlər</h2>
+        <a href="{% url 'services:service-page' %}" class="sdp-related-widget__all">
+            Hamısı <i class="fas fa-arrow-right ms-1" aria-hidden="true"></i>
+        </a>
+    </div>
+
+    <div class="sdp-related-carousel">
+        <button type="button" class="sdp-related-nav sdp-related-nav--up" aria-label="Əvvəlki xidmət">
+            <i class="fas fa-chevron-up" aria-hidden="true"></i>
+        </button>
+
+        <div class="sdp-related-track" id="sdpRelatedTrack">
+            {% for other in other_services %}
+            <a href="{% url 'services:service-detail' other.slug %}" class="sdp-related-card">
+                {% if other.cover_image %}
+                <span class="sdp-related-card__media">
+                    <img src="{{ other.cover_image }}" alt="" loading="lazy">
+                </span>
+                {% else %}
+                <span class="sdp-related-card__media sdp-related-card__media--placeholder">
+                    <i class="fas fa-concierge-bell" aria-hidden="true"></i>
+                </span>
+                {% endif %}
+                <span class="sdp-related-card__body">
+                    <span class="sdp-related-card__name">{{ other.name }}</span>
+                    {% if other.description_html %}
+                    <span class="sdp-related-card__excerpt">{{ other.description_html|striptags|truncatewords:12 }}</span>
+                    {% elif other.description %}
+                    <span class="sdp-related-card__excerpt">{{ other.description|striptags|truncatewords:12 }}</span>
+                    {% endif %}
+                </span>
+                <span class="sdp-related-card__arrow" aria-hidden="true">
+                    <i class="fas fa-arrow-right"></i>
+                </span>
+            </a>
+            {% endfor %}
+        </div>
+
+        <button type="button" class="sdp-related-nav sdp-related-nav--down" aria-label="Növbəti xidmət">
+            <i class="fas fa-chevron-down" aria-hidden="true"></i>
+        </button>
+    </div>
+</section>
+{% endif %}

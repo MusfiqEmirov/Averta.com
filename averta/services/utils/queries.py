@@ -143,18 +143,29 @@ def get_other_services(exclude_slug, lang='az', limit=6):
 # Package
 # ---------------------------------------------------------------------------
 
+def format_package_price(price, currency):
+    if price is None:
+        return None
+
+    symbols = {
+        Package.CURRENCY_AZN: '₼',
+        Package.CURRENCY_USD: '$',
+        Package.CURRENCY_EUR: '€',
+    }
+    symbol = symbols.get(currency, currency)
+    if price == price.to_integral_value():
+        amount = int(price)
+    else:
+        amount = price.normalize() if hasattr(price, 'normalize') else price
+    if currency == Package.CURRENCY_AZN:
+        return f'{amount} {symbol}'
+    return f'{symbol}{amount}'
+
+
 def get_packages(lang='az', is_active=True):
     from django.utils import timezone
 
-    queryset = Package.objects.prefetch_related(
-        'service',
-        Prefetch(
-            'medias',
-            queryset=Media.objects.filter(image__isnull=False).filter(
-                media_not_marked_as_background_q(),
-            ),
-        ),
-    )
+    queryset = Package.objects.prefetch_related('service')
 
     if is_active is not None:
         queryset = queryset.filter(is_active=is_active)
@@ -165,22 +176,6 @@ def get_packages(lang='az', is_active=True):
     )
 
     return queryset.order_by('-created_at')
-
-
-@cached_query(timeout='CACHE_TIMEOUT_MEDIUM')
-def get_package_by_slug(slug, lang='az'):
-    try:
-        return Package.objects.prefetch_related(
-            'service',
-            Prefetch(
-                'medias',
-                queryset=Media.objects.filter(image__isnull=False).filter(
-                    media_not_marked_as_background_q(),
-                ),
-            ),
-        ).get(slug=slug, is_active=True)
-    except Package.DoesNotExist:
-        return None
 
 
 # ---------------------------------------------------------------------------
@@ -507,24 +502,25 @@ def serialize_package(package, lang='az'):
 
     services = package.service.filter(is_active=True)
 
+    desc = getattr(package, desc_field, package.description_az) or ''
+
     return {
         'id': package.id,
-        'slug': package.slug,
         'name': getattr(package, name_field, package.name_az),
-        'description': getattr(package, desc_field, package.description_az),
+        'description': desc,
         'price': package.price,
+        'currency': package.currency,
+        'price_display': (
+            format_package_price(package.price, package.currency)
+            if package.price is not None
+            else None
+        ),
+        'icon_type': package.icon_type,
+        'icon_variant': package.icon_variant,
         'end_date': package.end_date,
         'is_active': package.is_active,
         'created_at': package.created_at,
         'services': [serialize_service(s, lang) for s in services],
-        'medias': [
-            {
-                'id': media.id,
-                'image': media.image.url if media.image else None,
-                'video': media.video.url if media.video else None,
-            }
-            for media in package.medias.all()
-        ],
     }
 
 
@@ -683,7 +679,7 @@ def get_home_page_data(request, lang):
     services = list(
         get_services(lang=lang, is_active=is_active, on_main_page=True)[:6]
     )
-    packages = list(get_packages(lang=lang, is_active=is_active)[:6])
+    packages = list(get_packages(lang=lang, is_active=is_active))
     serialized_services = [serialize_service(s, lang) for s in services]
     serialized_packages = [serialize_package(p, lang) for p in packages]
 
@@ -748,30 +744,6 @@ def get_service_list_data(request, lang):
         'background_image': get_background_image('service'),
         'page_heading': _('Services'),
         'page_motto': get_page_motto('service', lang),
-    }
-
-
-@cached_page_data(timeout='CACHE_TIMEOUT_MEDIUM')
-def get_package_list_data(request, lang):
-    is_active = request.GET.get('is_active', 'true').lower() == 'true'
-    page = request.GET.get('page', 1)
-    per_page = 9
-
-    packages = get_packages(lang=lang, is_active=is_active)
-    packages_page_obj, packages_paginator = paginate_queryset(packages, page, per_page)
-    serialized_packages = [serialize_package(p, lang) for p in packages_page_obj]
-
-    contact = get_contact(lang)
-
-    return {
-        'packages': serialized_packages,
-        'contact': serialize_contact(contact, lang) if contact else None,
-        'pagination': get_pagination_data(packages_page_obj, packages_paginator),
-        'filters': {
-            'is_active': is_active,
-        },
-        'page_heading': _('Packages'),
-        'page_motto': get_page_motto('package', lang),
     }
 
 
