@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ service.name }} — Averta{% endblock %}
+
+{% block content %}
+{% include 'partials/page_header.html' %}
+
+<article class="service-detail-page">
+    <div class="container py-4 py-lg-5">
+        <div class="row g-4 g-xl-5">
+            <div class="col-lg-{% if service.bullet_items or other_services %}8{% else %}12{% endif %}">
+                <a href="{% url 'services:service-page' %}" class="service-detail-back">
+                    <span class="service-detail-back__icon" aria-hidden="true"><i class="fas fa-arrow-left"></i></span>
+                    <span>Xidmətlərə qayıt</span>
+                </a>
+
+                {% if service.cover_image %}
+                <figure class="service-detail-cover">
+                    <img
+                        src="{{ service.cover_image }}"
+                        alt="{{ service.name }}"
+                        class="service-detail-cover__img"
+                        loading="eager"
+                    >
+                </figure>
+                {% endif %}
+
+                <header class="service-detail-hero">
+                    <h1 class="service-detail-hero__title">{{ service.name }}</h1>
+                </header>
+
+                {% if service.description_html %}
+                <section class="service-detail-panel service-detail-panel--content" aria-labelledby="service-about-heading">
+                    <div class="service-detail-panel__head">
+                        <h2 id="service-about-heading" class="service-detail-panel__title">Haqqında</h2>
+                    </div>
+                    <div class="service-detail-prose blog-rich-text">
+                        {{ service.description_html|safe }}
+                    </div>
+                </section>
+                {% endif %}
+
+                {% include 'partials/service_detail_gallery.html' %}
+
+                {% if service.videos %}
+                <section class="service-detail-panel" aria-labelledby="service-videos-heading">
+                    <div class="service-detail-panel__head">
+                        <h2 id="service-videos-heading" class="service-detail-panel__title">Video</h2>
+                    </div>
+                    <div class="service-detail-videos">
+                        {% for video in service.videos %}
+                        <video class="service-detail-video" controls preload="metadata" playsinline>
+                            <source src="{{ video }}">
+                        </video>
+                        {% endfor %}
+                    </div>
+                </section>
+                {% endif %}
+            </div>
+
+            {% if service.bullet_items or other_services %}
+            <aside class="col-lg-4">
+                <div class="service-detail-sidebar">
+                    {% if service.bullet_items %}
+                    {% include 'partials/service_detail_features_sidebar.html' %}
+                    {% endif %}
+
+                    {% if other_services %}
+                    <section class="service-detail-sidebar__card" aria-labelledby="service-related-heading">
+                        <div class="service-detail-sidebar__head">
+                            <h2 id="service-related-heading" class="service-detail-sidebar__title">Digər xidmətlər</h2>
+                            <a href="{% url 'services:service-page' %}" class="service-detail-sidebar__all">
+                                Hamısı <i class="fas fa-arrow-right ms-1" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                        <ul class="service-detail-related-list">
+                            {% for other in other_services %}
+                            <li>
+                                <a href="{% url 'services:service-detail' other.slug %}" class="service-detail-related">
+                                    {% if other.cover_image %}
+                                    <span class="service-detail-related__thumb">
+                                        <img src="{{ other.cover_image }}" alt="" loading="lazy">
+                                    </span>
+                                    {% endif %}
+                                    <span class="service-detail-related__body">
+                                        <span class="service-detail-related__name">{{ other.name }}</span>
+                                        {% if other.description_html %}
+                                        <span class="service-detail-related__excerpt">{{ other.description_html|striptags|truncatewords:10 }}</span>
+                                        {% elif other.description %}
+                                        <span class="service-detail-related__excerpt">{{ other.description|striptags|truncatewords:10 }}</span>
+                                        {% endif %}
+                                    </span>
+                                    <span class="service-detail-related__arrow" aria-hidden="true">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </section>
+                    {% endif %}
+                </div>
+            </aside>
+            {% endif %}
+        </div>
+    </div>
+</article>
+{% endblock %}
+
+{% block extra_js %}
+{% load static %}
+<script>
+    window.serviceGalleryUrls = [
+        {% for image in service.gallery_images %}"{{ image|escapejs }}"{% if not forloop.last %}, {% endif %}{% endfor %}
+    ];
+</script>
+<script src="{% static 'assets/js/service_detail.js' %}?v=2"></script>
+{% endblock %}

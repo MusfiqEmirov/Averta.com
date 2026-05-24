@@ -1,0 +1,10 @@
+<section class="service-detail-aside-features" aria-labelledby="service-features-heading">
+    <h2 id="service-features-heading" class="service-detail-aside-features__title">Xidmətə daxildir</h2>
+    <ul class="service-detail-tags">
+        {% for item in service.bullet_items %}
+        <li class="service-detail-tags__item">
+            <span class="service-detail-tag">#{{ item }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+</section>

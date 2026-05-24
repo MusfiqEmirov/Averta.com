@@ -1,7 +1,9 @@
 <div class="col-12 col-md-6 col-lg-4 mb-4">
-    <div class="service-content-inner d-flex align-items-center bg-white border border-primary rounded p-4 h-100">
+    <a href="{% url 'services:service-detail' service.slug %}" class="service-content-inner d-flex align-items-center bg-white border border-primary rounded p-4 h-100 text-decoration-none text-body">
         <div class="service-icon p-3 me-3">
-            {% if service.medias.0.image %}
+            {% if service.cover_image %}
+            <img src="{{ service.cover_image }}" alt="{{ service.name }}" class="rounded" style="width:80px;height:80px;object-fit:cover;">
+            {% elif service.medias.0.image %}
             <img src="{{ service.medias.0.image }}" alt="{{ service.name }}" class="rounded" style="width:80px;height:80px;object-fit:cover;">
             {% else %}
             <i class="fa fa-concierge-bell fa-3x text-primary"></i>
@@ -9,7 +11,7 @@
         </div>
         <div class="service-content flex-grow-1">
             <h5 class="mb-2">{{ service.name }}</h5>
-            <p class="mb-0 small">{{ service.description|truncatewords:25 }}</p>
+            <p class="mb-0 small">{{ service.description|striptags|truncatewords:25 }}</p>
         </div>
-    </div>
+    </a>
 </div>

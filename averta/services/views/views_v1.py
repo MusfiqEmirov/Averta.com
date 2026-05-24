@@ -24,12 +24,15 @@ from services.utils.queries import (
     serialize_contact,
     get_statistics,
     get_blog_list_data,
-    get_blog_by_id,
+    get_blog_by_slug,
     serialize_blog,
     get_other_blogs,
     get_page_motto,
     get_faqs,
     serialize_faq,
+    get_service_by_slug,
+    serialize_service,
+    get_other_services,
 )
 
 
@@ -53,6 +56,28 @@ class ServicePageView(View):
         context['background_image'] = get_background_image('service')
         context['language'] = lang
         context['active_nav'] = 'services'
+        return render(request, self.template_name, context)
+
+
+class ServiceDetailPageView(View):
+    template_name = 'service-detail.html'
+
+    def get(self, request, service_slug):
+        lang = get_language_from_request(request)
+        service = get_service_by_slug(service_slug)
+        if not service:
+            raise Http404(_('Service not found'))
+
+        contact = get_contact(lang)
+        context = {
+            'service': serialize_service(service, lang),
+            'other_services': get_other_services(service_slug, lang),
+            'contact': serialize_contact(contact, lang) if contact else None,
+            'language': lang,
+            'background_image': get_background_image('service'),
+            'page_motto': get_page_motto('service', lang),
+            'active_nav': 'services',
+        }
         return render(request, self.template_name, context)
 
 
@@ -182,13 +207,13 @@ class BlogPageView(View):
 class BlogDetailPageView(View):
     template_name = 'blog-detail.html'
 
-    def get(self, request, blog_id):
+    def get(self, request, blog_slug):
         lang = get_language_from_request(request)
-        blog = get_blog_by_id(blog_id)
+        blog = get_blog_by_slug(blog_slug)
         if not blog:
             raise Http404(_('Blog post not found'))
 
-        Blog.objects.filter(pk=blog_id).update(view_count=F('view_count') + 1)
+        Blog.objects.filter(pk=blog.pk).update(view_count=F('view_count') + 1)
         blog.refresh_from_db()
 
         blog_data = serialize_blog(blog, lang)
@@ -196,7 +221,7 @@ class BlogDetailPageView(View):
         contact = get_contact(lang)
         context = {
             'blog': blog_data,
-            'other_blogs': get_other_blogs(blog_id, lang),
+            'other_blogs': get_other_blogs(blog.pk, lang),
             'contact': serialize_contact(contact, lang) if contact else None,
             'language': lang,
             'background_image': get_background_image('blog'),

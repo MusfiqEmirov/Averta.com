@@ -5,106 +5,134 @@
 {% block content %}
 {% include 'partials/page_header.html' %}
 
-<div class="container-fluid contact bg-light py-5">
+<section class="contact-page">
     <div class="container py-5">
-        <div class="mx-auto text-center mb-5" style="max-width: 900px;">
+        <div class="mx-auto text-center mb-5" style="max-width: 720px;">
             <h5 class="section-title px-3">Əlaqə</h5>
-            <h1 class="mb-0">Bizimlə əlaqə</h1>
         </div>
-        <div class="row g-5 align-items-start">
+
+        <div class="row g-4 g-xl-5 align-items-stretch">
             <div class="col-lg-4">
-                <div class="bg-white rounded p-4">
+                <div class="contact-info-panel h-100">
                     {% if contact %}
                     {% if contact.address %}
-                    <div class="text-center mb-4">
-                        <i class="fa fa-map-marker-alt fa-3x text-primary"></i>
-                        <h4 class="text-primary mt-2">Ünvan</h4>
-                        <p class="mb-0">{{ contact.address }}</p>
+                    <div class="contact-info-card">
+                        <span class="contact-info-card__icon" aria-hidden="true"><i class="fas fa-map-marker-alt"></i></span>
+                        <div>
+                            <h3 class="contact-info-card__title">Ünvan</h3>
+                            <p class="mb-0">{{ contact.address }}</p>
+                        </div>
                     </div>
                     {% endif %}
                     {% if contact.phone %}
-                    <div class="text-center mb-4">
-                        <i class="fa fa-phone-alt fa-3x text-primary mb-3"></i>
-                        <h4 class="text-primary">Telefon</h4>
-                        <p class="mb-0"><a href="tel:{{ contact.phone }}">{{ contact.phone }}</a></p>
-                        {% if contact.whatsapp_number %}
-                        <p class="mb-0"><a href="https://wa.me/{{ contact.whatsapp_number }}" target="_blank" rel="noopener">WhatsApp</a></p>
-                        {% endif %}
+                    <div class="contact-info-card">
+                        <span class="contact-info-card__icon" aria-hidden="true"><i class="fas fa-phone-alt"></i></span>
+                        <div>
+                            <h3 class="contact-info-card__title">Telefon</h3>
+                            <p class="mb-0"><a href="tel:{{ contact.phone }}">{{ contact.phone }}</a></p>
+                        </div>
                     </div>
                     {% endif %}
+                    {% if contact.whatsapp_url %}
+                    <a href="{{ contact.whatsapp_url }}" class="contact-info-card contact-info-card--link" target="_blank" rel="noopener noreferrer">
+                        <span class="contact-info-card__icon" aria-hidden="true"><i class="fab fa-whatsapp"></i></span>
+                        <div>
+                            <h3 class="contact-info-card__title">WhatsApp</h3>
+                            <p class="mb-0">{% if contact.whatsapp_number %}{{ contact.whatsapp_number }}{% else %}Yazın{% endif %}</p>
+                        </div>
+                    </a>
+                    {% endif %}
                     {% if contact.email %}
-                    <div class="text-center">
-                        <i class="fa fa-envelope-open fa-3x text-primary mb-3"></i>
-                        <h4 class="text-primary">E-poçt</h4>
-                        <p class="mb-0"><a href="mailto:{{ contact.email }}">{{ contact.email }}</a></p>
-                        {% if contact.email_two %}
-                        <p class="mb-0"><a href="mailto:{{ contact.email_two }}">{{ contact.email_two }}</a></p>
-                        {% endif %}
+                    <div class="contact-info-card">
+                        <span class="contact-info-card__icon" aria-hidden="true"><i class="fas fa-envelope"></i></span>
+                        <div>
+                            <h3 class="contact-info-card__title">E-poçt</h3>
+                            <p class="mb-0"><a href="mailto:{{ contact.email }}">{{ contact.email }}</a></p>
+                            {% if contact.email_two %}
+                            <p class="mb-0 mt-1"><a href="mailto:{{ contact.email_two }}">{{ contact.email_two }}</a></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if contact.facebook or contact.instagram or contact.linkedn or contact.youtube or contact.tiktok %}
+                    <div class="contact-info-card contact-info-card--social">
+                        <div class="d-flex align-items-center justify-content-center flex-wrap contact-page-social">
+                            {% if contact.facebook %}
+                            <a class="btn-square btn btn-primary rounded-circle mx-1" href="{{ contact.facebook }}" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                            {% endif %}
+                            {% if contact.instagram %}
+                            <a class="btn-square btn btn-primary rounded-circle mx-1" href="{{ contact.instagram }}" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                            {% endif %}
+                            {% if contact.linkedn %}
+                            <a class="btn-square btn btn-primary rounded-circle mx-1" href="{{ contact.linkedn }}" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                            {% endif %}
+                            {% if contact.youtube %}
+                            <a class="btn-square btn btn-primary rounded-circle mx-1" href="{{ contact.youtube }}" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                            {% endif %}
+                            {% if contact.tiktok %}
+                            <a class="btn-square btn btn-primary rounded-circle mx-1" href="{{ contact.tiktok }}" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+                            {% endif %}
+                        </div>
                     </div>
                     {% endif %}
                     {% else %}
-                    <p class="text-center text-muted">Əlaqə məlumatı admin paneldən əlavə edilir.</p>
+                    <p class="text-muted mb-0">Əlaqə məlumatı admin paneldən əlavə edilir.</p>
                     {% endif %}
                 </div>
             </div>
+
             <div class="col-lg-8">
-                <h3 class="mb-2">Mesaj göndərin</h3>
-                <form method="post" action="{% url 'services:contact-page' %}">
-                    {% csrf_token %}
-                    {{ form.website }}
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="form-floating">
+                <div class="contact-form-panel h-100">
+                    <h2 class="contact-form-panel__title">Mesaj göndərin</h2>
+                    <form method="post" action="{% url 'services:contact-page' %}" class="contact-form">
+                        {% csrf_token %}
+                        {{ form.website }}
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label contact-form-label" for="{{ form.full_name.id_for_label }}">{{ form.full_name.label }}</label>
                                 {{ form.full_name }}
-                                <label for="{{ form.full_name.id_for_label }}">{{ form.full_name.label }}</label>
+                                {% if form.full_name.errors %}<div class="text-danger small mt-1">{{ form.full_name.errors }}</div>{% endif %}
                             </div>
-                            {% if form.full_name.errors %}<div class="text-danger small">{{ form.full_name.errors }}</div>{% endif %}
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-floating">
+                            <div class="col-md-6">
+                                <label class="form-label contact-form-label" for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
                                 {{ form.email }}
-                                <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                                {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors }}</div>{% endif %}
                             </div>
-                            {% if form.email.errors %}<div class="text-danger small">{{ form.email.errors }}</div>{% endif %}
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-floating">
+                            <div class="col-md-6">
+                                <label class="form-label contact-form-label" for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
                                 {{ form.phone }}
-                                <label for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-floating">
+                            <div class="col-md-6">
+                                <label class="form-label contact-form-label" for="{{ form.subject.id_for_label }}">{{ form.subject.label }}</label>
                                 {{ form.subject }}
-                                <label for="{{ form.subject.id_for_label }}">{{ form.subject.label }}</label>
                             </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-floating">
+                            <div class="col-12">
+                                <label class="form-label contact-form-label" for="{{ form.info.id_for_label }}">{{ form.info.label }}</label>
                                 {{ form.info }}
-                                <label for="{{ form.info.id_for_label }}">{{ form.info.label }}</label>
+                                {% if form.info.errors %}<div class="text-danger small mt-1">{{ form.info.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-12">
+                                <button class="btn btn-primary btn-lg rounded-pill w-100 py-3" type="submit">Göndər</button>
                             </div>
                         </div>
-                        <div class="col-12">
-                            <button class="btn btn-primary w-100 py-3" type="submit">Göndər</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            {% if contact.map_embed_url %}
-            <div class="col-12">
-                <div class="rounded overflow-hidden">
-                    <iframe class="rounded w-100" style="height: 450px;" src="{{ contact.map_embed_url }}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </form>
                 </div>
             </div>
-            {% else %}
-            <div class="col-12">
-                <div class="rounded">
-                    <iframe class="rounded w-100" style="height: 450px;" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d387191.33750346623!2d-73.97968099999999!3d40.6974881!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2sbd!4v1694259649153!5m2!1sen!2sbd" loading="lazy"></iframe>
-                </div>
-            </div>
-            {% endif %}
         </div>
+
+        {% if contact.map_embed_url %}
+        <div class="contact-map-section">
+            <h2 class="contact-map-section__title text-center">Xəritədə biz</h2>
+            <div class="contact-map-wrap">
+                <iframe
+                    class="contact-map-iframe"
+                    src="{{ contact.map_embed_url }}"
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    title="Xəritə"></iframe>
+            </div>
+        </div>
+        {% endif %}
     </div>
-</div>
+</section>
 {% endblock %}

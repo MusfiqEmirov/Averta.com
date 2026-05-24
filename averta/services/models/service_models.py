@@ -22,20 +22,41 @@ class Service(SluggedModel):
         verbose_name='Xidmət adı (RU)',
     )
     description_az = models.TextField(
-        validators=[MaxLengthValidator(500)],
+        validators=[MaxLengthValidator(5000)],
         verbose_name='Xidmət haqqında (AZ)',
     )
     description_en = models.TextField(
-        validators=[MaxLengthValidator(500)],
+        validators=[MaxLengthValidator(5000)],
         null=True,
         blank=True,
         verbose_name='Xidmət haqqında (EN)',
     )
     description_ru = models.TextField(
-        validators=[MaxLengthValidator(500)],
+        validators=[MaxLengthValidator(5000)],
         null=True,
         blank=True,
         verbose_name='Xidmət haqqında (RU)',
+    )
+    bullet_list_az = models.TextField(
+        blank=True,
+        null=True,
+        validators=[MaxLengthValidator(2000)],
+        verbose_name='Maddələr siyahısı (AZ)',
+        help_text='Hər sətirdə bir maddə yazın (bullet list).',
+    )
+    bullet_list_en = models.TextField(
+        blank=True,
+        null=True,
+        validators=[MaxLengthValidator(2000)],
+        verbose_name='Maddələr siyahısı (EN)',
+        help_text='One item per line (bullet list).',
+    )
+    bullet_list_ru = models.TextField(
+        blank=True,
+        null=True,
+        validators=[MaxLengthValidator(2000)],
+        verbose_name='Maddələr siyahısı (RU)',
+        help_text='Один пункт на строку (маркированный список).',
     )
     is_active = models.BooleanField(
         default=True,

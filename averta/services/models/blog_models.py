@@ -2,8 +2,10 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxLengthValidator
 
+from services.utils import SluggedModel
 
-class Blog(models.Model):
+
+class Blog(SluggedModel):
     name_az = models.CharField(
         max_length=255,
         verbose_name='Başlıq (AZ)'
@@ -19,6 +21,23 @@ class Blog(models.Model):
         null=True,
         blank=True,
         verbose_name='Başlıq (RU)'
+    )
+    topic_az = models.CharField(
+        max_length=255,
+        verbose_name='Mövzu (AZ)',
+        help_text='Kartda və yazı səhifəsində başlığın üstündə göstərilir.',
+    )
+    topic_en = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        verbose_name='Mövzu (EN)',
+    )
+    topic_ru = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        verbose_name='Mövzu (RU)',
     )
     image = models.ImageField(
         upload_to='blog/',
@@ -61,6 +80,9 @@ class Blog(models.Model):
         verbose_name = 'Bloq yazısı'
         verbose_name_plural = 'Bloq yazıları'
         ordering = ['-date', '-created_at']
+
+    def get_slug_source(self) -> str:
+        return self.name_az
 
     def clean(self):
         super().clean()

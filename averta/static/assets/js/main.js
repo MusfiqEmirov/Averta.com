@@ -12,12 +12,13 @@
     spinner(0);
 
 
-    // Sticky Navbar
-    $(window).scroll(function () {
+    // Sticky Navbar (smooth size transition via CSS on .sticky-top)
+    $(window).on('scroll', function () {
+        var $navbar = $('.navbar');
         if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
+            $navbar.addClass('sticky-top shadow-sm navbar-scrolled');
         } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
+            $navbar.removeClass('sticky-top shadow-sm navbar-scrolled');
         }
     });
 

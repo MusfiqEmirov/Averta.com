@@ -105,8 +105,11 @@ APPEAL_HELP = (
 SERVICE_HELP = (
     '<strong>Bu nədir?</strong> Saytda təqdim olunan xidmətlər (tur, transfer, bələdçilik və s.).<br>'
     '<strong>Harada dəyişir?</strong> Menyu → Xidmətlər; ana səhifə xidmət blokları.<br>'
-    '<strong>Şəkillər:</strong> Aşağıdakı «Xidmət şəkilləri» bölməsindən yükləyin. '
-    '«Ana səhifədə göstərilsin?» — ən çox 6 xidmət.'
+    '<strong>Şəkillər:</strong> Aşağıdakı «Xidmət şəkilləri» bölməsindən yükləyin — '
+    '<strong>birinci yüklənən şəkil cover</strong> olur, qalanları qalereyada göstərilir. '
+    '«Ana səhifədə göstərilsin?» — ən çox 6 xidmət.<br>'
+    '<strong>Mətn:</strong> «Xidmət haqqında» CKEditor ilə formatlanır.<br>'
+    '<strong>Maddələr siyahısı:</strong> Hər sətirdə bir maddə — detail səhifəsində xüsusi kartlar kimi göstərilir.'
 )
 
 PACKAGE_HELP = (
@@ -126,6 +129,8 @@ BLOG_HELP = (
     '<strong>Bu nədir?</strong> Bloq yazıları — xəbər və məqalələr.<br>'
     '<strong>Harada dəyişir?</strong> Menyu → Bloq siyahısı; hər yazının ayrıca səhifəsi; ana səhifə '
     '(«Ana səhifədə olsun» — max 6 yazı).<br>'
+    '<strong>Mövzu:</strong> Qısa kateqoriya və ya etiket — kartda və detail səhifəsində başlığın üstündə.<br>'
+    '<strong>Slug:</strong> URL üçün avtomatik yaradılır (məs: /blog/yazi-basligi/).<br>'
     '<strong>Şəkil:</strong> Yazının üz qabığı — kartlarda və yazı səhifəsində görünür.'
 )
 

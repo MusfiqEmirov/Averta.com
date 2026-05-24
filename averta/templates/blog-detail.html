@@ -3,36 +3,59 @@
 {% block title %}{{ blog.name }} — Averta{% endblock %}
 
 {% block content %}
-<div class="container-fluid bg-breadcrumb"{% if background_image %} style="background: linear-gradient(rgba(19, 53, 123, 0.7), rgba(19, 53, 123, 0.7)), url({{ background_image }}); background-position: center; background-size: cover;"{% endif %}>
-    <div class="container text-center py-5" style="max-width: 900px;">
-        <h3 class="text-white display-5 mb-3">{{ blog.name }}</h3>
-        <p class="text-white mb-0"><i class="fa fa-calendar-alt me-2"></i>{{ blog.date }} · <i class="fa fa-eye me-2"></i>{{ blog.view_count }}</p>
-    </div>
-</div>
+{% include 'partials/page_header.html' %}
 
-<div class="container py-5">
-    <div class="row g-5">
-        <div class="col-lg-8">
-            {% if blog.image %}
-            <img src="{{ blog.image }}" class="img-fluid rounded w-100 mb-4" alt="{{ blog.name }}">
+<article class="blog-detail">
+    <div class="container py-5">
+        <header class="blog-detail-header">
+            <a href="{% url 'services:blog-page' %}" class="blog-detail-back">
+                <i class="fas fa-arrow-left me-2" aria-hidden="true"></i>Bloq
+            </a>
+            {% if blog.topic %}
+            <p class="blog-detail-topic">{{ blog.topic }}</p>
             {% endif %}
-            <div class="blog-detail-content">{{ blog.description|linebreaks }}</div>
-        </div>
-        <div class="col-lg-4">
-            <h4 class="mb-4">Digər yazılar</h4>
-            {% if other_blogs %}
-            <ul class="list-group">
-                {% for ob in other_blogs %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <a href="{% url 'services:blog-detail' ob.id %}">{{ ob.name }}</a>
-                    <small class="text-muted">{{ ob.date }}</small>
-                </li>
-                {% endfor %}
-            </ul>
-            {% else %}
-            <p class="text-muted">Başqa yazı yoxdur.</p>
-            {% endif %}
+            <h1 class="blog-detail-title">{{ blog.name }}</h1>
+            <div class="blog-detail-meta">
+                <span><i class="fa fa-calendar-alt text-primary me-2" aria-hidden="true"></i>{{ blog.date|date:"d F Y" }}</span>
+                <span class="blog-detail-meta-sep" aria-hidden="true">·</span>
+                <span><i class="fa fa-eye text-primary me-2" aria-hidden="true"></i>{{ blog.view_count }}</span>
+            </div>
+        </header>
+
+        <div class="row g-5">
+            <div class="col-lg-8">
+                {% if blog.image %}
+                <figure class="blog-detail-figure mb-4">
+                    <img src="{{ blog.image }}" class="img-fluid rounded w-100" alt="{{ blog.name }}">
+                </figure>
+                {% endif %}
+                {% if blog.description %}
+                <div class="blog-detail-content blog-rich-text">
+                    {{ blog.description }}
+                </div>
+                {% endif %}
+            </div>
+            <aside class="col-lg-4">
+                <section class="blog-related" aria-labelledby="blog-related-heading">
+                    <div class="blog-related-head">
+                        <h2 id="blog-related-heading" class="blog-related-title">Digər yazılar</h2>
+                        <a href="{% url 'services:blog-page' %}" class="blog-related-all card-link-action card-link-action--compact">
+                            <span class="card-link-action__label">Hamısı</span>
+                            <span class="card-link-action__icon" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+                        </a>
+                    </div>
+                    {% if other_blogs %}
+                    <div class="blog-related-list">
+                        {% for ob in other_blogs %}
+                        {% include 'partials/blog_related_card.html' %}
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">Başqa yazı yoxdur.</p>
+                    {% endif %}
+                </section>
+            </aside>
         </div>
     </div>
-</div>
+</article>
 {% endblock %}

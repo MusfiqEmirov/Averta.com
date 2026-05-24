@@ -1,0 +1,19 @@
+{% load static %}
+<article class="blog-related-card">
+    <a href="{% url 'services:blog-detail' ob.slug %}" class="blog-related-card-link">
+        <div class="blog-related-card-media">
+            {% if ob.image %}
+            <img src="{{ ob.image }}" alt="{{ ob.name }}" loading="lazy">
+            {% else %}
+            <img src="{% static 'assets/img/blog-1.jpg' %}" alt="{{ ob.name }}" loading="lazy">
+            {% endif %}
+        </div>
+        <div class="blog-related-card-body">
+            {% if ob.topic %}
+            <p class="blog-related-card-topic">{{ ob.topic }}</p>
+            {% endif %}
+            <h3 class="blog-related-card-title">{{ ob.name }}</h3>
+            {% include 'partials/card_link_action.html' %}
+        </div>
+    </a>
+</article>

@@ -1,0 +1,22 @@
+{% if service.gallery_images %}
+<section class="service-detail-panel service-detail-panel--gallery" aria-labelledby="service-gallery-heading">
+    <div class="service-detail-panel__head">
+        <h2 id="service-gallery-heading" class="service-detail-panel__title">Şəkil qalereyası</h2>
+    </div>
+    <div class="service-detail-gallery-grid">
+        {% for image in service.gallery_images %}
+        <a
+            href="{{ image }}"
+            class="service-detail-gallery-card"
+            data-lightbox="service-{{ service.slug }}"
+            aria-label="{{ service.name }} — şəkil {{ forloop.counter }}"
+        >
+            <img src="{{ image }}" alt="" loading="lazy">
+            <span class="service-detail-gallery-card__overlay" aria-hidden="true">
+                <i class="fas fa-search-plus"></i>
+            </span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
