@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib import admin
-from django.utils.html import format_html
+from django.utils.html import format_html, mark_safe
 from django.utils.translation import gettext_lazy as _
 from ckeditor.widgets import CKEditorWidget
 
@@ -207,7 +207,98 @@ class ServiceAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin
     )
 
 
+class PackageVisualPickerWidget(forms.Widget):
+    """Admin picker: icon type × 3 variants."""
+
+    def __init__(self, icon_type='plane', icon_variant='1', **kwargs):
+        self.icon_type = icon_type or 'plane'
+        self.icon_variant = icon_variant or '1'
+        super().__init__(**kwargs)
+
+    def render(self, name, value, attrs=None, renderer=None):
+        from services.utils.package_icons import (
+            ICON_TYPES,
+            ICON_VARIANTS,
+            TYPE_HEADER_GRADIENTS,
+            get_icon_svg_admin,
+        )
+
+        css = mark_safe(
+            '<style>'
+            '.pkg-vp{margin-top:6px;}'
+            '.pkg-vp-group{margin-bottom:18px;}'
+            '.pkg-vp-group-title{font-weight:600;margin-bottom:8px;color:#333;}'
+            '.pkg-vp-variants{display:flex;flex-wrap:wrap;gap:8px;}'
+            '.pkg-vp-opt{position:relative;}'
+            '.pkg-vp-opt input{position:absolute;opacity:0;width:0;height:0;}'
+            '.pkg-vp-card{display:flex;flex-direction:column;align-items:center;gap:4px;'
+            'width:88px;padding:10px 6px 8px;border-radius:8px;cursor:pointer;'
+            'border:3px solid transparent;transition:box-shadow .15s;}'
+            '.pkg-vp-opt input:checked+.pkg-vp-card{box-shadow:0 0 0 3px #417690;}'
+            '.pkg-vp-card svg{width:36px;height:36px;}'
+            '.pkg-vp-vlbl{color:#fff;font-size:10px;font-weight:600;}'
+            '.form-row.field-icon_type,.form-row.field-icon_variant{display:none!important;}'
+            '</style>'
+        )
+
+        parts = [css, '<div class="pkg-vp" id="pkgVisualPicker">']
+
+        for type_key, type_label in ICON_TYPES:
+            grad = TYPE_HEADER_GRADIENTS.get(
+                type_key, 'linear-gradient(145deg,#555,#888)',
+            )
+            parts.append(format_html(
+                '<div class="pkg-vp-group" data-pkg-type="{}">'
+                '<div class="pkg-vp-group-title">{}</div><div class="pkg-vp-variants">',
+                type_key, type_label,
+            ))
+            for var_key, var_label in ICON_VARIANTS:
+                checked = (
+                    type_key == self.icon_type and var_key == self.icon_variant
+                )
+                svg = mark_safe(
+                    get_icon_svg_admin(type_key, var_key).replace(
+                        'viewBox="0 0 80 80"',
+                        'viewBox="0 0 80 80" width="36" height="36"',
+                    )
+                )
+                parts.append(format_html(
+                    '<label class="pkg-vp-opt">'
+                    '<input type="radio" name="pkg_vp_choice" value="{}:{}" {}>'
+                    '<span class="pkg-vp-card" style="background:{}">{}<span class="pkg-vp-vlbl">{}</span></span>'
+                    '</label>',
+                    type_key, var_key,
+                    mark_safe('checked' if checked else ''),
+                    grad, svg, var_label,
+                ))
+            parts.append(mark_safe('</div></div>'))
+
+        parts.append(mark_safe('</div>'))
+
+        parts.append(mark_safe(
+            '<script>'
+            '(function(){'
+            'var t=document.getElementById("id_icon_type");'
+            'var v=document.getElementById("id_icon_variant");'
+            'if(!t||!v)return;'
+            'function syncFromChoice(){'
+            'var ch=document.querySelector("input[name=pkg_vp_choice]:checked");'
+            'if(ch){var p=ch.value.split(":");t.value=p[0];v.value=p[1];}'
+            '}'
+            'document.getElementById("pkgVisualPicker").addEventListener("change",syncFromChoice);'
+            '})();'
+            '</script>'
+        ))
+        return mark_safe(''.join(str(p) for p in parts))
+
+
 class PackageAdminForm(forms.ModelForm):
+    icon_visual = forms.CharField(
+        required=False,
+        label=_('İkon'),
+        widget=PackageVisualPickerWidget(),
+    )
+
     class Meta:
         model = Package
         fields = '__all__'
@@ -215,7 +306,24 @@ class PackageAdminForm(forms.ModelForm):
             'description_az': CKEditorWidget(),
             'description_en': CKEditorWidget(),
             'description_ru': CKEditorWidget(),
+            'icon_type': forms.HiddenInput(),
+            'icon_variant': forms.HiddenInput(),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        instance = self.instance
+        it = 'plane'
+        iv = '1'
+        if instance and instance.pk:
+            it = instance.icon_type or 'plane'
+            iv = instance.icon_variant or '1'
+        elif self.initial:
+            it = self.initial.get('icon_type', it)
+            iv = self.initial.get('icon_variant', iv)
+        self.fields['icon_visual'].widget = PackageVisualPickerWidget(
+            icon_type=it, icon_variant=iv,
+        )
 
 
 @admin.register(Package)
@@ -223,13 +331,12 @@ class PackageAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin
     admin_page_help = PACKAGE_HELP
     form = PackageAdminForm
     filter_horizontal = ('service',)
-    list_display = ('name_az', 'price', 'end_date', 'is_active', 'created_at')
+    list_display = ('name_az', 'price', 'currency', 'end_date', 'is_active', 'created_at')
     list_filter = ('is_active',)
     search_fields = ('name_az', 'name_en', 'name_ru', 'slug')
     list_editable = ('is_active',)
     ordering = ('-created_at',)
     readonly_fields = ('slug', 'created_at')
-    inlines = [PackageMediaInline]
     fieldsets = (
         (_('Xidmətlər'), {
             'fields': ('service',),
@@ -249,8 +356,12 @@ class PackageAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin
             'fields': ('name_ru', 'description_ru'),
             'classes': ('wide', 'g-lang-ru'),
         }),
+        (_('İkon'), {
+            'fields': ('icon_visual', 'icon_type', 'icon_variant'),
+            'description': _('Hər tur növü üçün 3 fərqli ikon stili seçin.'),
+        }),
         (_('Qiymət və tarix'), {
-            'fields': ('price', 'end_date'),
+            'fields': ('price', 'currency', 'end_date'),
             'description': _(
                 'Bitiş tarixi keçəndən sonra paket saytda avtomatik gizlənir. '
                 'Tarix boşdursa paket müddətsizdir.'

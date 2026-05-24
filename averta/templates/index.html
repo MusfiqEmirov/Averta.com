@@ -39,38 +39,11 @@
 </div>
 {% endif %}
 
-{# ——— Statik: Destination; dinamik: Xidmətlər (Explore Tour kartları) ——— #}
-{% include 'partials/static/home_destination_tours.html' %}
+{# ——— Dinamik: Paketlər (xidmətlərdən əvvəl) ——— #}
+{% include 'partials/home_packages.html' %}
 
-{# ——— Dinamik: Paketlər ——— #}
-<div class="container-fluid packages py-5">
-    <div class="container py-5">
-        <div class="mx-auto text-center mb-5" style="max-width: 900px;">
-            <h5 class="section-title px-3">Paketlər</h5>
-            <h1 class="mb-0">Tur paketləri</h1>
-        </div>
-        {% if packages %}
-        <div class="packages-carousel owl-carousel">
-            {% for package in packages %}
-            {% include 'partials/package_card.html' %}
-            {% endfor %}
-        </div>
-        <div class="text-center mt-4">
-            <a class="btn btn-primary rounded-pill py-3 px-5" href="{% url 'services:package-page' %}">Bütün paketlər</a>
-        </div>
-        {% else %}
-        <div class="packages-carousel owl-carousel">
-            <div class="packages-item">
-                <div class="packages-img">
-                    <img src="{% static 'assets/img/packages-4.jpg' %}" class="img-fluid w-100 rounded-top" alt="Image">
-                    <div class="packages-price py-2 px-4">—</div>
-                </div>
-                <div class="packages-content bg-light p-4"><p class="mb-0 text-center">Tezliklə</p></div>
-            </div>
-        </div>
-        {% endif %}
-    </div>
-</div>
+{# ——— Dinamik: Xidmətlər (Explore Tour kartları) ——— #}
+{% include 'partials/home_services_explore.html' %}
 
 {# ——— Dinamik: Tərəfdaşlar ——— #}
 {% if partners %}
@@ -95,7 +68,7 @@
 </div>
 {% endif %}
 
-{# ——— Statik: Gallery, Booking, Guides, Testimonial ——— #}
+{# ——— Statik: Booking ——— #}
 {% include 'partials/static/home_gallery_through_testimonial.html' %}
 
 {# ——— Dinamik: Bloq ——— #}

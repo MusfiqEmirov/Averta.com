@@ -14,7 +14,7 @@
             <a href="{% url 'services:home-page' %}" class="nav-item nav-link {% if active_nav == 'home' %}active{% endif %}">Ana səhifə</a>
             <a href="{% url 'services:about-page' %}" class="nav-item nav-link {% if active_nav == 'about' %}active{% endif %}">Haqqımızda</a>
             <a href="{% url 'services:service-page' %}" class="nav-item nav-link {% if active_nav == 'services' %}active{% endif %}">Xidmətlər</a>
-            <a href="{% url 'services:package-page' %}" class="nav-item nav-link {% if active_nav == 'packages' %}active{% endif %}">Paketlər</a>
+            <a href="{% url 'services:home-page' %}#packages" class="nav-item nav-link">Paketlər</a>
             <a href="{% url 'services:blog-page' %}" class="nav-item nav-link {% if active_nav == 'blog' %}active{% endif %}">Bloq</a>
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Səhifələr</a>

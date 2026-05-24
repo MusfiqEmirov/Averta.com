@@ -67,6 +67,31 @@ def get_page_cache_key(view_name, lang, **query_params):
     return generate_cache_key(f"page_{view_name}", lang, **dict(sorted_params))
 
 
+def bump_cache_version():
+    """Increment global cache version so versioned keys miss stale entries."""
+    try:
+        current_version = cache.get('cache_version', 0) or 0
+        cache.set('cache_version', current_version + 1, None)
+    except Exception:
+        try:
+            cache.clear()
+        except Exception:
+            pass
+
+
+def get_cache_version_token():
+    """
+    Token embedded in cache keys: invalidation counter + deploy schema version.
+    Changing CACHE_SCHEMA_VERSION in settings invalidates all cached entries.
+    """
+    try:
+        invalidation_version = cache.get('cache_version', 0) or 0
+    except Exception:
+        invalidation_version = 0
+    schema_version = getattr(settings, 'CACHE_SCHEMA_VERSION', 1)
+    return f'{invalidation_version}:{schema_version}'
+
+
 def get_query_cache_key(query_name, *args, **kwargs):
     """
     Generate cache key for a database query.
@@ -125,11 +150,8 @@ def cached_query(timeout=None):
             
             # Generate cache key from function name and arguments
             # Include cache version for invalidation support
-            try:
-                cache_version = cache.get('cache_version', 0)
-            except Exception:
-                cache_version = 0
-            
+            cache_version = get_cache_version_token()
+
             # Generate cache key with all parameters
             try:
                 cache_key = get_query_cache_key(
@@ -181,13 +203,12 @@ def invalidate_page_cache(view_names=None):
         view_names: List of view names to invalidate. If None, invalidates all pages.
     """
     if view_names is None:
-        # Invalidate all page caches (using a pattern - simple but works with locmem)
-        # For production with Redis, you could use pattern matching
-        cache.clear()
+        try:
+            cache.clear()
+        except Exception:
+            pass
     else:
-        # For specific views, we'd need to track keys or use version-based invalidation
-        # For now, we'll use a version-based approach
-        cache.set('cache_version', cache.get('cache_version', 0) + 1, None)
+        bump_cache_version()
 
 
 def invalidate_query_cache(query_names=None):
@@ -197,15 +218,7 @@ def invalidate_query_cache(query_names=None):
     Args:
         query_names: List of query names to invalidate. If None, invalidates all queries.
     """
-    if query_names is None:
-        # Increment cache version to invalidate all queries
-        current_version = cache.get('cache_version', 0)
-        cache.set('cache_version', current_version + 1, None)
-    else:
-        # Increment cache version to invalidate specific queries
-        # Since we can't pattern match with locmem cache, we invalidate all
-        current_version = cache.get('cache_version', 0)
-        cache.set('cache_version', current_version + 1, None)
+    bump_cache_version()
 
 
 def cached_page_data(timeout=None):
@@ -251,11 +264,8 @@ def cached_page_data(timeout=None):
             
             # Generate cache key from function name, language, and query parameters
             # Include cache version for invalidation support
-            try:
-                cache_version = cache.get('cache_version', 0)
-            except Exception:
-                cache_version = 0
-            
+            cache_version = get_cache_version_token()
+
             try:
                 query_params = dict(request.GET.items())
                 view_name = func.__name__.replace('get_', '').replace('_data', '')
@@ -293,22 +303,12 @@ def cached_page_data(timeout=None):
     return decorator
 
 
-def invalidate_model_cache(model_name):
+def invalidate_model_cache(model_name=None):
     """
-    Invalidate all cache entries related to a specific model.
-    
+    Invalidate all versioned page/query caches (home, lists, about, hero, etc.).
+
     Args:
-        model_name: Name of the model (e.g., 'Service', 'About', 'Media', 'Motto', 'Blog')
+        model_name: Optional label for logging; invalidation is global via cache_version.
     """
-    # Increment cache version to invalidate all related caches
-    # This ensures all cache keys with cache_version parameter are invalidated
-    try:
-        current_version = cache.get('cache_version', 0)
-        cache.set('cache_version', current_version + 1, None)
-    except Exception:
-        # If cache version update fails, clear all cache as fallback
-        try:
-            cache.clear()
-        except Exception:
-            pass
+    bump_cache_version()
 
