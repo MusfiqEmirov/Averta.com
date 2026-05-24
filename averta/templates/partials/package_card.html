@@ -1,0 +1,37 @@
+{% load static %}
+<div class="packages-item">
+    <div class="packages-img">
+        {% if package.medias.0.image %}
+        <img src="{{ package.medias.0.image }}" class="img-fluid w-100 rounded-top" alt="{{ package.name }}">
+        {% else %}
+        <img src="{% static 'assets/img/packages-1.jpg' %}" class="img-fluid w-100 rounded-top" alt="{{ package.name }}">
+        {% endif %}
+        <div class="packages-info d-flex border border-start-0 border-end-0 position-absolute" style="width: 100%; bottom: 0; left: 0; z-index: 5;">
+            {% if package.duration %}
+            <small class="flex-fill text-center border-end py-2"><i class="fa fa-calendar-alt me-2"></i>{{ package.duration }}</small>
+            {% endif %}
+            {% if package.end_date %}
+            <small class="flex-fill text-center py-2"><i class="fa fa-clock me-2"></i>{{ package.end_date }}</small>
+            {% endif %}
+        </div>
+        {% if package.price %}
+        <div class="packages-price py-2 px-4">{{ package.price }} ₼</div>
+        {% endif %}
+    </div>
+    <div class="packages-content bg-light">
+        <div class="p-4 pb-0">
+            <h5 class="mb-2">{{ package.name }}</h5>
+            <p class="mb-3">{{ package.description|truncatewords:20 }}</p>
+            {% if package.services %}
+            <p class="small text-muted mb-2">
+                {% for s in package.services %}{{ s.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+            </p>
+            {% endif %}
+        </div>
+        <div class="row bg-primary rounded-bottom mx-0">
+            <div class="col-12 text-center px-0">
+                <a href="{% url 'services:contact-page' %}" class="btn-hover btn text-white py-2 px-4 w-100">Sorğu göndər</a>
+            </div>
+        </div>
+    </div>
+</div>

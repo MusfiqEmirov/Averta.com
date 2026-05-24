@@ -43,15 +43,15 @@ Thumbs.db
 .env.local
 
 # Local development configuration files
-# docker/docker-compose-local.yaml
-# docker/docker-compose-local.bat
-# docker/docker-compose-local.sh
-# docker/Dockerfile-local
-# docker/entrypoint-local.sh
-# conco/conco/settings_local.py
-# conco/conco/wsgi_local.py
-# docker/conco/media
-# docker/conco/staticfiles
+docker/docker-compose-local.yaml
+docker/docker-compose-local.bat
+docker/docker-compose-local.sh
+docker/Dockerfile-local
+docker/entrypoint-local.sh
+conco/conco/settings_local.py
+conco/conco/wsgi_local.py
+docker/conco/media
+docker/conco/staticfiles
 
 # Local database volumes (if created)
 postgres_data_local/

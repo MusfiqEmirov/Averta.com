@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Paketlər — Averta{% endblock %}
+
+{% block content %}
+{% include 'partials/page_header.html' %}
+
+<div class="container-fluid packages py-5">
+    <div class="container py-5">
+        <div class="mx-auto text-center mb-5" style="max-width: 900px;">
+            <h5 class="section-title px-3">Paketlər</h5>
+            <h1 class="mb-0">{{ page_heading }}</h1>
+        </div>
+        {% if packages %}
+        <div class="row g-4">
+            {% for package in packages %}
+            <div class="col-lg-4 col-md-6">
+                {% include 'partials/package_card.html' %}
+            </div>
+            {% endfor %}
+        </div>
+        {% include 'partials/pagination.html' %}
+        {% else %}
+        <div class="packages-carousel owl-carousel">
+            <div class="packages-item">
+                <div class="packages-img">
+                    <img src="{% static 'assets/img/packages-1.jpg' %}" class="img-fluid w-100 rounded-top" alt="">
+                    <div class="packages-price py-2 px-4">$349.00</div>
+                </div>
+                <div class="packages-content bg-light p-4">
+                    <h5>Venice - Italy</h5>
+                    <p class="mb-0">Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

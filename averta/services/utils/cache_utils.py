@@ -14,7 +14,7 @@ def generate_cache_key(prefix, *args, **kwargs):
     Generate a cache key from prefix and arguments.
     
     Args:
-        prefix: Cache key prefix (e.g., 'page_home', 'query_projects')
+        prefix: Cache key prefix (e.g., 'page_home', 'query_services')
         *args: Positional arguments to include in key
         **kwargs: Keyword arguments to include in key (None values are skipped)
     
@@ -72,7 +72,7 @@ def get_query_cache_key(query_name, *args, **kwargs):
     Generate cache key for a database query.
     
     Args:
-        query_name: Name of the query function (e.g., 'projects', 'about')
+        query_name: Name of the query function (e.g., 'services', 'about')
         *args: Positional arguments
         **kwargs: Keyword arguments
     
@@ -93,7 +93,7 @@ def cached_query(timeout=None):
     Usage:
         @cached_query(timeout=300)
         @cached_query(timeout=getattr(settings, 'CACHE_TIMEOUT_LONG', 3600))
-        def get_projects(lang='az', category_slug=None):
+        def get_services(lang='az', is_active=True):
             ...
     """
     # If timeout is a string, it's a settings attribute name
@@ -298,7 +298,7 @@ def invalidate_model_cache(model_name):
     Invalidate all cache entries related to a specific model.
     
     Args:
-        model_name: Name of the model (e.g., 'Product', 'About', 'Media', 'Motto', 'Blog')
+        model_name: Name of the model (e.g., 'Service', 'About', 'Media', 'Motto', 'Blog')
     """
     # Increment cache version to invalidate all related caches
     # This ensures all cache keys with cache_version parameter are invalidated

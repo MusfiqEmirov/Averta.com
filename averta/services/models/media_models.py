@@ -4,6 +4,7 @@ from django.core.files.storage import default_storage
 import logging
 
 from .service_models import Service
+from .package_models import Package
 from .partner_models import Partner
 from .about_models import About
 
@@ -37,6 +38,14 @@ class Media(models.Model):
         null=True,
         blank=True,
         verbose_name='Xidmət'
+    )
+    package = models.ForeignKey(
+        Package,
+        related_name='medias',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name='Paket',
     )
     partner = models.ForeignKey(
         Partner,

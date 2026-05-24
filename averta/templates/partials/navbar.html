@@ -1,0 +1,31 @@
+<nav class="navbar navbar-expand-lg navbar-light px-4 px-lg-5 py-3 py-lg-0">
+    <a href="{% url 'services:home-page' %}" class="navbar-brand p-0">
+        <h1 class="m-0"><i class="fa fa-map-marker-alt me-3"></i>Averta</h1>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+        <span class="fa fa-bars"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+        <div class="navbar-nav ms-auto py-0">
+            <a href="{% url 'services:home-page' %}" class="nav-item nav-link {% if active_nav == 'home' %}active{% endif %}">Ana səhifə</a>
+            <a href="{% url 'services:about-page' %}" class="nav-item nav-link {% if active_nav == 'about' %}active{% endif %}">Haqqımızda</a>
+            <a href="{% url 'services:service-page' %}" class="nav-item nav-link {% if active_nav == 'services' %}active{% endif %}">Xidmətlər</a>
+            <a href="{% url 'services:package-page' %}" class="nav-item nav-link {% if active_nav == 'packages' %}active{% endif %}">Paketlər</a>
+            <a href="{% url 'services:blog-page' %}" class="nav-item nav-link {% if active_nav == 'blog' %}active{% endif %}">Bloq</a>
+            <a href="{% url 'services:faq-page' %}" class="nav-item nav-link {% if active_nav == 'faq' %}active{% endif %}">FAQ</a>
+            <div class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Səhifələr</a>
+                <div class="dropdown-menu m-0">
+                    <a href="destination.html" class="dropdown-item">Destination</a>
+                    <a href="tour.html" class="dropdown-item">Explore Tour</a>
+                    <a href="booking.html" class="dropdown-item">Travel Booking</a>
+                    <a href="gallery.html" class="dropdown-item">Our Gallery</a>
+                    <a href="guides.html" class="dropdown-item">Travel Guides</a>
+                    <a href="testimonial.html" class="dropdown-item">Testimonial</a>
+                </div>
+            </div>
+            <a href="{% url 'services:contact-page' %}" class="nav-item nav-link {% if active_nav == 'contact' %}active{% endif %}">Əlaqə</a>
+        </div>
+        <a href="{% url 'services:contact-page' %}" class="btn btn-primary rounded-pill py-2 px-4 ms-lg-4">Əlaqə</a>
+    </div>
+</nav>

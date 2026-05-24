@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     'ckeditor',
     
     # Apps
-    
+    'services.apps.ServicesConfig',
 ]
 
 MIDDLEWARE = [
@@ -119,7 +119,7 @@ CACHES = {
 
 # Cache timeout settings (in seconds)
 CACHE_TIMEOUT_SHORT = 1800  # 30 minutes for occasionally changing data
-CACHE_TIMEOUT_MEDIUM = 7200  # 2 hours for normal pages (projects, vacancies lists)
+CACHE_TIMEOUT_MEDIUM = 7200  # 2 hours for normal pages (services, blog lists)
 CACHE_TIMEOUT_LONG = 86400  # 24 hours for stable data (about, contact, background images)
 
 # Default primary key field type
@@ -147,6 +147,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
 LANGUAGE_CODE = 'az'
+ADMIN_LANGUAGE_CODE = 'az'
 
 LANGUAGES = [
     ('az', 'Azərbaycan'),

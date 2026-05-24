@@ -1,6 +1,6 @@
 from django.db import models
 
-from projects.utils.unique_slugify import unique_slugify
+from services.utils.unique_slugify import unique_slugify
 
 
 class SluggedModel(models.Model):

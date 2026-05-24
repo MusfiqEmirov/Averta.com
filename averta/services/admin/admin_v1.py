@@ -4,22 +4,23 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from ckeditor.widgets import CKEditorWidget
 
-from projects.admin.admin_help import (
+from services.admin.admin_help import (
     AdminPageHelpMixin,
     ABOUT_HELP,
     APPEAL_HELP,
     BLOG_HELP,
-    CATEGORY_HELP,
     CONTACT_HELP,
     FAQ_HELP,
     MEDIA_HELP,
     MOTTO_HELP,
     PARTNER_HELP,
+    SERVICE_HELP,
+    PACKAGE_HELP,
     STATISTIC_HELP,
     patch_admin_site_order,
 )
 
-from projects.models import (
+from services.models import (
     Media,
     Partner,
     About,
@@ -29,6 +30,8 @@ from projects.models import (
     Statistic,
     Blog,
     FAQ,
+    Service,
+    Package,
 )
 
 admin.site.site_header = 'Averta — Sayt idarəetməsi'
@@ -80,6 +83,7 @@ class MediaAdminForm(forms.ModelForm):
             'is_home_page_background_image',
             'is_about_page_background_image',
             'is_contact_page_background_image',
+            'is_service_page_background_image',
             'is_blog_page_background_image',
         )
 
@@ -106,6 +110,23 @@ class PartnerMediaInline(ContentMediaInline):
     fk_name = 'partner'
     verbose_name = 'Logo'
     verbose_name_plural = 'Logo'
+    max_num = 1
+    extra = 1
+    fields = ('image_preview', 'image')
+    readonly_fields = ('image_preview',)
+
+
+class ServiceMediaInline(ContentMediaInline):
+    fk_name = 'service'
+    verbose_name = 'Şəkil'
+    verbose_name_plural = 'Xidmət şəkilləri'
+    extra = 1
+
+
+class PackageMediaInline(ContentMediaInline):
+    fk_name = 'package'
+    verbose_name = 'Şəkil'
+    verbose_name_plural = 'Paket şəkli'
     max_num = 1
     extra = 1
     fields = ('image_preview', 'image')
@@ -139,6 +160,90 @@ class AboutMediaInline(admin.StackedInline):
         return '—'
 
     image_preview.short_description = _('Önizləmə')
+
+
+# ---------------------------------------------------------------------------
+# Service & Package
+# ---------------------------------------------------------------------------
+
+@admin.register(Service)
+class ServiceAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin):
+    admin_page_help = SERVICE_HELP
+    list_display = ('name_az', 'is_active', 'on_main_page', 'created_at')
+    list_filter = ('is_active', 'on_main_page')
+    search_fields = ('name_az', 'name_en', 'name_ru', 'slug')
+    list_editable = ('is_active', 'on_main_page')
+    ordering = ('-created_at',)
+    readonly_fields = ('slug', 'created_at')
+    inlines = [ServiceMediaInline]
+    fieldsets = (
+        (_('Azərbaycan'), {'fields': ('name_az', 'description_az'), 'classes': ('wide',)}),
+        (_('English'), {'fields': ('name_en', 'description_en'), 'classes': ('wide', 'g-lang-en')}),
+        (_('Русский'), {'fields': ('name_ru', 'description_ru'), 'classes': ('wide', 'g-lang-ru')}),
+        (_('Parametrlər'), {
+            'fields': ('is_active', 'on_main_page', 'slug', 'created_at'),
+            'description': _(
+                '«Saytda göstərilsin?» söndürülərsə xidmət saytda gizlənir. '
+                '«Ana səhifədə göstərilsin?» — ən çox 6 xidmət.'
+            ),
+        }),
+    )
+
+
+class PackageAdminForm(forms.ModelForm):
+    class Meta:
+        model = Package
+        fields = '__all__'
+        widgets = {
+            'description_az': CKEditorWidget(),
+            'description_en': CKEditorWidget(),
+            'description_ru': CKEditorWidget(),
+        }
+
+
+@admin.register(Package)
+class PackageAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin):
+    admin_page_help = PACKAGE_HELP
+    form = PackageAdminForm
+    filter_horizontal = ('service',)
+    list_display = ('name_az', 'price', 'end_date', 'is_active', 'created_at')
+    list_filter = ('is_active',)
+    search_fields = ('name_az', 'name_en', 'name_ru', 'slug')
+    list_editable = ('is_active',)
+    ordering = ('-created_at',)
+    readonly_fields = ('slug', 'created_at')
+    inlines = [PackageMediaInline]
+    fieldsets = (
+        (_('Xidmətlər'), {
+            'fields': ('service',),
+            'description': _(
+                'Paketə daxil olan xidmətləri seçin. Bir paketə bir neçə xidmət əlavə edə bilərsiniz.'
+            ),
+        }),
+        (_('Azərbaycan'), {
+            'fields': ('name_az', 'description_az'),
+            'classes': ('wide',),
+        }),
+        (_('English'), {
+            'fields': ('name_en', 'description_en'),
+            'classes': ('wide', 'g-lang-en'),
+        }),
+        (_('Русский'), {
+            'fields': ('name_ru', 'description_ru'),
+            'classes': ('wide', 'g-lang-ru'),
+        }),
+        (_('Qiymət və tarix'), {
+            'fields': ('price', 'end_date'),
+            'description': _(
+                'Bitiş tarixi keçəndən sonra paket saytda avtomatik gizlənir. '
+                'Tarix boşdursa paket müddətsizdir.'
+            ),
+        }),
+        (_('Parametrlər'), {
+            'fields': ('is_active', 'slug', 'created_at'),
+            'description': _('«Saytda göstərilsin?» söndürülərsə paket saytda gizlənir.'),
+        }),
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -268,12 +373,16 @@ class MottoAdmin(AdminPageHelpMixin, admin.ModelAdmin):
         'show_on_home_hero',
         'is_about_page',
         'is_contact_page',
+        'is_service_page',
+        'is_package_page',
         'is_blog_page',
     )
     list_filter = (
         'show_on_home_hero',
         'is_about_page',
         'is_contact_page',
+        'is_service_page',
+        'is_package_page',
         'is_blog_page',
     )
     fieldsets = (
@@ -285,7 +394,8 @@ class MottoAdmin(AdminPageHelpMixin, admin.ModelAdmin):
                 'show_on_home_hero',
                 'is_about_page',
                 'is_contact_page',
-    
+                'is_service_page',
+                'is_package_page',
                 'is_blog_page',
             ),
             'description': _(
@@ -359,7 +469,7 @@ class StatisticAdmin(AdminPageHelpMixin, admin.ModelAdmin):
 @admin.register(Media)
 class MediaAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin):
     admin_page_help = MEDIA_HELP
-    """Yalnız səhifə fon şəkilləri: məhsul/partnyor/Haqqımızda inlaynlərində yaradılan media burada görünmür."""
+    """Yalnız səhifə fon şəkilləri: xidmət/partnyor/Haqqımızda inlaynlərində yaradılan media burada görünmür."""
 
     form = MediaAdminForm
     list_display = (
@@ -367,6 +477,7 @@ class MediaAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin):
         'is_home_page_background_image',
         'is_about_page_background_image',
         'is_contact_page_background_image',
+        'is_service_page_background_image',
         'is_blog_page_background_image',
         'created_at',
     )
@@ -374,6 +485,7 @@ class MediaAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin):
         'is_home_page_background_image',
         'is_about_page_background_image',
         'is_contact_page_background_image',
+        'is_service_page_background_image',
         'is_blog_page_background_image',
     )
     ordering = ('-created_at',)
@@ -386,6 +498,7 @@ class MediaAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin):
                 'is_home_page_background_image',
                 'is_about_page_background_image',
                 'is_contact_page_background_image',
+                'is_service_page_background_image',
                 'is_blog_page_background_image',
             ),
             'description': _(
@@ -409,11 +522,15 @@ class MediaAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin):
         return qs.filter(
             about__isnull=True,
             partner__isnull=True,
+            service__isnull=True,
+            package__isnull=True,
         )
 
     def save_model(self, request, obj, form, change):
         obj.about = None
         obj.partner = None
+        obj.service = None
+        obj.package = None
         obj.video = None
         super().save_model(request, obj, form, change)
 

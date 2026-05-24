@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Əlaqə — Averta{% endblock %}
+
+{% block content %}
+{% include 'partials/page_header.html' %}
+
+<div class="container-fluid contact bg-light py-5">
+    <div class="container py-5">
+        <div class="mx-auto text-center mb-5" style="max-width: 900px;">
+            <h5 class="section-title px-3">Əlaqə</h5>
+            <h1 class="mb-0">Bizimlə əlaqə</h1>
+        </div>
+        <div class="row g-5 align-items-start">
+            <div class="col-lg-4">
+                <div class="bg-white rounded p-4">
+                    {% if contact %}
+                    {% if contact.address %}
+                    <div class="text-center mb-4">
+                        <i class="fa fa-map-marker-alt fa-3x text-primary"></i>
+                        <h4 class="text-primary mt-2">Ünvan</h4>
+                        <p class="mb-0">{{ contact.address }}</p>
+                    </div>
+                    {% endif %}
+                    {% if contact.phone %}
+                    <div class="text-center mb-4">
+                        <i class="fa fa-phone-alt fa-3x text-primary mb-3"></i>
+                        <h4 class="text-primary">Telefon</h4>
+                        <p class="mb-0"><a href="tel:{{ contact.phone }}">{{ contact.phone }}</a></p>
+                        {% if contact.whatsapp_number %}
+                        <p class="mb-0"><a href="https://wa.me/{{ contact.whatsapp_number }}" target="_blank" rel="noopener">WhatsApp</a></p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    {% if contact.email %}
+                    <div class="text-center">
+                        <i class="fa fa-envelope-open fa-3x text-primary mb-3"></i>
+                        <h4 class="text-primary">E-poçt</h4>
+                        <p class="mb-0"><a href="mailto:{{ contact.email }}">{{ contact.email }}</a></p>
+                        {% if contact.email_two %}
+                        <p class="mb-0"><a href="mailto:{{ contact.email_two }}">{{ contact.email_two }}</a></p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    {% else %}
+                    <p class="text-center text-muted">Əlaqə məlumatı admin paneldən əlavə edilir.</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <h3 class="mb-2">Mesaj göndərin</h3>
+                <form method="post" action="{% url 'services:contact-page' %}">
+                    {% csrf_token %}
+                    {{ form.website }}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                {{ form.full_name }}
+                                <label for="{{ form.full_name.id_for_label }}">{{ form.full_name.label }}</label>
+                            </div>
+                            {% if form.full_name.errors %}<div class="text-danger small">{{ form.full_name.errors }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                {{ form.email }}
+                                <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                            </div>
+                            {% if form.email.errors %}<div class="text-danger small">{{ form.email.errors }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                {{ form.phone }}
+                                <label for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                {{ form.subject }}
+                                <label for="{{ form.subject.id_for_label }}">{{ form.subject.label }}</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-floating">
+                                {{ form.info }}
+                                <label for="{{ form.info.id_for_label }}">{{ form.info.label }}</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-primary w-100 py-3" type="submit">Göndər</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            {% if contact.map_embed_url %}
+            <div class="col-12">
+                <div class="rounded overflow-hidden">
+                    <iframe class="rounded w-100" style="height: 450px;" src="{{ contact.map_embed_url }}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-12">
+                <div class="rounded">
+                    <iframe class="rounded w-100" style="height: 450px;" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d387191.33750346623!2d-73.97968099999999!3d40.6974881!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2sbd!4v1694259649153!5m2!1sen!2sbd" loading="lazy"></iframe>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

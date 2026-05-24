@@ -7,13 +7,14 @@ from django.utils.translation import gettext as _
 from django.db.models import F
 from django.views import View
 
-from projects.models import Blog
-from projects.forms.forms_v1 import AppealContactForm
-from projects.utils.send_email import send_appeal_contact_notification
-from projects.utils.queries import (
+from services.models import Blog
+from services.forms.forms_v1 import AppealContactForm
+from services.utils.send_email import send_appeal_contact_notification
+from services.utils.queries import (
     get_language_from_request,
     get_home_page_data,
-    get_product_list_data,
+    get_service_list_data,
+    get_package_list_data,
     get_background_image,
     get_about,
     serialize_about,
@@ -22,8 +23,6 @@ from projects.utils.queries import (
     get_contact,
     serialize_contact,
     get_statistics,
-    get_product_categories,
-    serialize_product_category,
     get_blog_list_data,
     get_blog_by_id,
     serialize_blog,
@@ -41,23 +40,30 @@ class HomePageView(View):
         lang = get_language_from_request(request)
         context = get_home_page_data(request, lang)
         context['language'] = lang
+        context['active_nav'] = 'home'
         return render(request, self.template_name, context)
 
 
-class ProductPageView(View):
-    template_name = 'products.html'
+class ServicePageView(View):
+    template_name = 'services.html'
 
-    def get(self, request, category_slug=None):
+    def get(self, request):
         lang = get_language_from_request(request)
-        slug = category_slug or request.GET.get('slug')
-        if not slug:
-            return redirect('projects:home-page')
-        if category_slug:
-            request.GET = request.GET.copy()
-            request.GET['slug'] = category_slug
-        context = get_product_list_data(request, lang)
-        context['background_image'] = get_background_image('product')
+        context = get_service_list_data(request, lang)
+        context['background_image'] = get_background_image('service')
         context['language'] = lang
+        context['active_nav'] = 'services'
+        return render(request, self.template_name, context)
+
+
+class PackagePageView(View):
+    template_name = 'packages.html'
+
+    def get(self, request):
+        lang = get_language_from_request(request)
+        context = get_package_list_data(request, lang)
+        context['language'] = lang
+        context['active_nav'] = 'packages'
         return render(request, self.template_name, context)
 
 
@@ -71,19 +77,18 @@ class AboutPageView(View):
         partners = get_partners(lang=lang, is_active=is_active)
         contact = get_contact(lang)
         statistics = get_statistics(lang)
-        categories = get_product_categories(lang)
         page_heading = _('About us')
 
         context = {
             'about': serialize_about(about, lang) if about else None,
             'partners': [serialize_partner(p, lang) for p in partners],
             'contact': serialize_contact(contact, lang) if contact else None,
-            'categories': [serialize_product_category(c, lang) for c in categories],
             'statistics': statistics,
             'language': lang,
             'background_image': get_background_image('about'),
             'page_heading': page_heading,
             'page_motto': get_page_motto('about', lang),
+            'active_nav': 'about',
         }
         return render(request, self.template_name, context)
 
@@ -94,18 +99,17 @@ class ContactPageView(View):
     def get(self, request):
         lang = get_language_from_request(request)
         contact = get_contact(lang)
-        categories = get_product_categories(lang)
         form = AppealContactForm()
         page_heading = _('Contact')
 
         context = {
             'contact': serialize_contact(contact, lang) if contact else None,
-            'categories': [serialize_product_category(c, lang) for c in categories],
             'language': lang,
             'background_image': get_background_image('contact'),
             'form': form,
             'page_heading': page_heading,
             'page_motto': get_page_motto('contact', lang),
+            'active_nav': 'contact',
         }
         return render(request, self.template_name, context)
 
@@ -121,7 +125,7 @@ class ContactPageView(View):
                     request,
                     _('Thank you. We have received your message.'),
                 )
-                return redirect('projects:contact-page')
+                return redirect('services:contact-page')
             except Exception:
                 logging.getLogger(__name__).exception('Contact form save failed.')
                 messages.error(request, _('Something went wrong. Please try again.'))
@@ -129,17 +133,16 @@ class ContactPageView(View):
             messages.error(request, _('Please correct the errors in the form.'))
 
         contact = get_contact(lang)
-        categories = get_product_categories(lang)
         page_heading = _('Contact')
 
         context = {
             'contact': serialize_contact(contact, lang) if contact else None,
-            'categories': [serialize_product_category(c, lang) for c in categories],
             'language': lang,
             'background_image': get_background_image('contact'),
             'form': form,
             'page_heading': page_heading,
             'page_motto': get_page_motto('contact', lang),
+            'active_nav': 'contact',
         }
         return render(request, self.template_name, context)
 
@@ -150,16 +153,17 @@ class FAQPageView(View):
     def get(self, request):
         lang = get_language_from_request(request)
         faqs = get_faqs(lang)
-        categories = get_product_categories(lang)
+        contact = get_contact(lang)
         page_heading = _('Tez-tez verilən suallar')
 
         context = {
             'faqs': [serialize_faq(f, lang) for f in faqs],
-            'categories': [serialize_product_category(c, lang) for c in categories],
+            'contact': serialize_contact(contact, lang) if contact else None,
             'language': lang,
             'background_image': get_background_image('contact'),
             'page_heading': page_heading,
             'page_motto': get_page_motto('contact', lang),
+            'active_nav': 'faq',
         }
         return render(request, self.template_name, context)
 
@@ -172,8 +176,7 @@ class BlogPageView(View):
         context = get_blog_list_data(request, lang)
         context['language'] = lang
         context['background_image'] = get_background_image('blog')
-        categories = get_product_categories(lang)
-        context['categories'] = [serialize_product_category(c, lang) for c in categories]
+        context['active_nav'] = 'blog'
         return render(request, self.template_name, context)
 
 
@@ -190,15 +193,16 @@ class BlogDetailPageView(View):
         blog.refresh_from_db()
 
         blog_data = serialize_blog(blog, lang)
-        categories = get_product_categories(lang)
 
+        contact = get_contact(lang)
         context = {
             'blog': blog_data,
             'other_blogs': get_other_blogs(blog_id, lang),
+            'contact': serialize_contact(contact, lang) if contact else None,
             'language': lang,
-            'categories': [serialize_product_category(c, lang) for c in categories],
             'background_image': get_background_image('blog'),
             'page_motto': get_page_motto('blog', lang),
+            'active_nav': 'blog',
         }
         return render(request, self.template_name, context)
 

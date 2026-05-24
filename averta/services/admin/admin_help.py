@@ -9,6 +9,8 @@ ADMIN_MODEL_ORDER = [
     'about',
     'contact',
     'appealcontact',
+    'service',
+    'package',
     'partner',
     'blog',
     'faq',
@@ -22,7 +24,7 @@ def patch_admin_site_order():
     def get_app_list(request, app_label=None):
         app_list = original_get_app_list(request, app_label)
         for app in app_list:
-            if app.get('app_label') != 'projects':
+            if app.get('app_label') != 'services':
                 continue
             order_map = {name: idx for idx, name in enumerate(ADMIN_MODEL_ORDER)}
 
@@ -73,7 +75,7 @@ MOTTO_HELP = (
     '<strong>Bu nədir?</strong> Saytın müxtəlif yerlərində görünən qısa deviz cümlələri.<br>'
     '<strong>Harada dəyişir?</strong><br>'
     '• <strong>Ana səhifə karuseli</strong> — yuxarıdakı böyük şəkil slayderində mətn.<br>'
-    '• <strong>Daxili səhifələrin banneri</strong> — Haqqımızda, Əlaqə, Məhsullar, Bloq səhifələrinin '
+    '• <strong>Daxili səhifələrin banneri</strong> — Haqqımızda, Əlaqə, Xidmətlər, Bloq səhifələrinin '
     'yuxarı fon şəklinin üstündə (deviz varsa). Deviz yoxdursa banner boş qalır.<br>'
     '<strong>Qeyd:</strong> Hər səhifə üçün bir deviz kifayətdir.'
 )
@@ -98,10 +100,18 @@ APPEAL_HELP = (
     'yalnız saytdan gəlir.'
 )
 
-CATEGORY_HELP = (
-    '<strong>Bu nədir?</strong> Məhsulların qrupları (məs: Toxumlar, Gübrələr).<br>'
-    '<strong>Harada dəyişir?</strong> Menyu → Məhsullar dropdown; Məhsullar səhifəsi; ana səhifə məhsul panelləri.<br>'
-    '<strong>Qeyd:</strong> «Slug» avtomatik yaranır — link üçün istifadə olunur, adətən dəyişdirməyin.'
+SERVICE_HELP = (
+    '<strong>Bu nədir?</strong> Saytda təqdim olunan xidmətlər (tur, transfer, bələdçilik və s.).<br>'
+    '<strong>Harada dəyişir?</strong> Menyu → Xidmətlər; ana səhifə xidmət blokları.<br>'
+    '<strong>Şəkillər:</strong> Aşağıdakı «Xidmət şəkilləri» bölməsindən yükləyin. '
+    '«Ana səhifədə göstərilsin?» — ən çox 6 xidmət.'
+)
+
+PACKAGE_HELP = (
+    '<strong>Bu nədir?</strong> Tur paketləri — qiymət, bitiş tarixi və daxil olan xidmətlərlə.<br>'
+    '<strong>Harada dəyişir?</strong> Menyu → Paketlər; ana səhifə paket kartları (aktiv, vaxtı keçməyən).<br>'
+    '<strong>Xidmətlər:</strong> Paketə hansı xidmətlərin daxil olduğunu «Xidmətlər» sahəsindən seçin.<br>'
+    '<strong>Şəkillər:</strong> «Paket şəkilləri» bölməsindən yükləyin.'
 )
 
 PARTNER_HELP = (
@@ -126,6 +136,6 @@ FAQ_HELP = (
 MEDIA_HELP = (
     '<strong>Bu nədir?</strong> Daxili səhifələrin yuxarı banner fon şəkilləri (Haqqımızda, Bloq və s.).<br>'
     '<strong>Harada dəyişir?</strong> Ana səhifə xaric bütün səhifələrin yuxarı geniş şəkil zolağı.<br>'
-    '<strong>Qeyd:</strong> Məhsul, tərəfdaş və qalereya şəkilləri burada deyil — həmin bölmələrin '
+    '<strong>Qeyd:</strong> Xidmət, paket, tərəfdaş və qalereya şəkilləri burada deyil — həmin bölmələrin '
     'öz səhifəsindən yüklənir. Hər səhifə üçün yalnız <strong>bir</strong> fon şəkli işarələyin.'
 )
