@@ -105,8 +105,11 @@ APPEAL_HELP = (
 SERVICE_HELP = (
     '<strong>Bu nədir?</strong> Saytda təqdim olunan xidmətlər (tur, transfer, bələdçilik və s.).<br>'
     '<strong>Harada dəyişir?</strong> Menyu → Xidmətlər; ana səhifə xidmət blokları.<br>'
-    '<strong>Şəkillər:</strong> Aşağıdakı «Xidmət şəkilləri» bölməsindən yükləyin. '
-    '«Ana səhifədə göstərilsin?» — ən çox 6 xidmət.'
+    '<strong>Şəkillər:</strong> Aşağıdakı «Xidmət şəkilləri» bölməsindən yükləyin — '
+    '<strong>birinci yüklənən şəkil cover</strong> olur, qalanları qalereyada göstərilir. '
+    '«Ana səhifədə göstərilsin?» — ən çox 6 xidmət.<br>'
+    '<strong>Mətn:</strong> «Xidmət haqqında» CKEditor ilə formatlanır.<br>'
+    '<strong>Maddələr siyahısı:</strong> Hər sətirdə bir maddə — detail səhifəsində xüsusi kartlar kimi göstərilir.'
 )
 
 PACKAGE_HELP = (

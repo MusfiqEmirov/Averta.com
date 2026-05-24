@@ -3,6 +3,7 @@ from django.urls import path
 from services.views.views_v1 import (
     HomePageView,
     ServicePageView,
+    ServiceDetailPageView,
     PackagePageView,
     AboutPageView,
     ContactPageView,
@@ -25,6 +26,11 @@ urlpatterns = [
         'services/',
         ServicePageView.as_view(),
         name='service-page',
+    ),
+    path(
+        'services/<slug:service_slug>/',
+        ServiceDetailPageView.as_view(),
+        name='service-detail',
     ),
     path(
         'packages/',

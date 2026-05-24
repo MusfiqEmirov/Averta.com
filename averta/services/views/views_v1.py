@@ -30,6 +30,9 @@ from services.utils.queries import (
     get_page_motto,
     get_faqs,
     serialize_faq,
+    get_service_by_slug,
+    serialize_service,
+    get_other_services,
 )
 
 
@@ -53,6 +56,28 @@ class ServicePageView(View):
         context['background_image'] = get_background_image('service')
         context['language'] = lang
         context['active_nav'] = 'services'
+        return render(request, self.template_name, context)
+
+
+class ServiceDetailPageView(View):
+    template_name = 'service-detail.html'
+
+    def get(self, request, service_slug):
+        lang = get_language_from_request(request)
+        service = get_service_by_slug(service_slug)
+        if not service:
+            raise Http404(_('Service not found'))
+
+        contact = get_contact(lang)
+        context = {
+            'service': serialize_service(service, lang),
+            'other_services': get_other_services(service_slug, lang),
+            'contact': serialize_contact(contact, lang) if contact else None,
+            'language': lang,
+            'background_image': get_background_image('service'),
+            'page_motto': get_page_motto('service', lang),
+            'active_nav': 'services',
+        }
         return render(request, self.template_name, context)
 
 

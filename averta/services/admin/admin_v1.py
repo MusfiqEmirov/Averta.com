@@ -162,8 +162,20 @@ class AboutMediaInline(admin.StackedInline):
 # Service & Package
 # ---------------------------------------------------------------------------
 
+class ServiceAdminForm(forms.ModelForm):
+    class Meta:
+        model = Service
+        fields = '__all__'
+        widgets = {
+            'description_az': CKEditorWidget(),
+            'description_en': CKEditorWidget(),
+            'description_ru': CKEditorWidget(),
+        }
+
+
 @admin.register(Service)
 class ServiceAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin):
+    form = ServiceAdminForm
     admin_page_help = SERVICE_HELP
     list_display = ('name_az', 'is_active', 'on_main_page', 'created_at')
     list_filter = ('is_active', 'on_main_page')
@@ -173,9 +185,18 @@ class ServiceAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin
     readonly_fields = ('slug', 'created_at')
     inlines = [ServiceMediaInline]
     fieldsets = (
-        (_('Azərbaycan'), {'fields': ('name_az', 'description_az'), 'classes': ('wide',)}),
-        (_('English'), {'fields': ('name_en', 'description_en'), 'classes': ('wide', 'g-lang-en')}),
-        (_('Русский'), {'fields': ('name_ru', 'description_ru'), 'classes': ('wide', 'g-lang-ru')}),
+        (_('Azərbaycan'), {
+            'fields': ('name_az', 'description_az', 'bullet_list_az'),
+            'classes': ('wide',),
+        }),
+        (_('English'), {
+            'fields': ('name_en', 'description_en', 'bullet_list_en'),
+            'classes': ('wide', 'g-lang-en'),
+        }),
+        (_('Русский'), {
+            'fields': ('name_ru', 'description_ru', 'bullet_list_ru'),
+            'classes': ('wide', 'g-lang-ru'),
+        }),
         (_('Parametrlər'), {
             'fields': ('is_active', 'on_main_page', 'slug', 'created_at'),
             'description': _(

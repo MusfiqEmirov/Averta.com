@@ -98,14 +98,17 @@ def build_about_description_preview(html, word_count=45):
 # Service
 # ---------------------------------------------------------------------------
 
+def service_content_media_queryset():
+    return (
+        Media.objects.filter(image__isnull=False)
+        .filter(media_not_marked_as_background_q())
+        .order_by('created_at', 'id')
+    )
+
+
 def get_services(lang='az', is_active=True, on_main_page=None):
     queryset = Service.objects.prefetch_related(
-        Prefetch(
-            'medias',
-            queryset=Media.objects.filter(image__isnull=False).filter(
-                media_not_marked_as_background_q(),
-            ),
-        )
+        Prefetch('medias', queryset=service_content_media_queryset())
     )
 
     if is_active is not None:
@@ -121,15 +124,19 @@ def get_services(lang='az', is_active=True, on_main_page=None):
 def get_service_by_slug(slug, lang='az'):
     try:
         return Service.objects.prefetch_related(
-            Prefetch(
-                'medias',
-                queryset=Media.objects.filter(image__isnull=False).filter(
-                    media_not_marked_as_background_q(),
-                ),
-            )
+            Prefetch('medias', queryset=service_content_media_queryset())
         ).get(slug=slug, is_active=True)
     except Service.DoesNotExist:
         return None
+
+
+def get_other_services(exclude_slug, lang='az', limit=6):
+    qs = (
+        get_services(lang=lang, is_active=True)
+        .exclude(slug=exclude_slug)
+        .order_by('-created_at')[:limit]
+    )
+    return [serialize_service(s, lang) for s in qs]
 
 
 # ---------------------------------------------------------------------------
@@ -447,29 +454,47 @@ def get_other_blogs(blog_id, lang='az', limit=6):
 # Serializers
 # ---------------------------------------------------------------------------
 
+def parse_bullet_list(text):
+    if not text:
+        return []
+    return [line.strip() for line in text.splitlines() if line.strip()]
+
+
 def serialize_service(service, lang='az'):
     if service is None:
         return None
 
     name_field = get_localized_field_name('name', lang)
     desc_field = get_localized_field_name('description', lang)
+    bullet_field = get_localized_field_name('bullet_list', lang)
+    bullet_raw = getattr(service, bullet_field, None) or service.bullet_list_az
+    medias = [
+        {
+            'id': media.id,
+            'image': media.image.url if media.image else None,
+            'video': media.video.url if media.video else None,
+        }
+        for media in service.medias.all()
+    ]
+    images = [m['image'] for m in medias if m['image']]
+    videos = [m['video'] for m in medias if m['video']]
+    raw_description = getattr(service, desc_field, service.description_az) or ''
 
     return {
         'id': service.id,
         'slug': service.slug,
         'name': getattr(service, name_field, service.name_az),
-        'description': getattr(service, desc_field, service.description_az),
+        'description': raw_description,
+        'description_html': prepare_rich_html(raw_description),
+        'bullet_items': parse_bullet_list(bullet_raw),
         'is_active': service.is_active,
         'on_main_page': service.on_main_page,
         'created_at': service.created_at,
-        'medias': [
-            {
-                'id': media.id,
-                'image': media.image.url if media.image else None,
-                'video': media.video.url if media.video else None,
-            }
-            for media in service.medias.all()
-        ]
+        'medias': medias,
+        'images': images,
+        'cover_image': images[0] if images else None,
+        'gallery_images': images[1:],
+        'videos': videos,
     }
 
 
