@@ -1,4 +1,5 @@
 from services.models import Service
+from services.utils.queries import get_contact, get_language_from_request, serialize_contact
 
 
 def navbar_services(request):
@@ -31,3 +32,13 @@ def navbar_services(request):
         result = []
 
     return {'navbar_services': result}
+
+
+def site_contact(request):
+    """Əlaqə məlumatları — footer, WhatsApp/zəng düymələri."""
+    try:
+        lang = get_language_from_request(request)
+        contact = get_contact(lang)
+        return {'contact': serialize_contact(contact, lang) if contact else None}
+    except Exception:
+        return {'contact': None}

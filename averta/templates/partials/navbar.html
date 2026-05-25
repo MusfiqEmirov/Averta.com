@@ -24,18 +24,8 @@
                 </div>
             </div>
             <a href="{% url 'services:home-page' %}#packages" class="nav-item nav-link">Paketlər</a>
+            <a href="{% url 'services:home-page' %}#testimonial" class="nav-item nav-link">Rəylər</a>
             <a href="{% url 'services:blog-page' %}" class="nav-item nav-link {% if active_nav == 'blog' %}active{% endif %}">Bloq</a>
-            <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Səhifələr</a>
-                <div class="dropdown-menu m-0">
-                    <a href="destination.html" class="dropdown-item">Destination</a>
-                    <a href="tour.html" class="dropdown-item">Explore Tour</a>
-                    <a href="booking.html" class="dropdown-item">Travel Booking</a>
-                    <a href="gallery.html" class="dropdown-item">Our Gallery</a>
-                    <a href="guides.html" class="dropdown-item">Travel Guides</a>
-                    <a href="testimonial.html" class="dropdown-item">Testimonial</a>
-                </div>
-            </div>
         </div>
         <a href="{% url 'services:contact-page' %}" class="btn btn-primary rounded-pill py-2 px-4 ms-lg-4 navbar-contact-btn d-none d-lg-inline-block">Əlaqə</a>
     </div>

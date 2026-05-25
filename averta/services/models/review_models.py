@@ -2,10 +2,13 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MaxLengthValidator, MinValueValidator, MaxValueValidator
 from django.db import models
 
+REVIEW_NAME_MAX_LENGTH = 50
+REVIEW_MESSAGE_MAX_LENGTH = 190
+
 
 class Review(models.Model):
     name = models.CharField(
-        max_length=120,
+        max_length=REVIEW_NAME_MAX_LENGTH,
         verbose_name='Name',
     )
     email = models.EmailField(
@@ -14,8 +17,14 @@ class Review(models.Model):
         blank=True,
         default='',
     )
+    phone = models.CharField(
+        max_length=40,
+        blank=True,
+        default='',
+        verbose_name='Mobil nömrə',
+    )
     message = models.TextField(
-        validators=[MaxLengthValidator(1000)],
+        validators=[MaxLengthValidator(REVIEW_MESSAGE_MAX_LENGTH)],
         verbose_name='Review',
     )
     rating = models.PositiveSmallIntegerField(
@@ -27,9 +36,30 @@ class Review(models.Model):
         verbose_name='Rating (1–5)',
         help_text='Stars from 1 to 5.',
     )
+    service = models.ForeignKey(
+        'Service',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='reviews',
+        verbose_name='Xidmət',
+    )
+    package = models.ForeignKey(
+        'Package',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='reviews',
+        verbose_name='Paket',
+    )
     is_active = models.BooleanField(
         default=False,
         verbose_name='Active',
+    )
+    is_read = models.BooleanField(
+        default=False,
+        verbose_name='Oxunub?',
+        help_text='Rəyi oxuduqdan sonra işarələyin.',
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
@@ -37,8 +67,8 @@ class Review(models.Model):
     )
 
     class Meta:
-        verbose_name = 'Review'
-        verbose_name_plural = 'Reviews'
+        verbose_name = 'Rəy'
+        verbose_name_plural = 'Reyler'
         ordering = ('-created_at',)
 
     def clean(self):
@@ -48,8 +78,16 @@ class Review(models.Model):
             self.name = self.name.strip()
         if self.email:
             self.email = self.email.strip().lower()
+        if self.phone:
+            self.phone = self.phone.strip()
+        if not self.email and not self.phone:
+            raise ValidationError('E-poçt və ya mobil nömrə daxil edilməlidir.')
         if self.message:
             self.message = self.message.strip()
+        if self.service_id and self.package_id:
+            raise ValidationError(
+                'Yalnız xidmət və ya paket seçilməlidir, hər ikisi yox.'
+            )
 
     def __str__(self):
         return self.name

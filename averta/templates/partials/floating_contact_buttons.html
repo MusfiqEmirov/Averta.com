@@ -1,0 +1,22 @@
+{% if contact %}
+{% if contact.whatsapp_url or contact.phone_tel %}
+<div class="fab-contact" aria-label="Sürətli əlaqə">
+    {% if contact.whatsapp_url %}
+    <a href="{{ contact.whatsapp_url }}"
+       class="fab-contact__btn fab-contact__btn--whatsapp"
+       target="_blank"
+       rel="noopener noreferrer"
+       aria-label="WhatsApp">
+        <i class="fab fa-whatsapp" aria-hidden="true"></i>
+    </a>
+    {% endif %}
+    {% if contact.phone_tel %}
+    <a href="{{ contact.phone_tel }}"
+       class="fab-contact__btn fab-contact__btn--call"
+       aria-label="Zəng et">
+        <i class="fas fa-phone-alt" aria-hidden="true"></i>
+    </a>
+    {% endif %}
+</div>
+{% endif %}
+{% endif %}

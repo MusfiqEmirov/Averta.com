@@ -1,0 +1,30 @@
+{% extends "admin/averta/change_form.html" %}
+
+{% block content %}
+<div class="review-admin-page">
+    {% if original %}
+    {% if not original.is_read %}
+    <div class="review-admin-alert">Yeni rəy — məzmunu yoxlayın və «Oxunub» işarələyin.</div>
+    {% elif not original.is_active %}
+    <div class="review-admin-alert review-admin-alert--active">Rəy oxunub, amma saytda hələ göstərilmir — «Aktiv» işarələyin.</div>
+    {% endif %}
+    <div class="review-admin-meta">
+        <div class="review-admin-meta__item">
+            <label>Tarix</label>
+            <span>{{ original.created_at|date:"d.m.Y H:i" }}</span>
+        </div>
+        <div class="review-admin-meta__item">
+            <label>Reytinq</label>
+            <span>{{ original.rating }} / 5</span>
+        </div>
+        <div class="review-admin-meta__item">
+            <label>Status</label>
+            <span>{% if original.is_active %}Saytda aktiv{% else %}Gizli{% endif %} · {% if original.is_read %}Oxunub{% else %}Oxunmayıb{% endif %}</span>
+        </div>
+    </div>
+    {% endif %}
+    <div class="review-admin-form-wrap">
+        {{ block.super }}
+    </div>
+</div>
+{% endblock %}

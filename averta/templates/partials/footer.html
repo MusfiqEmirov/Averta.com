@@ -1,65 +1,99 @@
-<div class="container-fluid footer py-5">
-    <div class="container py-5">
-        <div class="row g-5">
-            <div class="col-md-6 col-lg-6 col-xl-4">
-                <div class="footer-item d-flex flex-column">
-                    <h4 class="mb-4 text-white">Əlaqə</h4>
-                    {% if contact.address %}
-                    <a href="{% url 'services:contact-page' %}"><i class="fas fa-home me-2"></i> {{ contact.address }}</a>
-                    {% else %}
-                    <a href="{% url 'services:contact-page' %}"><i class="fas fa-home me-2"></i> Ünvan</a>
-                    {% endif %}
-                    {% if contact.email %}
-                    <a href="mailto:{{ contact.email }}"><i class="fas fa-envelope me-2"></i> {{ contact.email }}</a>
-                    {% endif %}
-                    {% if contact.phone %}
-                    <a href="tel:{{ contact.phone }}"><i class="fas fa-phone me-2"></i> {{ contact.phone }}</a>
-                    {% endif %}
-                    <div class="d-flex align-items-center mt-3">
+<footer class="site-footer">
+    <div class="site-footer__main">
+        <div class="container site-footer__inner py-4 py-lg-5">
+            <div class="row g-3 g-lg-5 align-items-start">
+                <div class="col-12 col-lg-4">
+                    <a href="{% url 'services:home-page' %}" class="site-footer__brand">
+                        <span class="site-footer__brand-icon" aria-hidden="true"><i class="fa fa-map-marker-alt"></i></span>
+                        <span class="site-footer__brand-name">Averta</span>
+                    </a>
+                    <p class="site-footer__tagline">Səyahət və turizm xidmətləri — etibarlı tərəfdaşınız.</p>
+                    {% if contact %}
+                    {% if contact.facebook or contact.instagram or contact.linkedn or contact.youtube %}
+                    <div class="site-footer__social" aria-label="Sosial şəbəkələr">
                         {% if contact.facebook %}
-                        <a class="btn-square btn btn-primary rounded-circle mx-1" href="{{ contact.facebook }}" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+                        <a class="site-footer__social-link" href="{{ contact.facebook }}" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
                         {% endif %}
                         {% if contact.instagram %}
-                        <a class="btn-square btn btn-primary rounded-circle mx-1" href="{{ contact.instagram }}" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+                        <a class="site-footer__social-link" href="{{ contact.instagram }}" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
                         {% endif %}
                         {% if contact.linkedn %}
-                        <a class="btn-square btn btn-primary rounded-circle mx-1" href="{{ contact.linkedn }}" target="_blank" rel="noopener"><i class="fab fa-linkedin-in"></i></a>
+                        <a class="site-footer__social-link" href="{{ contact.linkedn }}" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        {% endif %}
+                        {% if contact.youtube %}
+                        <a class="site-footer__social-link" href="{{ contact.youtube }}" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
                         {% endif %}
                     </div>
+                    {% endif %}
+                    {% endif %}
+                    <div class="site-footer__cta">
+                        {% if contact and contact.whatsapp_url %}
+                        <a href="{{ contact.whatsapp_url }}" class="site-footer__cta-btn site-footer__cta-btn--wa" target="_blank" rel="noopener noreferrer">
+                            <i class="fab fa-whatsapp" aria-hidden="true"></i> WhatsApp
+                        </a>
+                        {% endif %}
+                        <a href="{% url 'services:contact-page' %}" class="site-footer__cta-btn site-footer__cta-btn--contact">
+                            Əlaqə saxla
+                        </a>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-6 col-lg-6 col-xl-4">
-                <div class="footer-item d-flex flex-column">
-                    <h4 class="mb-4 text-white">Səhifələr</h4>
-                    <a href="{% url 'services:about-page' %}"><i class="fas fa-angle-right me-2"></i> Haqqımızda</a>
-                    <a href="{% url 'services:service-page' %}"><i class="fas fa-angle-right me-2"></i> Xidmətlər</a>
-                    <a href="{% url 'services:home-page' %}#packages"><i class="fas fa-angle-right me-2"></i> Paketlər</a>
-                    <a href="{% url 'services:blog-page' %}"><i class="fas fa-angle-right me-2"></i> Bloq</a>
-                    <a href="{% url 'services:faq-page' %}"><i class="fas fa-angle-right me-2"></i> Tez-tez verilən suallar</a>
-                    <a href="{% url 'services:contact-page' %}"><i class="fas fa-angle-right me-2"></i> Əlaqə</a>
+
+                <div class="col-6 col-lg-4">
+                    <h4 class="site-footer__title">Sayt xəritəsi</h4>
+                    <nav class="site-footer__nav" aria-label="Footer naviqasiya">
+                        <a href="{% url 'services:home-page' %}">Ana səhifə</a>
+                        <a href="{% url 'services:about-page' %}">Haqqımızda</a>
+                        <a href="{% url 'services:service-page' %}">Xidmətlər</a>
+                        <a href="{% url 'services:home-page' %}#packages">Paketlər</a>
+                        <a href="{% url 'services:home-page' %}#testimonial">Rəylər</a>
+                        <a href="{% url 'services:blog-page' %}">Bloq</a>
+                        <a href="{% url 'services:faq-page' %}">Tez-tez verilən suallar</a>
+                        <a href="{% url 'services:contact-page' %}">Əlaqə</a>
+                    </nav>
                 </div>
-            </div>
-            <div class="col-md-6 col-lg-6 col-xl-4">
-                <div class="footer-item d-flex flex-column">
-                    <h4 class="mb-4 text-white">Şablon səhifələr</h4>
-                    <a href="destination.html"><i class="fas fa-angle-right me-2"></i> Destination</a>
-                    <a href="gallery.html"><i class="fas fa-angle-right me-2"></i> Gallery</a>
-                    <a href="guides.html"><i class="fas fa-angle-right me-2"></i> Guides</a>
-                    <a href="testimonial.html"><i class="fas fa-angle-right me-2"></i> Testimonial</a>
+
+                <div class="col-6 col-lg-4">
+                    <h4 class="site-footer__title">Əlaqə</h4>
+                    <ul class="site-footer__contact-list">
+                        {% if contact and contact.address %}
+                        <li>
+                            <span class="site-footer__contact-icon" aria-hidden="true"><i class="fas fa-map-marker-alt"></i></span>
+                            <span>{{ contact.address }}</span>
+                        </li>
+                        {% endif %}
+                        {% if contact and contact.phone %}
+                        <li>
+                            <span class="site-footer__contact-icon" aria-hidden="true"><i class="fas fa-phone-alt"></i></span>
+                            <a href="{{ contact.phone_tel|default:'#' }}">{{ contact.phone }}</a>
+                        </li>
+                        {% endif %}
+                        {% if contact and contact.whatsapp_number %}
+                        <li>
+                            <span class="site-footer__contact-icon site-footer__contact-icon--wa" aria-hidden="true"><i class="fab fa-whatsapp"></i></span>
+                            <a href="{{ contact.whatsapp_url|default:'#' }}" target="_blank" rel="noopener noreferrer">{{ contact.whatsapp_number }}</a>
+                        </li>
+                        {% endif %}
+                        {% if contact and contact.email %}
+                        <li>
+                            <span class="site-footer__contact-icon" aria-hidden="true"><i class="fas fa-envelope"></i></span>
+                            <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>
+                        </li>
+                        {% endif %}
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<div class="container-fluid copyright text-body py-4">
-    <div class="container">
-        <div class="row g-4 align-items-center">
-            <div class="col-md-12 text-center">
-                <div>
-                    © 2026 <a href="https://digiboom.az/" target="_blank" rel="noopener noreferrer">DigiBoom</a> · Bütün hüquqlar qorunur.
-                </div>
-            </div>
+
+    <div class="site-footer__bottom">
+        <div class="container site-footer__inner-bottom py-3 py-lg-4">
+            <p class="site-footer__copy mb-0 text-center">
+                © 2026 <a href="https://digiboom.az/" target="_blank" rel="noopener noreferrer">DigiBoom</a> · Bütün hüquqlar qorunur.
+            </p>
         </div>
     </div>
-</div>
-<a href="#" class="btn btn-primary btn-primary-outline-0 btn-md-square back-to-top"><i class="fa fa-arrow-up"></i></a>
+</footer>
+
+<button type="button" class="btn btn-primary back-to-top" aria-label="Yuxarı qalx">
+    <i class="fa fa-arrow-up" aria-hidden="true"></i>
+</button>

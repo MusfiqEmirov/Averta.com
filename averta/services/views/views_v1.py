@@ -44,7 +44,7 @@ class HomePageView(View):
         context = get_home_page_data(request, lang)
         context['language'] = lang
         context['active_nav'] = 'home'
-        context['review_form'] = ReviewForm()
+        context['review_form'] = ReviewForm(lang=lang)
         context['review_feedback'] = request.session.pop('review_feedback', None)
         return render(request, self.template_name, context)
 
@@ -54,7 +54,7 @@ class HomePageView(View):
         if request.POST.get('form_type') != 'review':
             return redirect(reverse('services:home-page'))
 
-        form = ReviewForm(request.POST)
+        form = ReviewForm(request.POST, lang=lang)
 
         if form.is_valid():
             try:
