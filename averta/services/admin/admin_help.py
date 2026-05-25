@@ -9,6 +9,7 @@ ADMIN_MODEL_ORDER = [
     'about',
     'contact',
     'appealcontact',
+    'review',
     'service',
     'package',
     'partner',
@@ -146,4 +147,12 @@ MEDIA_HELP = (
     '<strong>Harada dəyişir?</strong> Ana səhifə xaric bütün səhifələrin yuxarı geniş şəkil zolağı.<br>'
     '<strong>Qeyd:</strong> Xidmət, paket, tərəfdaş və qalereya şəkilləri burada deyil — həmin bölmələrin '
     'öz səhifəsindən yüklənir. Hər səhifə üçün yalnız <strong>bir</strong> fon şəkli işarələyin.'
+)
+
+REVIEW_HELP = (
+    '<strong>Bu nədir?</strong> Ziyarətçilərin ana səhifədəki formdan göndərdiyi müştəri rəyləri.<br>'
+    '<strong>Harada görünür?</strong> Ana səhifə → «Rəylər» bölməsi (yalnız aktiv olanlar).<br>'
+    '<strong>Nə etməli?</strong> Yeni gələn rəylər <em>deaktiv</em> olaraq gəlir — '
+    'oxuyun, uyğun olanı «Aktiv» işarələyin ki saytda göstərilsin. '
+    'Spam və ya uyğunsuz rəyi silə bilərsiniz.'
 )

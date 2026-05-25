@@ -10,6 +10,7 @@ from services.models import (
     Motto,
     Package,
     Partner,
+    Review,
     Service,
     Statistic,
 )
@@ -101,3 +102,8 @@ def invalidate_motto_cache(sender, **kwargs):
 @receiver([post_save, post_delete], sender=FAQ)
 def invalidate_faq_cache(sender, **kwargs):
     invalidate_model_cache('FAQ')
+
+
+@receiver([post_save, post_delete], sender=Review)
+def invalidate_review_cache(sender, **kwargs):
+    invalidate_model_cache('Review')

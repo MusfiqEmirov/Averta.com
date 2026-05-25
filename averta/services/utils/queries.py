@@ -12,7 +12,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from services.models.media_models import media_not_marked_as_background_q
 from services.models import (
     Service, Package, Partner, About,
-    Contact, Media, Motto, Statistic, Blog, FAQ,
+    Contact, Media, Motto, Statistic, Blog, FAQ, Review,
 )
 from services.utils.cache_utils import cached_query, get_query_cache_key, cached_page_data
 from django.core.cache import cache
@@ -642,6 +642,30 @@ def serialize_blog(blog, lang='az'):
 
 
 # ---------------------------------------------------------------------------
+# Reviews
+# ---------------------------------------------------------------------------
+
+def get_active_reviews(limit=20):
+    return list(Review.objects.filter(is_active=True).order_by('-created_at')[:limit])
+
+
+def serialize_review(review):
+    """Public testimonial data — email intentionally omitted."""
+    if review is None:
+        return None
+    rating = max(1, min(5, review.rating))
+    return {
+        'id': review.id,
+        'name': review.name,
+        'message': review.message,
+        'rating': rating,
+        'rating_range': range(rating),
+        'empty_stars': range(5 - rating),
+        'created_at': review.created_at,
+    }
+
+
+# ---------------------------------------------------------------------------
 # Pagination helpers
 # ---------------------------------------------------------------------------
 
@@ -699,6 +723,8 @@ def get_home_page_data(request, lang):
     faq_list = list(get_faqs(lang, on_main_page=True)[:6])
     home_faqs = [serialize_faq(f, lang) for f in faq_list]
 
+    reviews = [serialize_review(r) for r in get_active_reviews(limit=20)]
+
     return {
         'services': serialized_services,
         'packages': serialized_packages,
@@ -713,6 +739,7 @@ def get_home_page_data(request, lang):
         'statistics': get_statistics(lang),
         'home_blogs': home_blogs,
         'faqs': home_faqs,
+        'reviews': reviews,
     }
 
 

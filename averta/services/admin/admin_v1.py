@@ -14,6 +14,7 @@ from services.admin.admin_help import (
     MEDIA_HELP,
     MOTTO_HELP,
     PARTNER_HELP,
+    REVIEW_HELP,
     SERVICE_HELP,
     PACKAGE_HELP,
     STATISTIC_HELP,
@@ -27,6 +28,7 @@ from services.models import (
     Contact,
     AppealContact,
     Motto,
+    Review,
     Statistic,
     Blog,
     FAQ,
@@ -729,6 +731,58 @@ class BlogAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin):
         return '—'
 
     image_preview.short_description = _('Önizləmə')
+
+
+# ---------------------------------------------------------------------------
+# Review
+# ---------------------------------------------------------------------------
+
+def mark_review_active(modeladmin, request, queryset):
+    queryset.update(is_active=True)
+
+
+mark_review_active.short_description = _('Seçilmişləri aktiv et (saytda göstər)')
+
+
+def mark_review_inactive(modeladmin, request, queryset):
+    queryset.update(is_active=False)
+
+
+mark_review_inactive.short_description = _('Seçilmişləri deaktiv et (saytdan gizlət)')
+
+
+@admin.register(Review)
+class ReviewAdmin(AdminPageHelpMixin, admin.ModelAdmin):
+    admin_page_help = REVIEW_HELP
+    list_display = ('name', 'email', 'rating', 'short_message', 'is_active', 'created_at')
+    list_filter = ('is_active', 'rating')
+    search_fields = ('name', 'email', 'message')
+    list_editable = ('is_active',)
+    ordering = ('-created_at',)
+    readonly_fields = ('created_at',)
+    actions = [mark_review_active, mark_review_inactive]
+
+    fieldsets = (
+        (_('Məzmun'), {
+            'fields': ('name', 'email', 'message', 'rating'),
+            'description': _('E-poçt yalnız admin paneldə görünür — saytda göstərilmir.'),
+        }),
+        (_('Parametrlər'), {
+            'fields': ('is_active', 'created_at'),
+            'description': _(
+                '«Aktiv» işarələnmiş rəylər saytda görünür. '
+                'Yeni rəylər avtomatik deaktiv gəlir — yoxladıqdan sonra aktivləşdirin.'
+            ),
+        }),
+    )
+
+    def short_message(self, obj):
+        return obj.message[:80] + '…' if len(obj.message) > 80 else obj.message
+
+    short_message.short_description = _('Rəy (qısa)')
+
+    def has_add_permission(self, request):
+        return False
 
 
 patch_admin_site_order()

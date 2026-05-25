@@ -90,6 +90,9 @@
 </div>
 {% endif %}
 
+{# ——— Dinamik: Rəylər + Rəy formu ——— #}
+{% include 'partials/home_testimonial.html' %}
+
 {# ——— Dinamik: FAQ ——— #}
 {% if faqs %}
 {% include 'partials/home_faq.html' %}
@@ -109,4 +112,8 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'assets/js/home_testimonial.js' %}"></script>
 {% endblock %}

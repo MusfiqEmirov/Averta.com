@@ -85,7 +85,7 @@
     });
 
 
-    // testimonial carousel
+    // testimonial carousel (3+ reviews — full width)
     $(".testimonial-carousel").owlCarousel({
         autoplay: true,
         smartSpeed: 1000,

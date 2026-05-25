@@ -2,13 +2,14 @@ import logging
 
 from django.http import Http404, JsonResponse
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.contrib import messages
 from django.utils.translation import gettext as _
 from django.db.models import F
 from django.views import View
 
 from services.models import Blog
-from services.forms.forms_v1 import AppealContactForm
+from services.forms.forms_v1 import AppealContactForm, ReviewForm
 from services.utils.send_email import send_appeal_contact_notification
 from services.utils.queries import (
     get_language_from_request,
@@ -43,6 +44,33 @@ class HomePageView(View):
         context = get_home_page_data(request, lang)
         context['language'] = lang
         context['active_nav'] = 'home'
+        context['review_form'] = ReviewForm()
+        context['review_feedback'] = request.session.pop('review_feedback', None)
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        lang = get_language_from_request(request)
+
+        if request.POST.get('form_type') != 'review':
+            return redirect(reverse('services:home-page'))
+
+        form = ReviewForm(request.POST)
+
+        if form.is_valid():
+            try:
+                form.save()
+                request.session['review_feedback'] = 'success'
+            except Exception:
+                logging.getLogger(__name__).exception('Review form save failed.')
+                request.session['review_feedback'] = 'error'
+            return redirect(reverse('services:home-page') + '#testimonial')
+
+        # Validasiya xətası — modal yenidən açılır, sahə xətaları göstərilir
+        context = get_home_page_data(request, lang)
+        context['language'] = lang
+        context['active_nav'] = 'home'
+        context['review_form'] = form
+        context['review_feedback'] = None
         return render(request, self.template_name, context)
 
 
