@@ -2,6 +2,21 @@ from django.utils import translation
 from django.conf import settings
 
 
+class CsrfNullOriginFixMiddleware:
+    """
+    Bəzi brauzerlər/lokal mühitlər POST üçün Origin: null göndərir.
+    DEBUG rejimində null başlığı silinir — Django Referer ilə yoxlayır.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if settings.DEBUG and request.META.get('HTTP_ORIGIN') == 'null':
+            request.META.pop('HTTP_ORIGIN', None)
+        return self.get_response(request)
+
+
 class PublicHtmlCacheControlMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response

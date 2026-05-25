@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxLengthValidator, MinValueValidator, MaxValueValidator
 from django.db import models
 
@@ -6,6 +7,12 @@ class Review(models.Model):
     name = models.CharField(
         max_length=120,
         verbose_name='Name',
+    )
+    email = models.EmailField(
+        max_length=254,
+        verbose_name='Email',
+        blank=True,
+        default='',
     )
     message = models.TextField(
         validators=[MaxLengthValidator(1000)],
@@ -33,6 +40,16 @@ class Review(models.Model):
         verbose_name = 'Review'
         verbose_name_plural = 'Reviews'
         ordering = ('-created_at',)
+
+    def clean(self):
+        if self.rating is not None and not (1 <= self.rating <= 5):
+            raise ValidationError({'rating': 'Reytinq 1 ilə 5 arasında olmalıdır.'})
+        if self.name:
+            self.name = self.name.strip()
+        if self.email:
+            self.email = self.email.strip().lower()
+        if self.message:
+            self.message = self.message.strip()
 
     def __str__(self):
         return self.name

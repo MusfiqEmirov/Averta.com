@@ -1,0 +1,16 @@
+<div class="testimonial-item bg-white rounded-4 shadow-sm text-center p-4 h-100">
+    <div class="mx-auto mb-3 d-flex align-items-end justify-content-center overflow-hidden rounded-circle"
+         style="width:80px; height:80px; background:#aebac1; flex-shrink:0;">
+        <i class="fa fa-user" style="font-size:2.9rem; color:#fff;"></i>
+    </div>
+    <h6 class="fw-semibold mb-2">{{ review.name }}</h6>
+    <div class="d-flex justify-content-center gap-1 mb-3">
+        {% for i in review.rating_range %}
+        <i class="fa fa-star text-warning" style="font-size:.95rem;"></i>
+        {% endfor %}
+        {% for i in review.empty_stars %}
+        <i class="fa fa-star" style="font-size:.95rem; color:#ddd;"></i>
+        {% endfor %}
+    </div>
+    <p class="text-muted small mb-0">{{ review.message }}</p>
+</div>

@@ -18,14 +18,33 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    h.strip()
+    for h in os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,0.0.0.0').split(',')
+    if h.strip()
+]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://averta.az",
     'https://averta.az',
+    'https://www.averta.az',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
+    'http://localhost',
+    'http://127.0.0.1',
 ]
+_extra_csrf = os.getenv('CSRF_TRUSTED_ORIGINS', '')
+if _extra_csrf:
+    CSRF_TRUSTED_ORIGINS.extend(
+        o.strip() for o in _extra_csrf.split(',') if o.strip()
+    )
+for _port in ('8000', '8080', '8888'):
+    for _host in ('localhost', '127.0.0.1'):
+        _origin = f'http://{_host}:{_port}'
+        if _origin not in CSRF_TRUSTED_ORIGINS:
+            CSRF_TRUSTED_ORIGINS.append(_origin)
+
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
 
 
 # Admin URL - secret path (required)
@@ -60,6 +79,7 @@ MIDDLEWARE = [
     'django.middleware.locale.LocaleMiddleware', 
     'averta.middleware.CustomLocaleMiddleware',     
     'django.middleware.common.CommonMiddleware',
+    'averta.middleware.CsrfNullOriginFixMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
