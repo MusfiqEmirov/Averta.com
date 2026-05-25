@@ -21,7 +21,7 @@ services:
       context: ..
       dockerfile: docker/Dockerfile-local
     container_name: averta_web_local
-    command: gunicorn --bind 0.0.0.0:8000 --workers 1 --timeout 5 --chdir averta averta.wsgi_local:application
+    command: gunicorn --bind 0.0.0.0:8000 --workers 2 --timeout 120 --graceful-timeout 30 --keep-alive 5 --chdir averta averta.wsgi_local:application
     volumes:
       - ..:/app                                  # entire project mount
       - ../averta/staticfiles:/app/averta/staticfiles  # collectstatic mount
