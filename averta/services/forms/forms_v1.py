@@ -103,7 +103,6 @@ class ReviewForm(forms.ModelForm):
         required=True,
         label=_('E-poçt'),
         max_length=254,
-        strip=True,
     )
     message = forms.CharField(
         widget=forms.Textarea(attrs={
@@ -132,6 +131,10 @@ class ReviewForm(forms.ModelForm):
         if value:
             raise ValidationError(_('Something went wrong. Please try again.'))
         return value
+
+    def clean_email(self):
+        email = (self.cleaned_data.get('email') or '').strip().lower()
+        return email
 
     def clean_rating(self):
         rating = self.cleaned_data.get('rating')
