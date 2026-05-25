@@ -40,5 +40,5 @@ RUN chmod +x /entrypoint-local.sh
 EXPOSE 8000
 
 ENTRYPOINT ["/entrypoint-local.sh"]
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "1", "--timeout", "120", "--chdir", "averta", "averta.wsgi_local:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "--timeout", "120", "--graceful-timeout", "30", "--keep-alive", "5", "--chdir", "averta", "averta.wsgi_local:application"]
 
