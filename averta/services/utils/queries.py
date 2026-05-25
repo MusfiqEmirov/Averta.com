@@ -15,6 +15,7 @@ from services.models import (
     Contact, Media, Motto, Statistic, Blog, FAQ, Review,
 )
 from services.utils.cache_utils import cached_query, get_query_cache_key, cached_page_data
+from services.utils.package_icons import TYPE_HEADER_GRADIENTS
 from django.core.cache import cache
 
 
@@ -578,19 +579,33 @@ def serialize_partner(partner, lang='az'):
     }
 
 
-def _build_whatsapp_url(number):
+def _normalize_phone_digits(number):
     if not number:
         return None
     digits = re.sub(r'\D', '', str(number).strip())
     if not digits:
         return None
     if digits.startswith('994'):
-        pass
-    elif digits.startswith('0'):
-        digits = '994' + digits[1:]
-    elif len(digits) == 9:
-        digits = '994' + digits
+        return digits
+    if digits.startswith('0'):
+        return '994' + digits[1:]
+    if len(digits) == 9:
+        return '994' + digits
+    return digits
+
+
+def _build_whatsapp_url(number):
+    digits = _normalize_phone_digits(number)
+    if not digits:
+        return None
     return f'https://wa.me/{digits}'
+
+
+def _build_tel_url(number):
+    digits = _normalize_phone_digits(number)
+    if not digits:
+        return None
+    return f'tel:+{digits}'
 
 
 def serialize_contact(contact, lang='az'):
@@ -604,6 +619,7 @@ def serialize_contact(contact, lang='az'):
         'id': contact.id,
         'address': getattr(contact, address_field, contact.address_az),
         'phone': contact.phone,
+        'phone_tel': _build_tel_url(contact.phone),
         'whatsapp_number': whatsapp_raw,
         'whatsapp_url': _build_whatsapp_url(whatsapp_raw),
         'email': contact.email,
@@ -645,15 +661,64 @@ def serialize_blog(blog, lang='az'):
 # Reviews
 # ---------------------------------------------------------------------------
 
+_REVIEW_CARD_BACKGROUNDS = (
+    '#eef4ff', '#fff0f3', '#ecfdf5', '#fef9ee', '#f5f3ff', '#e0f7fa',
+    '#fdf4ff', '#fff7ed', '#f0fdf4', '#fef2f2',
+)
+_REVIEW_STAR_COLORS = (
+    '#f59e0b', '#ef4444', '#8b5cf6', '#059669', '#2563eb', '#db2777',
+    '#d97706', '#0d9488', '#7c3aed', '#ea580c',
+)
+
+
+def _review_card_theme(review_id):
+    """Stable per-review visuals: card bg and star tint."""
+    seed = (review_id or 0) * 7919 + 104729
+    card_bg = _REVIEW_CARD_BACKGROUNDS[seed % len(_REVIEW_CARD_BACKGROUNDS)]
+    star_color = _REVIEW_STAR_COLORS[(seed // 7) % len(_REVIEW_STAR_COLORS)]
+    return card_bg, star_color
+
+
 def get_active_reviews(limit=20):
-    return list(Review.objects.filter(is_active=True).order_by('-created_at')[:limit])
+    return list(
+        Review.objects.filter(is_active=True)
+        .select_related('service', 'package')
+        .order_by('-created_at')[:limit]
+    )
 
 
-def serialize_review(review):
+def _serialize_review_target(review, lang='az'):
+    if review.service_id and review.service:
+        name_field = get_localized_field_name('name', lang)
+        return {
+            'type': 'service',
+            'id': review.service.id,
+            'name': getattr(review.service, name_field, review.service.name_az),
+            'slug': review.service.slug,
+        }
+    if review.package_id and review.package:
+        name_field = get_localized_field_name('name', lang)
+        icon_type = review.package.icon_type or 'plane'
+        return {
+            'type': 'package',
+            'id': review.package.id,
+            'name': getattr(review.package, name_field, review.package.name_az),
+            'icon_type': icon_type,
+            'icon_variant': review.package.icon_variant,
+            'icon_gradient': TYPE_HEADER_GRADIENTS.get(
+                icon_type,
+                TYPE_HEADER_GRADIENTS['plane'],
+            ),
+        }
+    return None
+
+
+def serialize_review(review, lang='az'):
     """Public testimonial data — email intentionally omitted."""
     if review is None:
         return None
     rating = max(1, min(5, review.rating))
+    card_bg, star_color = _review_card_theme(review.id)
     return {
         'id': review.id,
         'name': review.name,
@@ -661,6 +726,9 @@ def serialize_review(review):
         'rating': rating,
         'rating_range': range(rating),
         'empty_stars': range(5 - rating),
+        'card_bg': card_bg,
+        'star_color': star_color,
+        'target': _serialize_review_target(review, lang),
         'created_at': review.created_at,
     }
 
@@ -723,7 +791,7 @@ def get_home_page_data(request, lang):
     faq_list = list(get_faqs(lang, on_main_page=True)[:6])
     home_faqs = [serialize_faq(f, lang) for f in faq_list]
 
-    reviews = [serialize_review(r) for r in get_active_reviews(limit=20)]
+    reviews = [serialize_review(r, lang) for r in get_active_reviews(limit=20)]
 
     return {
         'services': serialized_services,

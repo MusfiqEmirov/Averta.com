@@ -150,9 +150,11 @@ MEDIA_HELP = (
 )
 
 REVIEW_HELP = (
-    '<strong>Bu nədir?</strong> Ziyarətçilərin ana səhifədəki formdan göndərdiyi müştəri rəyləri.<br>'
+    '<strong>Bu nədir?</strong> Ziyarətçilərin ana səhifədəki formdan göndərdiyi və ya '
+    'admin paneldən əlavə etdiyiniz müştəri rəyləri.<br>'
     '<strong>Harada görünür?</strong> Ana səhifə → «Rəylər» bölməsi (yalnız aktiv olanlar).<br>'
-    '<strong>Nə etməli?</strong> Yeni gələn rəylər <em>deaktiv</em> olaraq gəlir — '
-    'oxuyun, uyğun olanı «Aktiv» işarələyin ki saytda göstərilsin. '
+    '<strong>Nə etməli?</strong> Formdan gələn yeni rəylər <em>deaktiv</em> olaraq gəlir — '
+    'siyahıda «Oxunub» və «Aktiv» sütunlarını birbaşa işarələyib saxlayın (detala girmədən). '
+    '«Rəy əlavə et» ilə özünüz də rəy yarada bilərsiniz. '
     'Spam və ya uyğunsuz rəyi silə bilərsiniz.'
 )

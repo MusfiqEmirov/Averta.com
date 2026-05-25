@@ -751,38 +751,151 @@ def mark_review_inactive(modeladmin, request, queryset):
 mark_review_inactive.short_description = _('Seçilmişləri deaktiv et (saytdan gizlət)')
 
 
+def mark_review_read(modeladmin, request, queryset):
+    queryset.update(is_read=True)
+
+
+mark_review_read.short_description = _('Seçilmişləri oxunmuş kimi işarələ')
+
+
+def mark_review_unread(modeladmin, request, queryset):
+    queryset.update(is_read=False)
+
+
+mark_review_unread.short_description = _('Seçilmişləri oxunmamış kimi işarələ')
+
+
 @admin.register(Review)
 class ReviewAdmin(AdminPageHelpMixin, admin.ModelAdmin):
     admin_page_help = REVIEW_HELP
-    list_display = ('name', 'email', 'rating', 'short_message', 'is_active', 'created_at')
-    list_filter = ('is_active', 'rating')
-    search_fields = ('name', 'email', 'message')
-    list_editable = ('is_active',)
+    change_list_template = 'admin/averta/review_change_list.html'
+    change_form_template = 'admin/averta/review_change_form.html'
+    list_display = (
+        'name',
+        'contact_display',
+        'rating_stars',
+        'review_target_display',
+        'short_message_display',
+        'created_at_display',
+        'status_badges',
+        'is_read',
+        'is_active',
+    )
+    list_display_links = ('name',)
+    list_filter = ('is_read', 'is_active', 'rating', 'service', 'package')
+    search_fields = (
+        'name', 'email', 'phone', 'message',
+        'service__name_az', 'package__name_az',
+    )
+    list_editable = ('is_read', 'is_active')
     ordering = ('-created_at',)
     readonly_fields = ('created_at',)
-    actions = [mark_review_active, mark_review_inactive]
+    actions = [mark_review_active, mark_review_inactive, mark_review_read, mark_review_unread]
+
+    class Media(AdminPageHelpMixin.Media):
+        css = {
+            'all': (
+                'assets/css/admin_help.css',
+                'assets/css/admin_review.css',
+            ),
+        }
 
     fieldsets = (
-        (_('Məzmun'), {
-            'fields': ('name', 'email', 'message', 'rating'),
-            'description': _('E-poçt yalnız admin paneldə görünür — saytda göstərilmir.'),
-        }),
-        (_('Parametrlər'), {
-            'fields': ('is_active', 'created_at'),
+        (_('Müştəri və əlaqə'), {
+            'fields': ('name', 'email', 'phone'),
             'description': _(
-                '«Aktiv» işarələnmiş rəylər saytda görünür. '
-                'Yeni rəylər avtomatik deaktiv gəlir — yoxladıqdan sonra aktivləşdirin.'
+                'E-poçt və mobil nömrə yalnız admin paneldə görünür — saytda göstərilmir. '
+                'Ən azı biri olmalıdır.'
+            ),
+        }),
+        (_('Rəy məzmunu'), {
+            'fields': ('message', 'rating', 'service', 'package'),
+            'classes': ('wide',),
+            'description': _('Yalnız xidmət və ya paket seçin, hər ikisi yox.'),
+        }),
+        (_('Moderasiya'), {
+            'fields': ('is_read', 'is_active', 'created_at'),
+            'description': _(
+                '«Oxunub» — rəyi nəzərdən keçirdiyinizi qeyd edin. '
+                '«Aktiv» — saytda göstərilir. Yeni rəylər deaktiv gəlir.'
             ),
         }),
     )
 
-    def short_message(self, obj):
-        return obj.message[:80] + '…' if len(obj.message) > 80 else obj.message
+    @admin.display(description=_('Əlaqə'))
+    def contact_display(self, obj):
+        parts = []
+        if obj.email:
+            parts.append(format_html(
+                '<a href="mailto:{}">{}</a>',
+                obj.email, obj.email,
+            ))
+        if obj.phone:
+            parts.append(format_html(
+                '<span class="review-admin-phone">{}</span>',
+                obj.phone,
+            ))
+        if not parts:
+            return '—'
+        return format_html(
+            '<div class="review-admin-contact">{}</div>',
+            mark_safe('<br>'.join(str(p) for p in parts)),
+        )
 
-    short_message.short_description = _('Rəy (qısa)')
+    @admin.display(description=_('Reytinq'))
+    def rating_stars(self, obj):
+        filled = '★' * obj.rating
+        empty = '☆' * (5 - obj.rating)
+        return format_html(
+            '<span class="review-admin-stars" title="{} / 5">'
+            '{}<span class="review-admin-stars-empty">{}</span></span>',
+            obj.rating, filled, empty,
+        )
 
-    def has_add_permission(self, request):
-        return False
+    @admin.display(description=_('Xidmət / Paket'))
+    def review_target_display(self, obj):
+        label = '—'
+        if obj.service_id:
+            label = obj.service.name_az
+        elif obj.package_id:
+            label = obj.package.name_az
+        if label == '—':
+            return label
+        return format_html(
+            '<span class="review-admin-target" title="{}">{}</span>',
+            label, label,
+        )
+
+    @admin.display(description=_('Rəy'))
+    def short_message_display(self, obj):
+        text = obj.message[:100] + '…' if len(obj.message) > 100 else obj.message
+        return format_html(
+            '<span class="review-admin-message" title="{}">{}</span>',
+            obj.message, text,
+        )
+
+    @admin.display(description=_('Tarix'), ordering='created_at')
+    def created_at_display(self, obj):
+        return format_html(
+            '<span class="review-admin-date">{}</span>',
+            obj.created_at.strftime('%d.%m.%Y %H:%M'),
+        )
+
+    @admin.display(description=_('Status'))
+    def status_badges(self, obj):
+        badges = []
+        if not obj.is_read:
+            badges.append('<span class="review-badge review-badge--unread">Yeni</span>')
+        else:
+            badges.append('<span class="review-badge review-badge--read">Oxunub</span>')
+        if obj.is_active:
+            badges.append('<span class="review-badge review-badge--active">Saytda</span>')
+        else:
+            badges.append('<span class="review-badge review-badge--hidden">Gizli</span>')
+        return format_html(
+            '<div class="review-admin-badges">{}</div>',
+            mark_safe(''.join(badges)),
+        )
 
 
 patch_admin_site_order()

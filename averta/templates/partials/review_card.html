@@ -1,16 +1,36 @@
-<div class="testimonial-item bg-white rounded-4 shadow-sm text-center p-4 h-100">
-    <div class="mx-auto mb-3 d-flex align-items-end justify-content-center overflow-hidden rounded-circle"
-         style="width:80px; height:80px; background:#aebac1; flex-shrink:0;">
-        <i class="fa fa-user" style="font-size:2.9rem; color:#fff;"></i>
-    </div>
-    <h6 class="fw-semibold mb-2">{{ review.name }}</h6>
-    <div class="d-flex justify-content-center gap-1 mb-3">
+{% load package_icon_tags %}
+<div class="review-card testimonial-item h-100"
+     style="--review-card-bg: {{ review.card_bg }}; --review-star-color: {{ review.star_color }};">
+    <span class="review-card__avatar-icon" role="img" aria-label="{{ review.name }}">
+        <i class="bi bi-person-fill" aria-hidden="true"></i>
+    </span>
+    <h6 class="review-card__name" title="{{ review.name }}">{{ review.name }}</h6>
+    <div class="review-card__stars" aria-label="{{ review.rating }} ulduz">
         {% for i in review.rating_range %}
-        <i class="fa fa-star text-warning" style="font-size:.95rem;"></i>
+        <i class="fa fa-star review-card__star review-card__star--filled"></i>
         {% endfor %}
         {% for i in review.empty_stars %}
-        <i class="fa fa-star" style="font-size:.95rem; color:#ddd;"></i>
+        <i class="fa fa-star review-card__star review-card__star--empty"></i>
         {% endfor %}
     </div>
-    <p class="text-muted small mb-0">{{ review.message }}</p>
+    {% if review.target %}
+    <p class="review-card__target">
+        {% if review.target.type == 'service' %}
+        <a href="{% url 'services:service-detail' review.target.slug %}" class="review-card__target-link">
+            <i class="bi bi-briefcase-fill" aria-hidden="true"></i>
+            <span>{{ review.target.name }}</span>
+        </a>
+        {% else %}
+        <a href="{% url 'services:home-page' %}#packages" class="review-card__target-link">
+            <span class="review-card__target-pkg-badge"
+                  style="background: {{ review.target.icon_gradient }};"
+                  aria-hidden="true">
+                {% package_icon_svg review.target.icon_type review.target.icon_variant 'review-card__pkg-icon' %}
+            </span>
+            <span>{{ review.target.name }}</span>
+        </a>
+        {% endif %}
+    </p>
+    {% endif %}
+    <p class="review-card__message">{{ review.message }}</p>
 </div>

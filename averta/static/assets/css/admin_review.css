@@ -1,0 +1,185 @@
+/* Rəylər — admin siyahı və redaktə */
+.review-admin-page {
+    max-width: 100%;
+}
+
+.review-admin-alert {
+    margin: 0 0 1rem;
+    padding: 0.85rem 1.1rem;
+    border-radius: 8px;
+    border-left: 4px solid #f0ad4e;
+    background: #fff8e6;
+    color: #6b4e00;
+    font-weight: 600;
+}
+
+.review-admin-alert--active {
+    border-left-color: #25d366;
+    background: #e8faf0;
+    color: #1a5c32;
+}
+
+#changelist.model-review #result_list thead th {
+    background: #13357b;
+    color: #fff;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+#changelist.model-review #result_list tbody tr.review-row--unread {
+    background: #fffbf0 !important;
+}
+
+#changelist.model-review #result_list tbody tr.review-row--unread:hover {
+    background: #fff3d6 !important;
+}
+
+#changelist.model-review #result_list tbody tr.review-row--inactive {
+    opacity: 0.72;
+}
+
+.review-admin-stars {
+    color: #f5a623;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+.review-admin-stars-empty {
+    color: #ccc;
+}
+
+.review-admin-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.review-badge {
+    display: inline-block;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1.3;
+}
+
+.review-badge--unread {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffc107;
+}
+
+.review-badge--read {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.review-badge--active {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #28a745;
+}
+
+.review-badge--hidden {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.review-admin-contact {
+    font-size: 0.85rem;
+    line-height: 1.45;
+}
+
+.review-admin-contact a {
+    color: #417690;
+    text-decoration: none;
+}
+
+.review-admin-contact a:hover {
+    text-decoration: underline;
+}
+
+.review-admin-phone {
+    color: #333;
+}
+
+.review-admin-target {
+    display: inline-block;
+    max-width: 10rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 6px;
+    background: #e8f2fa;
+    color: #13357b;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+}
+
+.review-admin-message {
+    display: block;
+    max-width: 16rem;
+    color: #444;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.review-admin-date {
+    font-size: 0.8rem;
+    color: #666;
+    white-space: nowrap;
+}
+
+.review-admin-form-wrap .form-row.field-message textarea {
+    min-height: 140px;
+    border-radius: 8px;
+    border-color: #c5d9e8;
+}
+
+.review-admin-form-wrap .form-row.field-rating select {
+    min-width: 5rem;
+    font-weight: 600;
+}
+
+.review-admin-form-wrap fieldset.module h2 {
+    background: #13357b;
+    color: #fff;
+    border-radius: 6px 6px 0 0;
+}
+
+.review-admin-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 10px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+.review-admin-meta__item label {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #64748b;
+    margin-bottom: 0.25rem;
+}
+
+.review-admin-meta__item span {
+    font-weight: 600;
+    color: #13357b;
+}
+
+@media (max-width: 767px) {
+    .review-admin-message {
+        max-width: 10rem;
+    }
+}

@@ -1,22 +1,20 @@
 {% load static %}
 {# Haqqımızda intro — admin paneldəki About məzmunu (ana səhifə + haqqımızda səhifəsi) #}
-<div class="container-fluid about py-5{% if about_page_layout %} about-intro-page{% endif %}">
+<div class="container-fluid about py-5{% if about_page_layout %} about-intro-page{% else %} about-intro-home{% endif %}">
     <div class="container py-5">
-        <div class="row g-4 g-lg-5 {% if about_page_layout %}align-items-start about-intro-row{% else %}align-items-center{% endif %}">
-            <div class="{% if about_page_layout %}col-md-6 col-lg-6{% else %}col-lg-5{% endif %} about-intro-media-col">
-                <div class="about-intro-image-frame{% if about_page_layout %} about-intro-image-frame--page{% endif %}">
-                    {% if about.first_image %}
-                    <img src="{{ about.first_image }}" class="img-fluid w-100 about-intro-image" alt="{{ about.main_title }}">
-                    {% else %}
-                    <img src="{% static 'assets/img/about-img.jpg' %}" class="img-fluid w-100 about-intro-image" alt="">
-                    {% endif %}
-                </div>
+        <div class="row g-4 g-lg-5 align-items-start{% if about_page_layout %} about-intro-row{% endif %}">
+            <div class="{% if about_page_layout %}col-md-6 col-lg-6{% else %}col-lg-6{% endif %} about-intro-media-col">
+                {% if about.first_image %}
+                <img src="{{ about.first_image }}" class="about-intro-image img-fluid w-100" alt="{{ about.main_title }}">
+                {% else %}
+                <img src="{% static 'assets/img/about-img.jpg' %}" class="about-intro-image img-fluid w-100" alt="">
+                {% endif %}
             </div>
-            <div class="{% if about_page_layout %}col-md-6 col-lg-6{% else %}col-lg-7{% endif %} about-intro-content-col">
+            <div class="{% if about_page_layout %}col-md-6 col-lg-6{% else %}col-lg-6{% endif %} about-intro-content-col">
                 <h5 class="section-about-title pe-3">Haqqımızda</h5>
                 <h1 class="mb-4">{{ about.main_title }}</h1>
                 {% if about.second_title %}<h4 class="text-primary mb-3">{{ about.second_title }}</h4>{% endif %}
-                <div class="mb-4 about-intro-text{% if show_read_more %} about-intro-text--preview{% endif %}">
+                <div class="mb-4 about-intro-text{% if about_page_layout and not show_read_more %} about-intro-text--scrollable{% endif %}{% if show_read_more %} about-intro-text--preview{% endif %}">
                 {% if show_read_more %}
                 {{ about.description_preview }}
                 {% else %}
