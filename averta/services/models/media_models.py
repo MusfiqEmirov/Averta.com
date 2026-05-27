@@ -19,6 +19,8 @@ def media_not_marked_as_background_q():
         & Q(is_contact_page_background_image=False)
         & Q(is_service_page_background_image=False)
         & Q(is_blog_page_background_image=False)
+        & Q(is_home_contact_background_image=False)
+        & Q(is_contact_booking_background_image=False)
     )
 
 
@@ -29,7 +31,7 @@ class Media(models.Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
-        verbose_name='Haqqımızda'
+        verbose_name='Haqqimizda'
     )
     service = models.ForeignKey(
         Service,
@@ -37,7 +39,7 @@ class Media(models.Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
-        verbose_name='Xidmət'
+        verbose_name='Xidmet'
     )
     package = models.ForeignKey(
         Package,
@@ -53,11 +55,11 @@ class Media(models.Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
-        verbose_name='Tərəfdaş'
+        verbose_name='Terefdasl'
     )
     image = models.ImageField(
         upload_to='images/',
-        verbose_name='Şəkil'
+        verbose_name='Sekil'
     )
     video = models.FileField(
         upload_to='videos/',
@@ -67,32 +69,40 @@ class Media(models.Model):
     )
     is_home_page_background_image = models.BooleanField(
         default=False,
-        verbose_name='Ana səhifə fon şəkli'
+        verbose_name='Ana sehife fon sekli'
     )
     is_about_page_background_image = models.BooleanField(
         default=False,
-        verbose_name='Haqqımızda səhifəsi fon şəkli'
+        verbose_name='Haqqimizda sehifesi fon sekli'
     )
     is_contact_page_background_image = models.BooleanField(
         default=False,
-        verbose_name='Əlaqə səhifəsi fon şəkli'
+        verbose_name='Elaqe sehifesi fon sekli'
     )
     is_service_page_background_image = models.BooleanField(
         default=False,
-        verbose_name='Xidmətlər səhifəsi fon şəkli'
+        verbose_name='Xidmetler sehifesi fon sekli'
     )
     is_blog_page_background_image = models.BooleanField(
         default=False,
-        verbose_name='Bloq səhifələri fon şəkli'
+        verbose_name='Bloq sehifeleri fon sekli'
+    )
+    is_home_contact_background_image = models.BooleanField(
+        default=False,
+        verbose_name='Ana sehife Elaqe bolmesi fon sekli'
+    )
+    is_contact_booking_background_image = models.BooleanField(
+        default=False,
+        verbose_name='Elaqe sehifesi Sifaris et bolmesi fonu'
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
-        verbose_name='Yaradılma tarixi'
+        verbose_name='Yaradilma tarixi'
     )
 
     class Meta:
-        verbose_name = 'Səhifə banner fon şəkli'
-        verbose_name_plural = 'Səhifə banner fon şəkilləri'
+        verbose_name = 'Sehife banner fon sekli'
+        verbose_name_plural = 'Sehife banner fon sekilleri'
 
     @property
     def webp_url(self):

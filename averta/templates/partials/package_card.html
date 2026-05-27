@@ -1,4 +1,4 @@
-{% load package_icon_tags %}
+{% load package_icon_tags i18n %}
 <article class="pkg-card pkg-card--{{ package.icon_type }}">
 
     <div class="pkg-card__header">
@@ -14,7 +14,7 @@
 
     <div class="pkg-card__scroll">
         {% if package.services %}
-        <p class="pkg-card__section-label">Daxil olan xidmətlər:</p>
+        <p class="pkg-card__section-label">{% trans "Daxil olan xidmətlər:" %}</p>
         <ul class="pkg-card__services list-unstyled mb-0">
             {% for s in package.services %}
             <li class="pkg-card__service-item">
@@ -36,14 +36,19 @@
         <div class="pkg-card__deadline">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="14" height="13" rx="2"/><line x1="3" y1="8" x2="17" y2="8"/><line x1="7" y1="2" x2="7" y2="6"/><line x1="13" y1="2" x2="13" y2="6"/></svg>
             <div class="pkg-card__deadline-text">
-                <span class="pkg-card__deadline-label">Bitmə tarixi</span>
+                <span class="pkg-card__deadline-label">{% trans "Bitmə tarixi" %}</span>
                 <span class="pkg-card__deadline-value">{{ package.end_date|date:"d.m.Y" }}</span>
             </div>
         </div>
         {% else %}
         <span></span>
         {% endif %}
-        <a href="{% url 'services:contact-page' %}" class="btn btn-primary rounded-pill pkg-card__cta">Sifariş et</a>
+        <a href="{% url 'services:contact-page' %}"
+           class="hb-submit pkg-card__cta"
+           role="button">
+            <i class="fas fa-paper-plane" aria-hidden="true"></i>
+            <span>{% trans "Sifariş et" %}</span>
+        </a>
     </div>
 
 </article>

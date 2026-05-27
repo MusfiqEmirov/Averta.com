@@ -1,0 +1,225 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Averta\n"
+"POT-Creation-Date: 2026-05-27 00:00+0000\n"
+"PO-Revision-Date: 2026-05-27 00:00+0000\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Yüklənir..."
+msgstr "Loading..."
+
+msgid "Bağla"
+msgstr "Close"
+
+msgid "Dil seçimi"
+msgstr "Language selection"
+
+msgid "Əlaqə"
+msgstr "Contact"
+
+msgid "Sifariş et"
+msgstr "Book now"
+
+msgid "Səyahət planlamaq çətin olmamalıdır.<br>Doğru komanda ilə bu proses rahat, sürətli və güvənli olur."
+msgstr "Planning a trip shouldn't be hard.<br>With the right team, the process is easy, fast, and reliable."
+
+msgid "Averta Travel olaraq bütün xidmətləri bir məkanda təqdim edirik: viza, aviabilet, transfer, otel — hamısı bir paketdə."
+msgstr "At Averta Travel, we provide everything in one place: visa, flights, transfer, hotel — all in one package."
+
+msgid "Planlama və sənədləşmə işlərini biz görürük, sən isə sadəcə səyahətin dadını çıxarırsan."
+msgstr "We handle planning and paperwork, and you simply enjoy your trip."
+
+msgid "2013-cü ildən qazandığımız təcrübə, minlərlə məmnun müştəri və daimi dəstək komandamızla hər addımda yanındayıq."
+msgstr "With experience since 2013, thousands of happy customers, and continuous support, we're with you every step of the way."
+
+msgid "Rahatlıq, komfort və etibar axtarırsansa, doğru seçim bəllidir."
+msgstr "If you're looking for convenience, comfort, and trust, the right choice is clear."
+
+msgid "Bizə yaz və növbəti səyahətini Averta Travel ilə planla!"
+msgstr "Message us and plan your next trip with Averta Travel!"
+
+msgid "Ünvan"
+msgstr "Address"
+
+msgid "Telefon"
+msgstr "Phone"
+
+msgid "Yazın"
+msgstr "Write to us"
+
+msgid "E-poçt"
+msgstr "Email"
+
+msgid "Əlaqə məlumatı admin paneldən əlavə edilir."
+msgstr "Contact info is added from the admin panel."
+
+msgid "Mesaj göndərin"
+msgstr "Send a message"
+
+msgid "Göndər"
+msgstr "Send"
+
+msgid "Xəritədə biz"
+msgstr "Find us on the map"
+
+msgid "Xəritə"
+msgstr "Map"
+
+msgid "Paket"
+msgstr "Package"
+
+msgid "Xidmət"
+msgstr "Service"
+
+msgid "Sifarişiniz qəbul olundu. Tezliklə sizinlə əlaqə saxlayacağıq."
+msgstr "Your booking has been received. We'll contact you soon."
+
+msgid "Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin."
+msgstr "Something went wrong. Please try again."
+
+msgid "Aktiv paket yoxdur."
+msgstr "No active packages."
+
+msgid "Aktiv xidmət yoxdur."
+msgstr "No active services."
+
+msgid "Qonaqlar"
+msgstr "Guests"
+
+msgid "Böyük"
+msgstr "Adults"
+
+msgid "Uşaq"
+msgstr "Children"
+
+msgid "Böyük: %(a)s • Uşaq: %(c)s"
+msgstr "Adults: %(a)s • Children: %(c)s"
+
+msgid "Qonaq sayı"
+msgstr "Guest count"
+
+msgid "18+ yaş"
+msgstr "18+ years"
+
+msgid "0–17 yaş"
+msgstr "0–17 years"
+
+msgid "Azalt"
+msgstr "Decrease"
+
+msgid "Artır"
+msgstr "Increase"
+
+msgid "Hazır"
+msgstr "Done"
+
+msgid "Qeyd"
+msgstr "Note"
+
+msgid "Haqqımızda"
+msgstr "About us"
+
+msgid "Ətraflı"
+msgstr "Read more"
+
+msgid "Paketlər"
+msgstr "Packages"
+
+msgid "Əvvəlki"
+msgstr "Previous"
+
+msgid "Növbəti"
+msgstr "Next"
+
+msgid "Xidmətlər"
+msgstr "Services"
+
+msgid "Xidmətlərimiz"
+msgstr "Our services"
+
+msgid "Bütün xidmətlər"
+msgstr "All services"
+
+msgid "Bloq"
+msgstr "Blog"
+
+msgid "Bütün yazılar"
+msgstr "All posts"
+
+msgid "Tərəfdaşlar"
+msgstr "Partners"
+
+msgid "Bizə yazın"
+msgstr "Write to us"
+
+msgid "Mesajınızı göndərin, tezliklə sizinlə əlaqə saxlayacağıq."
+msgstr "Send your message and we will contact you soon."
+
+msgid "Mesajınız qəbul olundu."
+msgstr "Your message has been received."
+
+msgid "Müştərilərimiz nə deyir!"
+msgstr "What our clients say!"
+
+msgid "Əvvəlki rəylər"
+msgstr "Previous reviews"
+
+msgid "Növbəti rəylər"
+msgstr "Next reviews"
+
+msgid "Rəyiniz uğurla göndərildi."
+msgstr "Your review has been sent successfully."
+
+msgid "Rəyiniz göndərilmədi. Zəhmət olmasa yenidən cəhd edin."
+msgstr "Your review could not be sent. Please try again."
+
+msgid "Rəy yaz"
+msgstr "Write a review"
+
+msgid "Rəyinizi yazın"
+msgstr "Write your review"
+
+msgid "Ad"
+msgstr "Name"
+
+msgid "(ən çoxu 50 simvol)"
+msgstr "(max 50 characters)"
+
+msgid "(saytda göstərilmir)"
+msgstr "(not shown on the site)"
+
+msgid "Xidmət və ya paket"
+msgstr "Service or package"
+
+msgid "Yalnız birini seçin."
+msgstr "Select only one."
+
+msgid "Reytinq"
+msgstr "Rating"
+
+msgid "Rəy"
+msgstr "Review"
+
+msgid "(ən çoxu 190 simvol)"
+msgstr "(max 190 characters)"
+
+msgid "Tez-tez verilən suallar"
+msgstr "Frequently asked questions"
+
+msgid "Bütün suallar"
+msgstr "All questions"
+
+msgid "Daxil olan xidmətlər:"
+msgstr "Included services:"
+
+msgid "Bitmə tarixi"
+msgstr "End date"
+
+msgid "ətraflı"
+msgstr "details"
+
+msgid "Sürətli keçidlər"
+msgstr "Quick links"

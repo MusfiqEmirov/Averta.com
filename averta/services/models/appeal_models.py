@@ -8,6 +8,8 @@ class AppealContact(models.Model):
         verbose_name='Ad soyad'
     )
     email = models.EmailField(
+        blank=True,
+        default='',
         verbose_name='Email'
     )
     phone = models.CharField(

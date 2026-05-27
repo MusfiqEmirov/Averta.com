@@ -1,4 +1,4 @@
-{% load static %}
+{% load static i18n %}
 {# Haqqımızda intro — admin paneldəki About məzmunu (ana səhifə + haqqımızda səhifəsi) #}
 <div class="container-fluid about py-5{% if about_page_layout %} about-intro-page{% else %} about-intro-home{% endif %}">
     <div class="container py-5">
@@ -11,7 +11,10 @@
                 {% endif %}
             </div>
             <div class="{% if about_page_layout %}col-md-6 col-lg-6{% else %}col-lg-6{% endif %} about-intro-content-col">
-                <h5 class="section-about-title pe-3">Haqqımızda</h5>
+                {% if not about_page_layout %}
+                <div class="about-intro-text-deco" aria-hidden="true"></div>
+                {% endif %}
+                <h5 class="section-about-title pe-3">{% trans "Haqqımızda" %}</h5>
                 <h1 class="mb-4">{{ about.main_title }}</h1>
                 {% if about.second_title %}<h4 class="text-primary mb-3">{{ about.second_title }}</h4>{% endif %}
                 <div class="mb-4 about-intro-text{% if about_page_layout and not show_read_more %} about-intro-text--scrollable{% endif %}{% if show_read_more %} about-intro-text--preview{% endif %}">
@@ -22,7 +25,7 @@
                 {% endif %}
                 </div>
                 {% if show_read_more %}
-                <a class="btn btn-primary rounded-pill py-3 px-5 mt-2" href="{% url 'services:about-page' %}">Ətraflı</a>
+                <a class="btn btn-primary rounded-pill py-3 px-5 mt-2" href="{% url 'services:about-page' %}">{% trans "Ətraflı" %}</a>
                 {% endif %}
                 {% if show_video %}
                 {% include 'partials/about_video.html' %}

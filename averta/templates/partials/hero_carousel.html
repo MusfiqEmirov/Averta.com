@@ -1,4 +1,4 @@
-{% load static %}
+{% load static i18n %}
 <div class="carousel-header">
     <div id="carouselId" class="carousel slide" data-bs-ride="carousel">
         {% if hero_carousel|length > 1 %}
@@ -17,9 +17,7 @@
                         {% if slide.motto %}
                         <p class="hero-motto text-white mb-4">{{ slide.motto }}</p>
                         {% endif %}
-                        <div class="d-flex align-items-center justify-content-center">
-                            <a class="btn-hover-bg btn btn-primary rounded-pill text-white py-3 px-5" href="{% url 'services:home-page' %}#packages">Paketlər</a>
-                        </div>
+                        {# CTA removed per request (Paketlər button) #}
                     </div>
                 </div>
             </div>
@@ -34,12 +32,12 @@
         </div>
         {% if hero_carousel|length > 1 %}
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselId" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon btn bg-primary" aria-hidden="false"></span>
-            <span class="visually-hidden">Previous</span>
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">{% trans "Əvvəlki" %}</span>
         </button>
         <button class="carousel-control-next" type="button" data-bs-target="#carouselId" data-bs-slide="next">
-            <span class="carousel-control-next-icon btn bg-primary" aria-hidden="false"></span>
-            <span class="visually-hidden">Next</span>
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">{% trans "Növbəti" %}</span>
         </button>
         {% endif %}
     </div>

@@ -1,19 +1,46 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}Əlaqə — Averta{% endblock %}
+{% block title %}{% trans "Əlaqə" %} — Averta{% endblock %}
 
 {% block content %}
 {% include 'partials/page_header.html' %}
 
 <section class="contact-page">
-    <div class="container py-5">
+    {# Booking section first #}
+    <div class="container-fluid booking py-5" id="contact-booking"{% if contact_booking_bg %} style="background-image:linear-gradient(rgba(19,53,123,.8),rgba(19,53,123,.8)),url('{{ contact_booking_bg }}');background-size:cover;background-position:center;background-repeat:no-repeat;background-attachment:scroll;"{% endif %}>
+        <div class="container py-5">
+            <div class="mx-auto text-center mb-5" style="max-width: 720px;">
+                <h5 class="section-title px-3 text-white">{% trans "Sifariş et" %}</h5>
+            </div>
+            <div class="row g-5 align-items-center">
+                <div class="col-lg-6">
+                    <h5 class="section-booking-title pe-3">Booking</h5>
+                    <div class="text-white contact-booking-copy">
+                        <p class="mb-3">{% blocktrans %}Səyahət planlamaq çətin olmamalıdır.<br>Doğru komanda ilə bu proses rahat, sürətli və güvənli olur.{% endblocktrans %}</p>
+                        <p class="mb-3">{% blocktrans %}Averta Travel olaraq bütün xidmətləri bir məkanda təqdim edirik: viza, aviabilet, transfer, otel — hamısı bir paketdə.{% endblocktrans %}</p>
+                        <p class="mb-3">{% blocktrans %}Planlama və sənədləşmə işlərini biz görürük, sən isə sadəcə səyahətin dadını çıxarırsan.{% endblocktrans %}</p>
+                        <p class="mb-3">{% blocktrans %}2013-cü ildən qazandığımız təcrübə, minlərlə məmnun müştəri və daimi dəstək komandamızla hər addımda yanındayıq.{% endblocktrans %}</p>
+                        <p class="mb-3">{% blocktrans %}Rahatlıq, komfort və etibar axtarırsansa, doğru seçim bəllidir.{% endblocktrans %}</p>
+                        <p class="mb-0 fw-semibold">{% blocktrans %}Bizə yaz və növbəti səyahətini Averta Travel ilə planla!{% endblocktrans %}</p>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    {% include 'partials/home_booking_embed.html' %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Contact section second #}
+    <div class="container py-5" id="contact-section">
         <div class="mx-auto text-center mb-5" style="max-width: 720px;">
-            <h5 class="section-title px-3">Əlaqə</h5>
+            <h5 class="section-title px-3">{% trans "Əlaqə" %}</h5>
         </div>
 
         <div class="row g-4 g-xl-5 align-items-stretch">
-            <div class="col-lg-4">
-                <div class="contact-info-panel h-100">
+            <div class="col-lg-6">
+                <div class="contact-info-panel contact-info-panel--card h-100">
                     {% if contact %}
                     {% if contact.address %}
                     <div class="contact-info-card">
@@ -38,7 +65,7 @@
                         <span class="contact-info-card__icon" aria-hidden="true"><i class="fab fa-whatsapp"></i></span>
                         <div>
                             <h3 class="contact-info-card__title">WhatsApp</h3>
-                            <p class="mb-0">{% if contact.whatsapp_number %}{{ contact.whatsapp_number }}{% else %}Yazın{% endif %}</p>
+                            <p class="mb-0">{% if contact.whatsapp_number %}{{ contact.whatsapp_number }}{% else %}{% trans "Yazın" %}{% endif %}</p>
                         </div>
                     </a>
                     {% endif %}
@@ -75,18 +102,32 @@
                         </div>
                     </div>
                     {% endif %}
+
+                    {% if contact.map_embed_url %}
+                    <div class="contact-info-card contact-info-card--map">
+                        <div class="contact-map-wrap">
+                            <iframe
+                                class="contact-map-iframe"
+                                src="{{ contact.map_embed_url }}"
+                                loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade"
+                                title="{% trans 'Xəritə' %}"></iframe>
+                        </div>
+                    </div>
+                    {% endif %}
                     {% else %}
-                    <p class="text-muted mb-0">Əlaqə məlumatı admin paneldən əlavə edilir.</p>
+                    <p class="text-muted mb-0">{% trans "Əlaqə məlumatı admin paneldən əlavə edilir." %}</p>
                     {% endif %}
                 </div>
             </div>
 
-            <div class="col-lg-8">
+            <div class="col-lg-6">
                 <div class="contact-form-panel h-100">
-                    <h2 class="contact-form-panel__title">Mesaj göndərin</h2>
-                    <form method="post" action="{% url 'services:contact-page' %}" class="contact-form">
+                    <h2 class="contact-form-panel__title">{% trans "Mesaj göndərin" %}</h2>
+                    <form method="post" action="{% url 'services:contact-page' %}#contact-section" class="contact-form">
                         {% csrf_token %}
                         {{ form.website }}
+                        <input type="hidden" name="form_type" value="contact">
                         <div class="row g-4">
                             <div class="col-md-6">
                                 <label class="form-label contact-form-label" for="{{ form.full_name.id_for_label }}">{{ form.full_name.label }}</label>
@@ -101,6 +142,7 @@
                             <div class="col-md-6">
                                 <label class="form-label contact-form-label" for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
                                 {{ form.phone }}
+                                {% if form.phone.errors %}<div class="text-danger small mt-1">{{ form.phone.errors }}</div>{% endif %}
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label contact-form-label" for="{{ form.subject.id_for_label }}">{{ form.subject.label }}</label>
@@ -112,7 +154,7 @@
                                 {% if form.info.errors %}<div class="text-danger small mt-1">{{ form.info.errors }}</div>{% endif %}
                             </div>
                             <div class="col-12">
-                                <button class="btn btn-primary btn-lg rounded-pill w-100 py-3" type="submit">Göndər</button>
+                                <button class="btn btn-primary btn-lg rounded-pill w-100 py-3" type="submit">{% trans "Göndər" %}</button>
                             </div>
                         </div>
                     </form>
@@ -120,19 +162,6 @@
             </div>
         </div>
 
-        {% if contact.map_embed_url %}
-        <div class="contact-map-section">
-            <h2 class="contact-map-section__title text-center">Xəritədə biz</h2>
-            <div class="contact-map-wrap">
-                <iframe
-                    class="contact-map-iframe"
-                    src="{{ contact.map_embed_url }}"
-                    loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade"
-                    title="Xəritə"></iframe>
-            </div>
-        </div>
-        {% endif %}
     </div>
 </section>
 {% endblock %}

@@ -29,22 +29,26 @@
 {% endif %}
 
 {% if partners %}
-<div class="container-fluid py-5 bg-light">
-    <div class="container py-5">
-        <h2 class="text-center mb-5">Tərəfdaşlar</h2>
-        <div class="row g-4 justify-content-center">
-            {% for partner in partners %}
-            <div class="col-6 col-md-3 text-center">
+<section class="partners-strip" aria-labelledby="partners-title">
+    <div class="partners-strip__head">
+        <h3 class="partners-strip__title" id="partners-title">Tərəfdaşlar</h3>
+        <span class="partners-strip__rule" aria-hidden="true"></span>
+    </div>
+    <div class="partner-carousel partners-strip__carousel">
+        {% for partner in partners %}
+        <div class="partners-strip__item">
+            <div class="partners-strip__bubble">
                 {% if partner.logo %}
-                <img src="{{ partner.logo }}" alt="{{ partner.name }}" class="img-fluid" style="max-height:70px;">
+                <img src="{{ partner.logo }}" alt="{{ partner.name }}" class="partners-strip__logo">
                 {% else %}
-                <p class="fw-bold">{{ partner.name }}</p>
+                <span class="partners-strip__fallback">{{ partner.name|slice:":2" }}</span>
                 {% endif %}
             </div>
-            {% endfor %}
+            <div class="partners-strip__name" title="{{ partner.name }}">{{ partner.name }}</div>
         </div>
+        {% endfor %}
     </div>
-</div>
+</section>
 {% endif %}
 {% endblock %}
 

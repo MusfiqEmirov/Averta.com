@@ -1,0 +1,511 @@
+{% load static i18n %}
+<script>
+(function(){
+  document.addEventListener('DOMContentLoaded',function(){
+    var root = document.getElementById('contact-booking-form-root');
+    if(!root) return;
+
+    var i18n = {
+      package: root.getAttribute('data-i18n-package') || 'Paket',
+      service: root.getAttribute('data-i18n-service') || 'Xidmət',
+      adults: root.getAttribute('data-i18n-adults') || 'Böyük',
+      children: root.getAttribute('data-i18n-children') || 'Uşaq',
+    };
+    var typeInput = root.querySelector('[name="booking_type"]');
+    var tabs = root.querySelectorAll('[data-booking-tab]');
+    var panels = root.querySelectorAll('[data-booking-panel]');
+    var pickers = root.querySelectorAll('[data-hb-picker]');
+    var menus = root.querySelectorAll('[data-hb-picker-menu]');
+
+    function closeAll(){pickers.forEach(function(b){b.setAttribute('aria-expanded','false');});menus.forEach(function(m){m.hidden=true;});}
+    function openPicker(k){closeAll();var b=root.querySelector('[data-hb-picker="'+k+'"]');var m=root.querySelector('[data-hb-picker-menu="'+k+'"]');if(b&&m){b.setAttribute('aria-expanded','true');m.hidden=false;}}
+    function togglePicker(k){var b=root.querySelector('[data-hb-picker="'+k+'"]');if(!b)return;b.getAttribute('aria-expanded')==='true'?closeAll():openPicker(k);}
+    function updateLabel(k){var v=root.querySelector('[data-hb-picker-value="'+k+'"]');var p=root.querySelector('[data-booking-panel="'+k+'"]');if(!v||!p)return;var sel=p.querySelectorAll('input:checked');if(!sel.length){v.textContent=k==='package'?i18n.package:i18n.service;return;}var names=[];sel.forEach(function(c){var s=c.closest('label')&&c.closest('label').querySelector('span');if(s)names.push(s.textContent.trim());});var h=names.slice(0,2).join(', ');v.textContent=names.length>2?h+' +'+(names.length-2):h;}
+    function setType(t){if(typeInput)typeInput.value=t;tabs.forEach(function(tab){var a=tab.getAttribute('data-booking-tab')===t;tab.classList.toggle('hb-tab--active',a);tab.setAttribute('aria-selected',a?'true':'false');});panels.forEach(function(p){var s=p.getAttribute('data-booking-panel')===t;p.style.display=s?'':'none';p.querySelectorAll('input[type="checkbox"]').forEach(function(c){c.disabled=!s;if(!s)c.checked=false;});});closeAll();updateLabel('package');updateLabel('service');}
+    tabs.forEach(function(t){t.addEventListener('click',function(){setType(t.getAttribute('data-booking-tab'));});});
+    setType((typeInput&&typeInput.value)||'package');
+    pickers.forEach(function(b){b.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();togglePicker(b.getAttribute('data-hb-picker'));});});
+    root.querySelectorAll('[data-booking-panel] input[type="checkbox"]').forEach(function(c){c.addEventListener('change',function(){var p=c.closest('[data-booking-panel]');if(p)updateLabel(p.getAttribute('data-booking-panel'));});});
+    document.addEventListener('click',function(e){
+      if(root.contains(e.target)){
+        if(e.target.closest('[data-hb-picker]') || e.target.closest('[data-hb-picker-menu]')) return;
+      }
+      closeAll();
+    });
+
+    // Preselect service from URL (?service=<id>)
+    try{
+      var sp = new URLSearchParams(window.location.search || '');
+      var serviceId = (sp.get('service') || '').trim();
+      if(serviceId){
+        setType('service');
+        var sPanel = root.querySelector('[data-booking-panel="service"]');
+        var cb = sPanel && sPanel.querySelector('input[type="checkbox"][value="'+serviceId+'"]');
+        if(cb){
+          cb.checked = true;
+          cb.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        openPicker('service');
+        var booking = document.getElementById('contact-booking');
+        if(booking && booking.scrollIntoView){ booking.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+      }
+    }catch(e){}
+
+    var limits={adults:{min:1,max:100},children:{min:0,max:100}};
+    function setCount(name,val){var cfg=limits[name];var next=Math.min(cfg.max,Math.max(cfg.min,val));var inp=root.querySelector('input[name="'+name+'_count"]');var disp=root.querySelector('[data-counter-display="'+name+'"]');if(inp)inp.value=String(next);if(disp)disp.textContent=String(next);}
+    root.querySelectorAll('[data-counter-action]').forEach(function(btn){btn.addEventListener('click',function(){var name=btn.getAttribute('data-counter');var inp=root.querySelector('input[name="'+name+'_count"]');var cur=parseInt(inp&&inp.value,10);if(isNaN(cur))cur=name==='adults'?1:0;setCount(name,cur+(btn.getAttribute('data-counter-action')==='plus'?1:-1));});});
+    ['adults','children'].forEach(function(n){var inp=root.querySelector('input[name="'+n+'_count"]');var disp=root.querySelector('[data-counter-display="'+n+'"]');if(inp&&disp)disp.textContent=inp.value||(n==='adults'?'1':'0');});
+
+    function updateGuestsSummary(){
+      var aInp=root.querySelector('input[name="adults_count"]');
+      var cInp=root.querySelector('input[name="children_count"]');
+      var a=parseInt(aInp&&aInp.value,10); if(isNaN(a)) a=1;
+      var c=parseInt(cInp&&cInp.value,10); if(isNaN(c)) c=0;
+      var el=root.querySelector('[data-guests-summary]');
+      if(el) el.textContent=i18n.adults+': '+a+' • '+i18n.children+': '+c;
+    }
+
+    var modal = root.querySelector('[data-guests-modal]');
+    var openBtn = root.querySelector('[data-guests-open]');
+    var closeBtns = root.querySelectorAll('[data-guests-close]');
+    var animMs = 180;
+    function openModal(){
+      if(!modal) return;
+      modal.hidden=false;
+      modal.setAttribute('aria-hidden','false');
+      requestAnimationFrame(function(){ modal.classList.add('is-open'); });
+      if(openBtn) openBtn.classList.add('is-open');
+      updateGuestsSummary();
+    }
+    function closeModal(){
+      if(!modal) return;
+      modal.classList.remove('is-open');
+      if(openBtn) openBtn.classList.remove('is-open');
+      window.setTimeout(function(){
+        modal.hidden=true;
+        modal.setAttribute('aria-hidden','true');
+      }, animMs);
+      updateGuestsSummary();
+    }
+    if(openBtn){openBtn.addEventListener('click',function(e){e.preventDefault();if(modal && !modal.hidden) closeModal(); else openModal();});}
+    closeBtns.forEach(function(b){b.addEventListener('click',function(e){e.preventDefault();closeModal();});});
+    document.addEventListener('click',function(e){
+      if(!modal || modal.hidden) return;
+      if(root.contains(e.target) && (e.target.closest('[data-guests-open]') || e.target.closest('[data-guests-modal]'))) return;
+      closeModal();
+    });
+    document.addEventListener('keydown',function(e){
+      if(e.key==='Escape' && modal && !modal.hidden) closeModal();
+    });
+    root.addEventListener('click',function(e){
+      if(e.target && e.target.closest && e.target.closest('[data-counter-action]')) updateGuestsSummary();
+    });
+    updateGuestsSummary();
+  });
+})();
+</script>
+
+<div id="contact-booking-form-root"
+     data-i18n-package="{% trans 'Paket' %}"
+     data-i18n-service="{% trans 'Xidmət' %}"
+     data-i18n-adults="{% trans 'Böyük' %}"
+     data-i18n-children="{% trans 'Uşaq' %}">
+
+  {% if booking_feedback == 'success' %}
+  <div class="alert alert-success rounded-pill py-2 px-4 mb-3">
+    <i class="fas fa-check-circle me-2"></i>{% trans "Sifarişiniz qəbul olundu. Tezliklə sizinlə əlaqə saxlayacağıq." %}
+  </div>
+  {% elif booking_feedback == 'error' %}
+  <div class="alert alert-danger rounded-pill py-2 px-4 mb-3">
+    <i class="fas fa-exclamation-circle me-2"></i>{% trans "Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin." %}
+  </div>
+  {% endif %}
+
+  <style>
+    /* Contact page booking: make counters more compact */
+    #contact-booking-form-root {
+      --hb-input-h: 44px;
+    }
+    #contact-booking-form-root .hb-counter-btn {
+      width: 1.85rem;
+      font-size: 1.02rem;
+    }
+    #contact-booking-form-root .hb-counter-val {
+      min-width: 1.6rem;
+      font-size: 0.95rem;
+    }
+
+    /* Guests modal */
+    #contact-booking-form-root .hb-guests-field {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: 0.6rem;
+      border: 1px solid rgba(0,0,0,0.08);
+      background: #fff;
+      color: #212529;
+      transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+    }
+    #contact-booking-form-root .hb-guests-field:hover {
+      border-color: rgba(13,33,63,0.22);
+      box-shadow: 0 10px 24px rgba(13,33,63,0.10);
+      transform: translateY(-1px);
+    }
+    #contact-booking-form-root .hb-guests-field.is-open {
+      border-color: rgba(13,33,63,0.28);
+      box-shadow: 0 12px 28px rgba(13,33,63,0.14);
+    }
+    #contact-booking-form-root .hb-guests-field i {
+      transition: transform 180ms ease;
+    }
+    #contact-booking-form-root .hb-guests-field.is-open i {
+      transform: rotate(180deg);
+    }
+    #contact-booking-form-root .hb-guests-field__label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: rgba(33,37,41,0.65);
+      line-height: 1;
+      margin-bottom: 0.18rem;
+    }
+    #contact-booking-form-root .hb-guests-field__value {
+      font-weight: 700;
+      color: #0d213f;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+    #contact-booking-form-root .hb-guests-wrap {
+      position: relative;
+    }
+    /* anchored dropdown panel (opens under field, centered) */
+    #contact-booking-form-root .hb-guests-modal {
+      position: absolute;
+      left: 50%;
+      top: calc(100% + 10px);
+      width: min(560px, calc(100vw - 2rem));
+      transform: translateX(-50%) translateY(-6px) scale(0.98);
+      transform-origin: top center;
+      z-index: 2000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+    #contact-booking-form-root .hb-guests-modal.is-open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0) scale(1);
+    }
+    #contact-booking-form-root .hb-guests-sheet {
+      position: relative;
+      width: 100%;
+      background: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      padding: 0.9rem;
+    }
+    #contact-booking-form-root .hb-guests-sheet__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+    #contact-booking-form-root .hb-guests-sheet__title {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #0d213f;
+    }
+    #contact-booking-form-root .hb-guests-close {
+      border: 1px solid rgba(0,0,0,0.12);
+      background: #fff;
+      border-radius: 999px;
+      padding: 0.35rem 0.7rem;
+      font-weight: 700;
+      color: #0d213f;
+      transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+    }
+    #contact-booking-form-root .hb-guests-close:hover {
+      background: rgba(13,33,63,0.06);
+      border-color: rgba(13,33,63,0.20);
+      transform: translateY(-1px);
+    }
+    #contact-booking-form-root .hb-guests-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+    }
+    #contact-booking-form-root .hb-guests-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.5rem 0.6rem;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 0.75rem;
+      background: #f8f9fa;
+    }
+    #contact-booking-form-root .hb-guests-row__label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+    #contact-booking-form-root .hb-guests-row__name {
+      font-weight: 800;
+      color: #0d213f;
+      line-height: 1.1;
+    }
+    #contact-booking-form-root .hb-guests-row__hint {
+      font-size: 0.82rem;
+      color: rgba(13,33,63,0.7);
+      line-height: 1.2;
+    }
+
+    /* Light (modal) counter theme — no stretch, content width only */
+    #contact-booking-form-root [data-guests-modal] .hb-counter {
+      background: #fff;
+      border-color: rgba(0,0,0,0.12);
+      height: 40px;
+      border-radius: 0.6rem;
+      flex: 0 0 auto;
+      width: auto;
+    }
+    #contact-booking-form-root [data-guests-modal] .hb-counter-btn {
+      color: #0d213f;
+      width: 2rem;
+      font-size: 1.05rem;
+    }
+    #contact-booking-form-root [data-guests-modal] .hb-counter-btn:hover {
+      background: rgba(13,33,63,0.06);
+    }
+    #contact-booking-form-root [data-guests-modal] .hb-counter-btn:active {
+      background: rgba(13,33,63,0.10);
+    }
+    #contact-booking-form-root [data-guests-modal] .hb-counter-val {
+      color: #0d213f;
+      border-left-color: rgba(0,0,0,0.10);
+      border-right-color: rgba(0,0,0,0.10);
+      min-width: 2rem;
+      font-size: 0.95rem;
+    }
+    #contact-booking-form-root .hb-guests-actions {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: flex-end;
+      margin-top: 0.7rem;
+    }
+    #contact-booking-form-root .hb-guests-done {
+      border: none;
+      border-radius: 999px;
+      padding: 0.6rem 1.2rem;
+      font-weight: 800;
+      color: #0d213f;
+      background: #ffc107;
+      transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
+    }
+    #contact-booking-form-root .hb-guests-done:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 26px rgba(255,193,7,0.35);
+      filter: brightness(1.03);
+    }
+    #contact-booking-form-root .hb-guests-done:active {
+      transform: translateY(0);
+      box-shadow: 0 8px 18px rgba(255,193,7,0.25);
+    }
+  </style>
+
+  <form method="post" action="{% url 'services:contact-page' %}#contact-booking" class="hb-form" novalidate>
+    {% csrf_token %}
+    <input type="hidden" name="form_type" value="booking">
+    {{ booking_form.website }}
+    {{ booking_form.booking_type }}
+
+    <div class="row g-3">
+
+      {# Tabs #}
+      <div class="col-12">
+        <div class="hb-tabs" role="tablist">
+          <button type="button" class="hb-tab"
+                  data-booking-tab="package" role="tab" aria-selected="true">{% trans "Paket" %}</button>
+          <button type="button" class="hb-tab"
+                  data-booking-tab="service" role="tab" aria-selected="false">{% trans "Xidmət" %}</button>
+        </div>
+      </div>
+
+      {# Package picker #}
+      <div class="col-12" data-booking-panel="package" style="display:block">
+        <div class="hb-picker">
+          <button type="button" class="hb-picker-btn" data-hb-picker="package" aria-expanded="false">
+            <span class="hb-picker-btn__value" data-hb-picker-value="package">{% trans "Paket" %}</span>
+            <i class="fas fa-chevron-down" aria-hidden="true"></i>
+          </button>
+          <div class="hb-picker-menu" hidden data-hb-picker-menu="package">
+            <div class="hb-pills">
+              {% for cb in booking_form.packages %}
+              <label class="hb-pill">{{ cb.tag }}<span>{{ cb.choice_label }}</span></label>
+              {% empty %}
+              <p class="hb-empty">{% trans "Paket yoxdur." %}</p>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        {% if booking_form.packages.errors %}
+        <p class="hb-field-err">{{ booking_form.packages.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      {# Service picker #}
+      <div class="col-12" data-booking-panel="service" style="display:none">
+        <div class="hb-picker">
+          <button type="button" class="hb-picker-btn" data-hb-picker="service" aria-expanded="false">
+            <span class="hb-picker-btn__value" data-hb-picker-value="service">{% trans "Xidmət" %}</span>
+            <i class="fas fa-chevron-down" aria-hidden="true"></i>
+          </button>
+          <div class="hb-picker-menu" hidden data-hb-picker-menu="service">
+            <div class="hb-pills">
+              {% for cb in booking_form.services %}
+              <label class="hb-pill">{{ cb.tag }}<span>{{ cb.choice_label }}</span></label>
+              {% empty %}
+              <p class="hb-empty">{% trans "Xidmət yoxdur." %}</p>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        {% if booking_form.services.errors %}
+        <p class="hb-field-err">{{ booking_form.services.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      {# Ad soyad #}
+      <div class="col-md-6">
+        <div class="form-floating">
+          <input type="text" class="form-control bg-white border-0"
+                 id="bk_name" name="full_name" placeholder="Ad Soyad"
+                 value="{{ booking_form.full_name.value|default:'' }}">
+          <span class="hb-required-star" aria-hidden="true">*</span>
+          <label for="bk_name">Ad Soyad *</label>
+        </div>
+        {% if booking_form.full_name.errors %}
+        <div class="text-warning small mt-1">{{ booking_form.full_name.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      {# Email #}
+      <div class="col-md-6">
+        <div class="form-floating">
+          <input type="email" class="form-control bg-white border-0"
+                 id="bk_email" name="email" placeholder="E-poçt (istəyə görə)"
+                 value="{{ booking_form.email.value|default:'' }}">
+          <label for="bk_email">E-poçt (istəyə görə)</label>
+        </div>
+        {% if booking_form.email.errors %}
+        <div class="text-warning small mt-1">{{ booking_form.email.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      {# Telefon #}
+      <div class="col-md-6">
+        <div class="form-floating">
+          <input type="tel" class="form-control bg-white border-0"
+                 id="bk_phone" name="phone" placeholder="Mobil nömrə *"
+                 value="{{ booking_form.phone.value|default:'' }}">
+          <label for="bk_phone">Mobil nömrə *</label>
+        </div>
+        {% if booking_form.phone.errors %}
+        <div class="text-warning small mt-1">{{ booking_form.phone.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      {# Böyük / Uşaq #}
+      <div class="col-md-6">
+        {{ booking_form.adults_count }}
+        {{ booking_form.children_count }}
+
+        <div class="hb-guests-wrap">
+          <button type="button" class="hb-guests-field" data-guests-open>
+            <span style="min-width:0">
+              <span class="hb-guests-field__label">{% trans "Qonaqlar" %}</span>
+              <span class="hb-guests-field__value" data-guests-summary>{% trans "Böyük" %}: 1 • {% trans "Uşaq" %}: 0</span>
+            </span>
+            <i class="fas fa-chevron-down" aria-hidden="true" style="opacity:0.7"></i>
+          </button>
+
+          <div class="hb-guests-modal" hidden aria-hidden="true" data-guests-modal>
+            <div class="hb-guests-sheet" role="dialog" aria-modal="true" aria-label="{% trans 'Qonaq sayı' %}">
+              <div class="hb-guests-sheet__head">
+                <h3 class="hb-guests-sheet__title">{% trans "Qonaq sayı" %}</h3>
+                <button type="button" class="hb-guests-close" data-guests-close>{% trans "Bağla" %}</button>
+              </div>
+
+              <div class="hb-guests-grid">
+                <div class="hb-guests-row">
+                  <div class="hb-guests-row__label">
+                    <div class="hb-guests-row__name"><i class="fas fa-user me-1" aria-hidden="true"></i> {% trans "Böyük" %}</div>
+                    <div class="hb-guests-row__hint">{% trans "18+ yaş" %}</div>
+                  </div>
+                  <div class="hb-counter">
+                    <button type="button" class="hb-counter-btn" data-counter-action="minus" data-counter="adults" aria-label="{% trans 'Azalt' %}">−</button>
+                    <span class="hb-counter-val" data-counter-display="adults">{{ booking_form.adults_count.value|default:1 }}</span>
+                    <button type="button" class="hb-counter-btn" data-counter-action="plus" data-counter="adults" aria-label="{% trans 'Artır' %}">+</button>
+                  </div>
+                </div>
+
+                <div class="hb-guests-row">
+                  <div class="hb-guests-row__label">
+                    <div class="hb-guests-row__name"><i class="fas fa-child me-1" aria-hidden="true"></i> {% trans "Uşaq" %}</div>
+                    <div class="hb-guests-row__hint">{% trans "0–17 yaş" %}</div>
+                  </div>
+                  <div class="hb-counter">
+                    <button type="button" class="hb-counter-btn" data-counter-action="minus" data-counter="children" aria-label="{% trans 'Azalt' %}">−</button>
+                    <span class="hb-counter-val" data-counter-display="children">{{ booking_form.children_count.value|default:0 }}</span>
+                    <button type="button" class="hb-counter-btn" data-counter-action="plus" data-counter="children" aria-label="{% trans 'Artır' %}">+</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="hb-guests-actions">
+                <button type="button" class="hb-guests-done" data-guests-close>{% trans "Hazır" %}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {# Qeyd #}
+      <div class="col-12">
+        <div class="form-floating">
+          <textarea class="form-control bg-white border-0" placeholder="Qısa qeyd (istəyə görə)"
+                    id="bk_note" name="note" style="height:100px">{{ booking_form.note.value|default:'' }}</textarea>
+          <label for="bk_note">Qısa qeyd (istəyə görə)</label>
+        </div>
+        {% if booking_form.note.errors %}
+        <div class="text-warning small mt-1">{{ booking_form.note.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      {# Non-field errors #}
+      {% if booking_form.non_field_errors %}
+      <div class="col-12">
+        <div class="alert alert-warning py-2 px-3 rounded">{{ booking_form.non_field_errors }}</div>
+      </div>
+      {% endif %}
+
+      {# Submit #}
+      <div class="col-12">
+        <button type="submit" class="hb-submit w-100 justify-content-center">
+          <i class="fas fa-paper-plane" aria-hidden="true"></i>
+          <span>{% trans "Sifariş et" %}</span>
+        </button>
+      </div>
+
+    </div>
+  </form>
+</div>

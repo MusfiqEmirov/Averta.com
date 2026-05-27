@@ -1,5 +1,5 @@
 from services.models import Service
-from services.utils.queries import get_contact, get_language_from_request, serialize_contact
+from services.utils.queries import get_contact, get_language_from_request, serialize_contact, get_background_image
 
 
 def navbar_services(request):
@@ -34,11 +34,24 @@ def navbar_services(request):
     return {'navbar_services': result}
 
 
+def _safe_bg(page_type):
+    """Return background image URL or None — never raises."""
+    try:
+        return get_background_image(page_type)
+    except Exception:
+        return None
+
+
 def site_contact(request):
     """Əlaqə məlumatları — footer, WhatsApp/zəng düymələri."""
     try:
         lang = get_language_from_request(request)
         contact = get_contact(lang)
-        return {'contact': serialize_contact(contact, lang) if contact else None}
+        contact_data = serialize_contact(contact, lang) if contact else None
     except Exception:
-        return {'contact': None}
+        contact_data = None
+
+    return {
+        'contact': contact_data,
+        'home_contact_bg': _safe_bg('home_contact'),
+    }

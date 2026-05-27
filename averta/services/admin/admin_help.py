@@ -9,6 +9,7 @@ ADMIN_MODEL_ORDER = [
     'about',
     'contact',
     'appealcontact',
+    'booking',
     'review',
     'service',
     'package',
@@ -101,6 +102,13 @@ APPEAL_HELP = (
     '<strong>Harada gəlir?</strong> Sayt → Əlaqə səhifəsi → «Mesaj göndər» forması.<br>'
     '<strong>Nə etməli?</strong> Mesajı oxuyun, «Oxunub» işarələyin. Yeni mesaj əlavə edə bilməzsiniz — '
     'yalnız saytdan gəlir.'
+)
+
+BOOKING_HELP = (
+    '<strong>Bu nədir?</strong> Ana səhifənin yuxarısındakı sifariş formasından gələn müraciətlər.<br>'
+    '<strong>Harada gəlir?</strong> Ana səhifə → hero altındakı «Xidmət / Paket» forması.<br>'
+    '<strong>Nə etməli?</strong> Sifarişi oxuyun, «Oxunub» və lazım olsa «Müştərimizdir?» işarələyin. '
+    'Yeni sifariş əlavə edə bilməzsiniz — yalnız saytdan gəlir.'
 )
 
 SERVICE_HELP = (
