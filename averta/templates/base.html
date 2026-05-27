@@ -7,6 +7,77 @@
     {% block extra_head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
+
+    <!-- Tourism background decorations -->
+    <div class="tourism-bg-deco" aria-hidden="true">
+
+        <!-- Airplane – top right -->
+        <svg class="tbd tbd--plane" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 98 L155 32 C163 28 172 37 169 46 L147 76 L168 158 L148 152 L118 80 L76 90 L80 118 L60 112 Z"/>
+            <path d="M147 76 L88 91"/>
+        </svg>
+
+        <!-- Palm tree – bottom left -->
+        <svg class="tbd tbd--palm" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <path d="M100 196 C97 168 93 138 98 108 C103 78 100 58 100 58"/>
+            <path d="M100 58 C82 46 55 52 38 36"/>
+            <path d="M100 58 C118 46 145 52 162 36"/>
+            <path d="M100 64 C78 57 52 67 36 57"/>
+            <path d="M100 64 C122 57 148 67 164 57"/>
+            <path d="M100 58 C96 40 93 18 96 6"/>
+            <path d="M100 108 C90 105 78 110 70 106"/>
+            <path d="M100 108 C110 105 122 110 130 106"/>
+        </svg>
+
+        <!-- Compass rose – bottom right -->
+        <svg class="tbd tbd--compass" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="100" cy="100" r="78"/>
+            <circle cx="100" cy="100" r="10"/>
+            <path d="M100 22 L109 92 L100 86 L91 92 Z" style="fill:#13357b;stroke:none"/>
+            <path d="M100 178 L109 108 L100 114 L91 108 Z"/>
+            <path d="M178 100 L108 109 L114 100 L108 91 Z"/>
+            <path d="M22 100 L92 109 L86 100 L92 91 Z" style="fill:#13357b;stroke:none"/>
+            <line x1="100" y1="22" x2="100" y2="10"/>
+            <line x1="100" y1="178" x2="100" y2="190"/>
+            <line x1="22" y1="100" x2="10" y2="100"/>
+            <line x1="178" y1="100" x2="190" y2="100"/>
+            <line x1="155" y1="45" x2="149" y2="51"/>
+            <line x1="155" y1="155" x2="149" y2="149"/>
+            <line x1="45" y1="155" x2="51" y2="149"/>
+            <line x1="45" y1="45" x2="51" y2="51"/>
+        </svg>
+
+        <!-- Mountain range – top left -->
+        <svg class="tbd tbd--mountain" viewBox="0 0 340 200" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 190 L55 70 L90 120 L125 42 L185 130 L215 55 L280 190 Z"/>
+            <path d="M125 42 L108 80 L142 80 Z" style="fill:#13357b;stroke:none"/>
+            <path d="M215 55 L202 88 L228 88 Z" style="fill:#13357b;stroke:none"/>
+        </svg>
+
+        <!-- Camera – center right -->
+        <svg class="tbd tbd--camera" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <rect x="14" y="58" width="172" height="118" rx="14"/>
+            <circle cx="100" cy="117" r="36"/>
+            <circle cx="100" cy="117" r="22"/>
+            <circle cx="100" cy="117" r="8"/>
+            <rect x="62" y="42" width="38" height="18" rx="6"/>
+            <rect x="122" y="44" width="26" height="14" rx="4"/>
+            <circle cx="162" cy="76" r="6"/>
+        </svg>
+
+        <!-- Suitcase – center left -->
+        <svg class="tbd tbd--suitcase" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <rect x="18" y="58" width="164" height="126" rx="14"/>
+            <path d="M72 58 L72 38 C72 28 82 22 100 22 C118 22 128 28 128 38 L128 58"/>
+            <line x1="100" y1="58" x2="100" y2="184"/>
+            <line x1="18" y1="121" x2="182" y2="121"/>
+            <rect x="80" y="112" width="40" height="18" rx="5"/>
+            <circle cx="38" cy="178" r="7"/>
+            <circle cx="162" cy="178" r="7"/>
+        </svg>
+
+    </div>
+
     <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
         <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
             <span class="sr-only">{% trans "Yüklənir..." %}</span>
