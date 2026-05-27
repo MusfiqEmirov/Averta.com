@@ -506,6 +506,13 @@ class ReviewForm(forms.ModelForm):
         phone = (cleaned_data.get('phone') or '').strip()
         if not phone:
             raise ValidationError(_('Mobil nömrə mütləqdir.'))
+        if not Booking.objects.filter(phone=phone, is_customer=True, is_deleted=False).exists():
+            not_customer_msg = {
+                'az': 'Rəy yazmaq üçün müştərimiz olmalısınız. Zəhmət olmasa əvvəlcə sifariş verin.',
+                'en': 'You must be our customer to leave a review. Please place a booking first.',
+                'ru': 'Чтобы оставить отзыв, вы должны быть нашим клиентом. Сначала оформите заказ.',
+            }.get(getattr(self, 'lang', 'az'), 'Rəy yazmaq üçün müştərimiz olmalısınız.')
+            raise ValidationError(not_customer_msg)
         return cleaned_data
 
     def clean_website(self):
