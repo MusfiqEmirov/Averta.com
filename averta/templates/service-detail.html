@@ -13,7 +13,7 @@
             </a>
             <div class="sdp-header__row">
                 <h1 class="sdp-title">{{ service.name }}</h1>
-                <a href="{% url 'services:contact-page' %}" class="btn btn-primary rounded-pill sdp-order-btn">
+                <a href="{% url 'services:contact-page' %}?service={{ service.id }}#contact-booking" class="btn btn-primary rounded-pill sdp-order-btn btn-averta-order">
                     Sifariş et
                 </a>
             </div>

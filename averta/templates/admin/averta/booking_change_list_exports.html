@@ -1,0 +1,17 @@
+{% extends "admin/averta/change_list.html" %}
+{% load i18n %}
+
+{% block object-tools-items %}
+  <li>
+    <a href="#" class="button" id="bookingExportListCsvBtn" title="{% trans 'Cari siyahını CSV kimi yüklə' %}">
+      {% trans "CSV yüklə" %}
+    </a>
+  </li>
+  <li>
+    <a href="#" class="button" id="bookingExportListXlsBtn" title="{% trans 'Cari siyahını Excel kimi yüklə' %}">
+      {% trans "Excel yüklə" %}
+    </a>
+  </li>
+  {{ block.super }}
+{% endblock %}
+

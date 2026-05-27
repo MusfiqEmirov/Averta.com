@@ -84,6 +84,26 @@
         }
     });
 
+    // partners strip — CSS marquee (no OwlCarousel, truly infinite)
+    (function () {
+        var strip = document.querySelector('.partner-carousel.partners-strip__carousel');
+        if (!strip) { return; }
+        // remove owl class so OwlCarousel doesn't init on it
+        strip.classList.remove('owl-carousel');
+        // build marquee track
+        var items = Array.from(strip.children);
+        if (!items.length) { return; }
+        // wrap all items in a scrolling track, duplicate for seamless loop
+        var track = document.createElement('div');
+        track.className = 'partners-marquee-track';
+        items.forEach(function (item) { track.appendChild(item); });
+        // clone for seamless loop
+        var clone = track.cloneNode(true);
+        clone.setAttribute('aria-hidden', 'true');
+        strip.appendChild(track);
+        strip.appendChild(clone);
+    })();
+
 
 
     // Back to top

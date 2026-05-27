@@ -1,32 +1,55 @@
 <nav class="navbar navbar-expand-lg navbar-light px-4 px-lg-5 py-3 py-lg-0">
+    {% with language|default:request.LANGUAGE_CODE as lang %}
     <a href="{% url 'services:home-page' %}" class="navbar-brand p-0">
         <h1 class="m-0"><i class="fa fa-map-marker-alt me-3"></i>Averta</h1>
     </a>
     <div class="d-flex align-items-center ms-auto d-lg-none navbar-mobile-actions">
-        <a href="{% url 'services:contact-page' %}" class="btn btn-primary rounded-pill py-2 px-4 navbar-contact-btn">Əlaqə</a>
+        <a href="{% url 'services:contact-page' %}#contact-booking" class="btn btn-primary rounded-pill py-2 px-4 navbar-contact-btn">
+            {% if lang == 'en' %}Order{% elif lang == 'ru' %}Заказать{% else %}Sifariş et{% endif %}
+        </a>
         {% include 'partials/lang_switcher.html' with mobile=True %}
-        <button class="navbar-toggler ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-label="Menyu">
+        <button class="navbar-toggler ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-label="{% if lang == 'en' %}Menu{% elif lang == 'ru' %}Меню{% else %}Menyu{% endif %}">
             <span class="fa fa-bars"></span>
         </button>
     </div>
     <div class="collapse navbar-collapse" id="navbarCollapse">
         <div class="navbar-nav ms-auto py-0">
-            <a href="{% url 'services:home-page' %}" class="nav-item nav-link {% if active_nav == 'home' %}active{% endif %}">Ana səhifə</a>
-            <a href="{% url 'services:about-page' %}" class="nav-item nav-link {% if active_nav == 'about' %}active{% endif %}">Haqqımızda</a>
+            <a href="{% url 'services:home-page' %}" class="nav-item nav-link {% if active_nav == 'home' %}active{% endif %}">
+                {% if lang == 'en' %}Home{% elif lang == 'ru' %}Главная{% else %}Ana səhifə{% endif %}
+            </a>
+            <a href="{% url 'services:about-page' %}" class="nav-item nav-link {% if active_nav == 'about' %}active{% endif %}">
+                {% if lang == 'en' %}About{% elif lang == 'ru' %}О нас{% else %}Haqqımızda{% endif %}
+            </a>
             <div class="nav-item dropdown">
-                <a href="{% url 'services:service-page' %}" class="nav-link dropdown-toggle {% if active_nav == 'services' %}active{% endif %}" data-bs-toggle="dropdown" aria-expanded="false">Xidmətlər</a>
+                <a href="{% url 'services:service-page' %}" class="nav-link dropdown-toggle {% if active_nav == 'services' %}active{% endif %}" data-bs-toggle="dropdown" aria-expanded="false">
+                    {% if lang == 'en' %}Services{% elif lang == 'ru' %}Услуги{% else %}Xidmətlər{% endif %}
+                </a>
                 <div class="dropdown-menu m-0">
                     {% for nav_service in navbar_services %}
                     <a href="{% url 'services:service-detail' nav_service.slug %}" class="dropdown-item">{{ nav_service.name }}</a>
                     {% empty %}
-                    <a href="{% url 'services:service-page' %}" class="dropdown-item">Bütün xidmətlər</a>
+                    <a href="{% url 'services:service-page' %}" class="dropdown-item">
+                        {% if lang == 'en' %}All services{% elif lang == 'ru' %}Все услуги{% else %}Bütün xidmətlər{% endif %}
+                    </a>
                     {% endfor %}
                 </div>
             </div>
-            <a href="{% url 'services:home-page' %}#packages" class="nav-item nav-link">Paketlər</a>
-            <a href="{% url 'services:home-page' %}#testimonial" class="nav-item nav-link">Rəylər</a>
-            <a href="{% url 'services:blog-page' %}" class="nav-item nav-link {% if active_nav == 'blog' %}active{% endif %}">Bloq</a>
+            <a href="{% url 'services:home-page' %}#packages" class="nav-item nav-link">
+                {% if lang == 'en' %}Packages{% elif lang == 'ru' %}Пакеты{% else %}Paketlər{% endif %}
+            </a>
+            <a href="{% url 'services:home-page' %}#testimonial" class="nav-item nav-link">
+                {% if lang == 'en' %}Reviews{% elif lang == 'ru' %}Отзывы{% else %}Rəylər{% endif %}
+            </a>
+            <a href="{% url 'services:blog-page' %}" class="nav-item nav-link {% if active_nav == 'blog' %}active{% endif %}">
+                {% if lang == 'en' %}Blog{% elif lang == 'ru' %}Блог{% else %}Bloq{% endif %}
+            </a>
+            <a href="{% url 'services:contact-page' %}#contact-section" class="nav-item nav-link {% if active_nav == 'contact' %}active{% endif %}">
+                {% if lang == 'en' %}Contact{% elif lang == 'ru' %}Контакты{% else %}Əlaqə{% endif %}
+            </a>
         </div>
-        <a href="{% url 'services:contact-page' %}" class="btn btn-primary rounded-pill py-2 px-4 ms-lg-4 navbar-contact-btn d-none d-lg-inline-block">Əlaqə</a>
+        <a href="{% url 'services:contact-page' %}#contact-booking" class="btn btn-primary rounded-pill py-2 px-4 ms-lg-4 navbar-contact-btn d-none d-lg-inline-block">
+            {% if lang == 'en' %}Order{% elif lang == 'ru' %}Заказать{% else %}Sifariş et{% endif %}
+        </a>
     </div>
+    {% endwith %}
 </nav>

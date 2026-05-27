@@ -1,0 +1,120 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Averta\n"
+"POT-Creation-Date: 2026-05-27 00:00+0000\n"
+"PO-Revision-Date: 2026-05-27 00:00+0000\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Yüklənir..."
+msgstr "Загрузка..."
+
+msgid "Bağla"
+msgstr "Закрыть"
+
+msgid "Dil seçimi"
+msgstr "Выбор языка"
+
+msgid "Əlaqə"
+msgstr "Контакты"
+
+msgid "Sifariş et"
+msgstr "Забронировать"
+
+msgid "Səyahət planlamaq çətin olmamalıdır.<br>Doğru komanda ilə bu proses rahat, sürətli və güvənli olur."
+msgstr "Планирование путешествия не должно быть сложным.<br>С правильной командой этот процесс становится удобным, быстрым и надёжным."
+
+msgid "Averta Travel olaraq bütün xidmətləri bir məkanda təqdim edirik: viza, aviabilet, transfer, otel — hamısı bir paketdə."
+msgstr "В Averta Travel мы предлагаем всё в одном месте: виза, авиабилеты, трансфер, отель — всё в одном пакете."
+
+msgid "Planlama və sənədləşmə işlərini biz görürük, sən isə sadəcə səyahətin dadını çıxarırsan."
+msgstr "Мы берём на себя планирование и оформление документов, а вы просто наслаждаетесь поездкой."
+
+msgid "2013-cü ildən qazandığımız təcrübə, minlərlə məmnun müştəri və daimi dəstək komandamızla hər addımda yanındayıq."
+msgstr "Опыт с 2013 года, тысячи довольных клиентов и постоянная поддержка — мы рядом на каждом шаге."
+
+msgid "Rahatlıq, komfort və etibar axtarırsansa, doğru seçim bəllidir."
+msgstr "Если вы ищете удобство, комфорт и доверие — правильный выбор очевиден."
+
+msgid "Bizə yaz və növbəti səyahətini Averta Travel ilə planla!"
+msgstr "Напишите нам и спланируйте своё следующее путешествие с Averta Travel!"
+
+msgid "Ünvan"
+msgstr "Адрес"
+
+msgid "Telefon"
+msgstr "Телефон"
+
+msgid "Yazın"
+msgstr "Напишите нам"
+
+msgid "E-poçt"
+msgstr "Эл. почта"
+
+msgid "Əlaqə məlumatı admin paneldən əlavə edilir."
+msgstr "Контактная информация добавляется через админ-панель."
+
+msgid "Mesaj göndərin"
+msgstr "Отправить сообщение"
+
+msgid "Göndər"
+msgstr "Отправить"
+
+msgid "Xəritədə biz"
+msgstr "Мы на карте"
+
+msgid "Xəritə"
+msgstr "Карта"
+
+msgid "Paket"
+msgstr "Пакет"
+
+msgid "Xidmət"
+msgstr "Услуга"
+
+msgid "Sifarişiniz qəbul olundu. Tezliklə sizinlə əlaqə saxlayacağıq."
+msgstr "Ваш запрос принят. Мы свяжемся с вами в ближайшее время."
+
+msgid "Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin."
+msgstr "Произошла ошибка. Пожалуйста, попробуйте ещё раз."
+
+msgid "Aktiv paket yoxdur."
+msgstr "Нет активных пакетов."
+
+msgid "Aktiv xidmət yoxdur."
+msgstr "Нет активных услуг."
+
+msgid "Qonaqlar"
+msgstr "Гости"
+
+msgid "Böyük"
+msgstr "Взрослые"
+
+msgid "Uşaq"
+msgstr "Дети"
+
+msgid "Böyük: %(a)s • Uşaq: %(c)s"
+msgstr "Взрослые: %(a)s • Дети: %(c)s"
+
+msgid "Qonaq sayı"
+msgstr "Количество гостей"
+
+msgid "18+ yaş"
+msgstr "18+ лет"
+
+msgid "0–17 yaş"
+msgstr "0–17 лет"
+
+msgid "Azalt"
+msgstr "Уменьшить"
+
+msgid "Artır"
+msgstr "Увеличить"
+
+msgid "Hazır"
+msgstr "Готово"
+
+msgid "Qeyd"
+msgstr "Примечание"

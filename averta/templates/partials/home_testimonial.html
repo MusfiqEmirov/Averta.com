@@ -1,5 +1,6 @@
 <div class="container-fluid testimonial py-5 px-0" id="testimonial"
      data-review-form-errors="{% if review_form.errors %}true{% else %}false{% endif %}">
+    {% with language|default:request.LANGUAGE_CODE as lang %}
 
     <div class="testimonial-inner py-3">
         <div class="text-center mb-5">
@@ -38,11 +39,13 @@
     <div class="testimonial-inner py-3">
         {% if review_feedback == 'success' %}
         <div class="alert alert-success text-center rounded-3 mb-4 mx-auto review-feedback-alert" style="max-width:520px;" role="alert">
-            <i class="fa fa-check-circle me-2"></i>Rəyiniz uğurla göndərildi.
+            <i class="fa fa-check-circle me-2"></i>
+            {% if lang == 'en' %}Your review has been sent successfully.{% elif lang == 'ru' %}Ваш отзыв успешно отправлен.{% else %}Rəyiniz uğurla göndərildi.{% endif %}
         </div>
         {% elif review_feedback == 'error' %}
         <div class="alert alert-danger text-center rounded-3 mb-4 mx-auto review-feedback-alert" style="max-width:520px;" role="alert">
-            <i class="fa fa-exclamation-circle me-2"></i>Rəyiniz göndərilmədi. Zəhmət olmasa yenidən cəhd edin.
+            <i class="fa fa-exclamation-circle me-2"></i>
+            {% if lang == 'en' %}Your review could not be sent. Please try again.{% elif lang == 'ru' %}Не удалось отправить отзыв. Пожалуйста, попробуйте снова.{% else %}Rəyiniz göndərilmədi. Zəhmət olmasa yenidən cəhd edin.{% endif %}
         </div>
         {% endif %}
 
@@ -51,11 +54,13 @@
                     class="btn btn-primary rounded-pill py-2 px-5 testimonial-review-btn"
                     data-bs-toggle="modal"
                     data-bs-target="#reviewModal">
-                <i class="fa fa-pencil-alt me-2"></i>Rəy yaz
+                <i class="fa fa-pencil-alt me-2"></i>
+                {% if lang == 'en' %}Write a review{% elif lang == 'ru' %}Оставить отзыв{% else %}Rəy yaz{% endif %}
             </button>
         </div>
     </div>
 </div>
+{% endwith %}
 
 {# ======== Modal ======== #}
 <div class="modal fade" id="reviewModal" tabindex="-1"
@@ -97,17 +102,9 @@
 
                     <div class="mb-3">
                         <label class="form-label small fw-semibold mb-1">
-                            Əlaqə <span class="text-danger">*</span>
-                            <span class="text-muted fw-normal">(e-poçt və ya mobil — saytda göstərilmir)</span>
+                            Mobil nömrə <span class="text-danger">*</span>
+                            <span class="text-muted fw-normal">(saytda göstərilmir)</span>
                         </label>
-                        <input type="email"
-                               name="email"
-                               id="reviewEmail"
-                               class="form-control mb-2{% if review_form.email.errors or review_form.non_field_errors %} is-invalid{% endif %}"
-                               placeholder="E-poçt ünvanınız"
-                               maxlength="254"
-                               value="{{ review_form.email.value|default:'' }}"
-                               autocomplete="email">
                         <input type="tel"
                                name="phone"
                                id="reviewPhone"
@@ -117,9 +114,7 @@
                                value="{{ review_form.phone.value|default:'' }}"
                                inputmode="tel"
                                autocomplete="tel">
-                        {% if review_form.email.errors %}
-                        <div class="invalid-feedback d-block">{{ review_form.email.errors.0 }}</div>
-                        {% elif review_form.phone.errors %}
+                        {% if review_form.phone.errors %}
                         <div class="invalid-feedback d-block">{{ review_form.phone.errors.0 }}</div>
                         {% elif review_form.non_field_errors %}
                         <div class="invalid-feedback d-block">{{ review_form.non_field_errors.0 }}</div>

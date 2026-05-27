@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 from pathlib import Path
 import os
+import sys
 
 load_dotenv('')
 
@@ -38,7 +39,12 @@ if _extra_csrf:
 # Admin URL - secret path (required)
 ADMIN_URL = os.getenv('ADMIN_URL')
 if not ADMIN_URL:
-    raise ValueError("ADMIN_URL environment variable is required!")
+    # Allow management commands (e.g. makemessages) to run locally
+    # even when env vars are not configured.
+    if any(cmd in sys.argv for cmd in ('makemessages', 'compilemessages', 'check', 'test', 'collectstatic', 'migrate', 'createsuperuser')):
+        ADMIN_URL = 'admin/'
+    else:
+        raise ValueError("ADMIN_URL environment variable is required!")
 if not ADMIN_URL.endswith('/'):
     ADMIN_URL += '/'
 

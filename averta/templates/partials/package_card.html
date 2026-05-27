@@ -43,7 +43,12 @@
         {% else %}
         <span></span>
         {% endif %}
-        <a href="{% url 'services:contact-page' %}" class="btn btn-primary rounded-pill pkg-card__cta">Sifariş et</a>
+        <a href="{% url 'services:contact-page' %}"
+           class="hb-submit pkg-card__cta"
+           role="button">
+            <i class="fas fa-paper-plane" aria-hidden="true"></i>
+            <span>Sifariş et</span>
+        </a>
     </div>
 
 </article>

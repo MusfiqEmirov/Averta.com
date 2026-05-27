@@ -8,6 +8,7 @@ from services.admin.admin_help import (
     AdminPageHelpMixin,
     ABOUT_HELP,
     APPEAL_HELP,
+    BOOKING_HELP,
     BLOG_HELP,
     CONTACT_HELP,
     FAQ_HELP,
@@ -21,12 +22,14 @@ from services.admin.admin_help import (
     patch_admin_site_order,
 )
 
+from services.forms.forms_v1 import BookingAdminForm
 from services.models import (
     Media,
     Partner,
     About,
     Contact,
     AppealContact,
+    Booking,
     Motto,
     Review,
     Statistic,
@@ -491,6 +494,82 @@ class AppealContactAdmin(AdminPageHelpMixin, admin.ModelAdmin):
         return False
 
 
+@admin.register(Booking)
+class BookingAdmin(AdminPageHelpMixin, admin.ModelAdmin):
+    admin_page_help = BOOKING_HELP
+    form = BookingAdminForm
+    change_form_template = 'admin/averta/booking_change_form.html'
+    change_list_template = 'admin/averta/booking_change_list_exports.html'
+    list_display = (
+        'full_name',
+        'booking_target',
+        'adults_count',
+        'children_count',
+        'email',
+        'phone',
+        'is_read',
+        'is_customer',
+        'is_deleted',
+        'created_at',
+    )
+    list_filter = ('is_read', 'is_customer', 'is_deleted', 'services', 'packages')
+    search_fields = ('full_name', 'email', 'phone', 'note')
+    ordering = ('-created_at',)
+    list_editable = ('is_read', 'is_customer', 'is_deleted')
+    readonly_fields = (
+        'full_name',
+        'email',
+        'phone',
+        'note',
+        'services',
+        'packages',
+        'adults_count',
+        'children_count',
+        'created_at',
+    )
+    actions = [mark_as_read, mark_as_unread]
+    fieldsets = (
+        (_('Müştəri'), {
+            'fields': ('full_name', 'email', 'phone', 'note'),
+        }),
+        (_('Sifariş'), {
+            'fields': ('services', 'packages', 'adults_count', 'children_count'),
+        }),
+        (_('Status'), {
+            'fields': ('is_read', 'is_customer', 'is_deleted', 'created_at'),
+        }),
+    )
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return True
+
+    class Media(AdminPageHelpMixin.Media):
+        css = {
+            'all': (
+                'assets/css/admin_help.css',
+                'assets/css/admin_booking.css',
+            ),
+        }
+        js = (
+            'assets/js/admin_booking_detail_export.js',
+            'assets/js/admin_booking_list_export.js',
+        )
+
+    @admin.display(description=_('Seçim'))
+    def booking_target(self, obj):
+        labels = [str(s) for s in obj.services.all()]
+        labels += [str(p) for p in obj.packages.all()]
+        if not labels:
+            return '—'
+        return format_html(
+            '<span class="review-admin-target">{}</span>',
+            ', '.join(labels),
+        )
+
+
 # ---------------------------------------------------------------------------
 # Motto
 # ---------------------------------------------------------------------------
@@ -784,7 +863,7 @@ class ReviewAdmin(AdminPageHelpMixin, admin.ModelAdmin):
     list_display_links = ('name',)
     list_filter = ('is_read', 'is_active', 'rating', 'service', 'package')
     search_fields = (
-        'name', 'email', 'phone', 'message',
+        'name', 'phone', 'message',
         'service__name_az', 'package__name_az',
     )
     list_editable = ('is_read', 'is_active')
@@ -802,10 +881,9 @@ class ReviewAdmin(AdminPageHelpMixin, admin.ModelAdmin):
 
     fieldsets = (
         (_('Müştəri və əlaqə'), {
-            'fields': ('name', 'email', 'phone'),
+            'fields': ('name', 'phone'),
             'description': _(
-                'E-poçt və mobil nömrə yalnız admin paneldə görünür — saytda göstərilmir. '
-                'Ən azı biri olmalıdır.'
+                'Mobil nömrə yalnız admin paneldə görünür — saytda göstərilmir.'
             ),
         }),
         (_('Rəy məzmunu'), {
@@ -825,11 +903,6 @@ class ReviewAdmin(AdminPageHelpMixin, admin.ModelAdmin):
     @admin.display(description=_('Əlaqə'))
     def contact_display(self, obj):
         parts = []
-        if obj.email:
-            parts.append(format_html(
-                '<a href="mailto:{}">{}</a>',
-                obj.email, obj.email,
-            ))
         if obj.phone:
             parts.append(format_html(
                 '<span class="review-admin-phone">{}</span>',

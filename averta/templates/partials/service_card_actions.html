@@ -1,6 +1,6 @@
 {# Sifariş et (sol) + Ətraflı (sağ) #}
 <div class="service-card-actions">
-    <a href="{% url 'services:contact-page' %}" class="service-card-actions__order btn btn-primary rounded-pill">
+    <a href="{% url 'services:contact-page' %}?service={{ service.id }}#contact-booking" class="service-card-actions__order btn btn-primary rounded-pill btn-averta-order">
         Sifariş et
     </a>
     <a href="{% url 'services:service-detail' service.slug %}" class="service-card-actions__detail" aria-label="{{ service.name }} — ətraflı">

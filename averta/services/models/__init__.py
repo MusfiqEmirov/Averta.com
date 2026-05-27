@@ -10,6 +10,7 @@ from .partner_models import Partner
 from .review_models import Review
 from .service_models import Service
 from .statistic_models import Statistic
+from .booking_models import Booking
 
 __all__ = [
     'About',
@@ -24,4 +25,5 @@ __all__ = [
     'Review',
     'Service',
     'Statistic',
+    'Booking',
 ]

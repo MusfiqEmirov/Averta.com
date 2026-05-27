@@ -9,8 +9,8 @@ from django.db.models import F
 from django.views import View
 
 from services.models import Blog
-from services.forms.forms_v1 import AppealContactForm, ReviewForm
-from services.utils.send_email import send_appeal_contact_notification
+from services.forms.forms_v1 import AppealContactForm, BookingForm, ReviewForm
+from services.utils.send_email import send_appeal_contact_notification, send_booking_notification
 from services.utils.queries import (
     get_language_from_request,
     get_home_page_data,
@@ -46,14 +46,43 @@ class HomePageView(View):
         context['active_nav'] = 'home'
         context['review_form'] = ReviewForm(lang=lang)
         context['review_feedback'] = request.session.pop('review_feedback', None)
+        context['booking_form'] = BookingForm(lang=lang, initial={'booking_type': 'package'})
+        context['booking_feedback'] = request.session.pop('booking_feedback', None)
         return render(request, self.template_name, context)
 
     def post(self, request):
         lang = get_language_from_request(request)
+        form_type = request.POST.get('form_type')
 
-        if request.POST.get('form_type') != 'review':
-            return redirect(reverse('services:home-page'))
+        if form_type == 'booking':
+            return self._handle_booking_post(request, lang)
+        if form_type == 'review':
+            return self._handle_review_post(request, lang)
+        return redirect(reverse('services:home-page'))
 
+    def _handle_booking_post(self, request, lang):
+        form = BookingForm(request.POST, lang=lang)
+
+        if form.is_valid():
+            try:
+                booking = form.save()
+                send_booking_notification(booking)
+                request.session['booking_feedback'] = 'success'
+            except Exception:
+                logging.getLogger(__name__).exception('Booking form save failed.')
+                request.session['booking_feedback'] = 'error'
+            return redirect(reverse('services:home-page') + '#hero-booking')
+
+        context = get_home_page_data(request, lang)
+        context['language'] = lang
+        context['active_nav'] = 'home'
+        context['booking_form'] = form
+        context['booking_feedback'] = None
+        context['review_form'] = ReviewForm(lang=lang)
+        context['review_feedback'] = None
+        return render(request, self.template_name, context)
+
+    def _handle_review_post(self, request, lang):
         form = ReviewForm(request.POST, lang=lang)
 
         if form.is_valid():
@@ -65,12 +94,13 @@ class HomePageView(View):
                 request.session['review_feedback'] = 'error'
             return redirect(reverse('services:home-page') + '#testimonial')
 
-        # Validasiya xətası — modal yenidən açılır, sahə xətaları göstərilir
         context = get_home_page_data(request, lang)
         context['language'] = lang
         context['active_nav'] = 'home'
         context['review_form'] = form
         context['review_feedback'] = None
+        context['booking_form'] = BookingForm(lang=lang, initial={'booking_type': 'package'})
+        context['booking_feedback'] = None
         return render(request, self.template_name, context)
 
 
@@ -148,6 +178,8 @@ class ContactPageView(View):
             'language': lang,
             'background_image': get_background_image('contact'),
             'form': form,
+            'booking_form': BookingForm(lang=lang, initial={'booking_type': 'package'}),
+            'booking_feedback': request.session.pop('booking_feedback', None),
             'page_heading': page_heading,
             'page_motto': get_page_motto('contact', lang),
             'active_nav': 'contact',
@@ -156,6 +188,10 @@ class ContactPageView(View):
 
     def post(self, request):
         lang = get_language_from_request(request)
+        form_type = request.POST.get('form_type')
+        if form_type == 'booking':
+            return self._handle_booking_post(request, lang)
+
         form = AppealContactForm(request.POST)
 
         if form.is_valid():
@@ -181,6 +217,36 @@ class ContactPageView(View):
             'language': lang,
             'background_image': get_background_image('contact'),
             'form': form,
+            'booking_form': BookingForm(lang=lang, initial={'booking_type': 'package'}),
+            'booking_feedback': request.session.pop('booking_feedback', None),
+            'page_heading': page_heading,
+            'page_motto': get_page_motto('contact', lang),
+            'active_nav': 'contact',
+        }
+        return render(request, self.template_name, context)
+
+    def _handle_booking_post(self, request, lang):
+        form = BookingForm(request.POST, lang=lang)
+
+        if form.is_valid():
+            try:
+                booking = form.save()
+                send_booking_notification(booking)
+                request.session['booking_feedback'] = 'success'
+            except Exception:
+                logging.getLogger(__name__).exception('Booking form save failed (contact page).')
+                request.session['booking_feedback'] = 'error'
+            return redirect(reverse('services:contact-page') + '#contact-booking')
+
+        contact = get_contact(lang)
+        page_heading = _('Contact')
+        context = {
+            'contact': serialize_contact(contact, lang) if contact else None,
+            'language': lang,
+            'background_image': get_background_image('contact'),
+            'form': AppealContactForm(),
+            'booking_form': form,
+            'booking_feedback': None,
             'page_heading': page_heading,
             'page_motto': get_page_motto('contact', lang),
             'active_nav': 'contact',

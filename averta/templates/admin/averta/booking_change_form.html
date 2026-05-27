@@ -1,0 +1,64 @@
+{% extends "admin/averta/change_form.html" %}
+
+{% block content %}
+<div class="booking-admin-page">
+    {% if original %}
+    {% if original.is_deleted %}
+    <div class="booking-admin-alert booking-admin-alert--danger">Bu sifariş “Silinib?” kimi işarələnib.</div>
+    {% elif not original.is_read %}
+    <div class="booking-admin-alert">Yeni sifariş — zəhmət olmasa yoxlayın və «Oxunub» işarələyin.</div>
+    {% endif %}
+
+    <div class="booking-admin-meta">
+        <div class="booking-admin-meta__item">
+            <label>ID</label>
+            <span>#{{ original.id }}</span>
+        </div>
+        <div class="booking-admin-meta__item">
+            <label>Tarix</label>
+            <span>{{ original.created_at|date:"d.m.Y H:i" }}</span>
+        </div>
+        <div class="booking-admin-meta__item">
+            <label>Status</label>
+            <span>
+                {% if original.is_read %}Oxunub{% else %}Oxunmayıb{% endif %}
+                · {% if original.is_customer %}Müştəri{% else %}Yeni{% endif %}
+                · {% if original.is_deleted %}Silinib{% else %}Aktiv{% endif %}
+            </span>
+        </div>
+        <div class="booking-admin-meta__item">
+            <label>Qonaqlar</label>
+            <span>{{ original.adults_count }} böyük · {{ original.children_count }} uşaq</span>
+        </div>
+    </div>
+
+    <div class="booking-admin-actions" style="margin:0 0 1rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
+        <a href="#" class="button" id="bookingExportOneCsvBtn">CSV yüklə</a>
+        <a href="#" class="button" id="bookingExportOneXlsBtn">Excel (bu sifariş)</a>
+    </div>
+
+    <script type="application/json" id="bookingExportOneCsvData">
+      {
+        "id": {{ original.id|default:"null" }},
+        "created_at": "{{ original.created_at|date:'d.m.Y H:i' }}",
+        "full_name": "{{ original.full_name|default:''|escapejs }}",
+        "phone": "{{ original.phone|default:''|escapejs }}",
+        "email": "{{ original.email|default:''|escapejs }}",
+        "note": "{{ original.note|default:''|escapejs }}",
+        "adults_count": {{ original.adults_count|default:0 }},
+        "children_count": {{ original.children_count|default:0 }},
+        "is_read": {{ original.is_read|yesno:"true,false" }},
+        "is_customer": {{ original.is_customer|yesno:"true,false" }},
+        "is_deleted": {{ original.is_deleted|yesno:"true,false" }},
+        "services": [{% for s in original.services.all %}"{{ s|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}],
+        "packages": [{% for p in original.packages.all %}"{{ p|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}]
+      }
+    </script>
+    {% endif %}
+
+    <div class="booking-admin-form-wrap">
+        {{ block.super }}
+    </div>
+</div>
+{% endblock %}
+

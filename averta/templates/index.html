@@ -2,18 +2,13 @@
 {% load static %}
 
 {% block title %}Averta — Ana səhifə{% endblock %}
+{% block body_class %}page-home{% endblock %}
 
 {% block hero %}
 {% include 'partials/hero_carousel.html' %}
-<div class="container-fluid search-bar p-0">
-    <div class="container">
-        <div class="search-bar__inner position-relative w-100 mx-auto">
-            <input class="form-control border-0 rounded-pill w-100 search-bar__input" type="text" placeholder="Axtarış (tezliklə)">
-            <button type="button" class="btn btn-primary rounded-pill search-bar__btn">Axtar</button>
-        </div>
-    </div>
-</div>
+{% include 'partials/home_booking_search.html' %}
 {% endblock %}
+
 
 {% block content %}
 {# ——— Dinamik: Haqqımızda (admin panel → About) ——— #}
@@ -45,29 +40,6 @@
 {# ——— Dinamik: Xidmətlər (Explore Tour kartları) ——— #}
 {% include 'partials/home_services_explore.html' %}
 
-{# ——— Dinamik: Tərəfdaşlar ——— #}
-{% if partners %}
-<div class="container-fluid py-5 bg-light">
-    <div class="container py-5">
-        <div class="mx-auto text-center mb-5" style="max-width: 900px;">
-            <h5 class="section-title px-3">Tərəfdaşlar</h5>
-            <h1 class="mb-0">Partnyorlarımız</h1>
-        </div>
-        <div class="owl-carousel partner-carousel">
-            {% for partner in partners %}
-            <div class="text-center p-4">
-                {% if partner.logo %}
-                <img src="{{ partner.logo }}" alt="{{ partner.name }}" class="img-fluid" style="max-height:80px;">
-                {% else %}
-                <span class="fw-bold">{{ partner.name }}</span>
-                {% endif %}
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-</div>
-{% endif %}
-
 {# ——— Dinamik: Bloq ——— #}
 {% if home_blogs %}
 <div class="container-fluid blog py-5">
@@ -89,6 +61,30 @@
 
 {# ——— Dinamik: Rəylər + Rəy formu ——— #}
 {% include 'partials/home_testimonial.html' %}
+
+{# ——— Dinamik: Tərəfdaşlar (rəylərin altında, full-width) ——— #}
+{% if partners %}
+<section class="partners-strip" aria-labelledby="partners-title">
+    <div class="partners-strip__head">
+        <h3 class="partners-strip__title" id="partners-title">Tərəfdaşlar</h3>
+        <span class="partners-strip__rule" aria-hidden="true"></span>
+    </div>
+    <div class="partner-carousel partners-strip__carousel">
+        {% for partner in partners %}
+        <div class="partners-strip__item">
+            <div class="partners-strip__bubble">
+                {% if partner.logo %}
+                <img src="{{ partner.logo }}" alt="{{ partner.name }}" class="partners-strip__logo">
+                {% else %}
+                <span class="partners-strip__fallback">{{ partner.name|slice:":2" }}</span>
+                {% endif %}
+            </div>
+            <div class="partners-strip__name" title="{{ partner.name }}">{{ partner.name }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
 
 {# ——— Dinamik: FAQ ——— #}
 {% if faqs %}
@@ -112,5 +108,6 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'assets/js/home_booking.js' %}"></script>
 <script src="{% static 'assets/js/home_testimonial.js' %}"></script>
 {% endblock %}
