@@ -4,6 +4,7 @@ from django.utils.html import format_html, mark_safe
 from django.utils.translation import gettext_lazy as _
 from ckeditor.widgets import CKEditorWidget
 
+from services.utils.cache_utils import invalidate_model_cache
 from services.admin.admin_help import (
     AdminPageHelpMixin,
     ABOUT_HELP,
@@ -140,16 +141,16 @@ class PackageMediaInline(ContentMediaInline):
     readonly_fields = ('image_preview',)
 
 
-class AboutMediaInline(admin.StackedInline):
-    """Haqqımızda — yalnız bir şəkil."""
+class AboutMediaInline(admin.TabularInline):
+    """Haqqımızda — qaleriya şəkilləri (çoxlu)."""
 
     model = Media
     fk_name = 'about'
-    max_num = 1
+    max_num = 20
     min_num = 0
-    extra = 0
-    verbose_name = 'Şəkil'
-    verbose_name_plural = 'Səhifə şəkli'
+    extra = 1
+    verbose_name = 'Qaleriya şəkli'
+    verbose_name_plural = 'Qaleriya şəkilləri'
     classes = ('wide',)
     fields = ('image_preview', 'image')
     readonly_fields = ('image_preview',)
@@ -157,7 +158,7 @@ class AboutMediaInline(admin.StackedInline):
     def image_preview(self, obj):
         if obj.image:
             return format_html(
-                '<img src="{}" style="max-height:120px;border-radius:4px;" />',
+                '<img src="{}" style="max-height:80px;border-radius:4px;" />',
                 obj.image.url,
             )
         return '—'
@@ -425,10 +426,14 @@ class AboutAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin):
             'fields': ('video', 'video_poster'),
             'description': _(
                 'Haqqımızda səhifəsində play düyməsi ilə açılan video. '
-                'Aşağıda yalnız bir səhifə şəkli əlavə edə bilərsiniz.'
+                'Aşağıda qaleriya üçün çoxlu şəkil əlavə edə bilərsiniz — 3-dən çox olduqda karusel kimi göstərilir.'
             ),
         }),
     )
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        invalidate_model_cache('about')
 
     def save_formset(self, request, form, formset, change):
         instances = formset.save(commit=False)
@@ -439,6 +444,7 @@ class AboutAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin):
                 instance.video = None
             instance.save()
         formset.save_m2m()
+        invalidate_model_cache('about')
 
 
 # ---------------------------------------------------------------------------

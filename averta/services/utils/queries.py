@@ -541,13 +541,9 @@ def serialize_about(about, lang='az'):
     second_title_field = get_localized_field_name('second_title', lang)
     desc_field = get_localized_field_name('description', lang)
 
-    first_media = None
-    for media in about.medias.all():
-        if media.image:
-            first_media = media
-            break
+    gallery_images = [m.image.url for m in about.medias.all() if m.image]
 
-    first_image = first_media.image.url if first_media else None
+    first_image = gallery_images[0] if gallery_images else None
     if not first_image and about.video_poster:
         first_image = about.video_poster.url
 
@@ -565,6 +561,7 @@ def serialize_about(about, lang='az'):
         'video': about.video.url if about.video else None,
         'video_poster': about.video_poster.url if about.video_poster else None,
         'first_image': first_image,
+        'gallery_images': gallery_images,
     }
 
 
