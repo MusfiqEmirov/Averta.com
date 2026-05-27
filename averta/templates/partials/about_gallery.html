@@ -1,0 +1,40 @@
+{% load i18n %}
+{% with images=about.gallery_images %}
+{% if images %}
+<section class="about-gallery py-4">
+    <div class="container">
+        <div class="about-gallery__stage">
+            <div class="about-gallery__owl owl-carousel">
+                {% for img in images %}
+                <div class="about-gallery__card">
+                    <a href="{{ img }}" data-lightbox="about-gallery"
+                       aria-label="{% trans 'Qaleriya şəkli' %} {{ forloop.counter }}">
+                        <img src="{{ img }}"
+                             class="about-gallery__card-img"
+                             alt="{% trans 'Qaleriya şəkli' %} {{ forloop.counter }}">
+                        <span class="about-gallery__zoom" aria-hidden="true">
+                            <i class="fa fa-search-plus"></i>
+                        </span>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            {% if images|length > 1 %}
+            <div class="about-gallery__toolbar">
+                <button type="button"
+                        class="about-gallery__prev"
+                        aria-label="{% trans 'Əvvəlki şəkil' %}">
+                    <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                </button>
+                <button type="button"
+                        class="about-gallery__next"
+                        aria-label="{% trans 'Növbəti şəkil' %}">
+                    <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endwith %}

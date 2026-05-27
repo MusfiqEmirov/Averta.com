@@ -24,6 +24,10 @@
 </div>
 {% endif %}
 
+{% if about and about.gallery_images %}
+{% include 'partials/about_gallery.html' %}
+{% endif %}
+
 {% if statistics %}
 {% include 'partials/about_statistics.html' %}
 {% endif %}
@@ -54,6 +58,33 @@
 
 {% block extra_js %}
 <script>
+{% if about and about.gallery_images %}
+(function () {
+    var count = {{ about.gallery_images|length }};
+    var $carousel = $('.about-gallery__owl');
+    $carousel.owlCarousel({
+        loop: count > 3,
+        margin: 16,
+        nav: false,
+        dots: count > 1,
+        autoplay: count > 1,
+        autoplayTimeout: 4000,
+        autoplayHoverPause: true,
+        responsive: {
+            0:   { items: 1 },
+            576: { items: Math.min(count, 2) },
+            992: { items: Math.min(count, 3) }
+        }
+    });
+    $('.about-gallery__prev').on('click', function () {
+        $carousel.trigger('prev.owl.carousel');
+    });
+    $('.about-gallery__next').on('click', function () {
+        $carousel.trigger('next.owl.carousel');
+    });
+})();
+{% endif %}
+
 (function () {
     var statValues = document.querySelectorAll('.about-stats-value[data-count]');
     if (statValues.length) {
@@ -112,5 +143,6 @@
         });
     }
 })();
+
 </script>
 {% endblock %}
