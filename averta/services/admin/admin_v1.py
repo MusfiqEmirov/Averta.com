@@ -90,6 +90,8 @@ class MediaAdminForm(forms.ModelForm):
             'is_contact_page_background_image',
             'is_service_page_background_image',
             'is_blog_page_background_image',
+            'is_home_contact_background_image',
+            'is_contact_booking_background_image',
         )
 
 
@@ -692,6 +694,8 @@ class MediaAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin):
         'is_contact_page_background_image',
         'is_service_page_background_image',
         'is_blog_page_background_image',
+        'is_home_contact_background_image',
+        'is_contact_booking_background_image',
         'created_at',
     )
     list_filter = (
@@ -700,6 +704,8 @@ class MediaAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin):
         'is_contact_page_background_image',
         'is_service_page_background_image',
         'is_blog_page_background_image',
+        'is_home_contact_background_image',
+        'is_contact_booking_background_image',
     )
     ordering = ('-created_at',)
     readonly_fields = ('image_preview', 'created_at')
@@ -713,10 +719,15 @@ class MediaAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin):
                 'is_contact_page_background_image',
                 'is_service_page_background_image',
                 'is_blog_page_background_image',
+                'is_home_contact_background_image',
+                'is_contact_booking_background_image',
             ),
             'description': _(
-                'Yalnız bir səhifə seçin. Bu şəkil həmin səhifənin yuxarı geniş banner '
-                'hissəsində arxa fonda görünür.'
+                'Yalniz bir sehife secin. '
+                '"Ana sehife Elaqe bolmesi" — ana sehifede asagidaki "Elaqe/Bize yazin" '
+                'formasinin arxa fonu. '
+                '"Elaqe sehifesi Sifaris et bolmesi" — elaqe sehifesindeki booking '
+                'formasinin arxa fonu.'
             ),
         }),
         (_('Sistem məlumatı'), {'fields': ('created_at',)}),

@@ -22,6 +22,8 @@ _MEDIA_BACKGROUND_FIELDS = (
     'is_contact_page_background_image',
     'is_service_page_background_image',
     'is_blog_page_background_image',
+    'is_home_contact_background_image',
+    'is_contact_booking_background_image',
 )
 
 

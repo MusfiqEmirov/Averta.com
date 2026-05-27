@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static i18n %}
 
 {% block title %}Averta — Ana səhifə{% endblock %}
 {% block body_class %}page-home{% endblock %}
@@ -45,7 +45,7 @@
 <div class="container-fluid blog py-5">
     <div class="container py-5">
         <div class="mx-auto text-center mb-5" style="max-width: 900px;">
-            <h5 class="section-title px-3">Bloq</h5>
+            <h5 class="section-title px-3">{% trans "Bloq" %}</h5>
         </div>
         <div class="row g-4">
             {% for blog in home_blogs %}
@@ -53,7 +53,7 @@
             {% endfor %}
         </div>
         <div class="text-center mt-4">
-            <a class="btn btn-primary rounded-pill py-3 px-5" href="{% url 'services:blog-page' %}">Bütün yazılar</a>
+            <a class="btn btn-primary rounded-pill py-3 px-5" href="{% url 'services:blog-page' %}">{% trans "Bütün yazılar" %}</a>
         </div>
     </div>
 </div>
@@ -66,7 +66,7 @@
 {% if partners %}
 <section class="partners-strip" aria-labelledby="partners-title">
     <div class="partners-strip__head">
-        <h3 class="partners-strip__title" id="partners-title">Tərəfdaşlar</h3>
+        <h3 class="partners-strip__title" id="partners-title">{% trans "Tərəfdaşlar" %}</h3>
         <span class="partners-strip__rule" aria-hidden="true"></span>
     </div>
     <div class="partner-carousel partners-strip__carousel">
@@ -92,16 +92,64 @@
 {% endif %}
 
 {# ——— Statik: Subscribe (şablondan) ——— #}
-<div class="container-fluid subscribe py-5">
+<div class="container-fluid subscribe py-5"{% if home_contact_bg %} style="background-image:linear-gradient(rgba(19,53,123,.55),rgba(19,53,123,.55)),url('{{ home_contact_bg }}');background-size:cover;background-position:center;background-repeat:no-repeat;background-attachment:scroll;"{% endif %}>
     <div class="container text-center py-5">
         <div class="mx-auto text-center" style="max-width: 900px;">
-            <h5 class="subscribe-title px-3">Subscribe</h5>
-            <h1 class="text-white mb-4">Our Newsletter</h1>
-            <p class="text-white mb-5">Lorem ipsum dolor sit amet consectetur adipisicing elit. Laborum tempore nam, architecto doloremque velit explicabo?</p>
-            <div class="position-relative mx-auto">
-                <input class="form-control border-primary rounded-pill w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
-                <button type="button" class="btn btn-primary rounded-pill position-absolute top-0 end-0 py-2 px-4 mt-2 me-2">Subscribe</button>
+            <h5 class="subscribe-title px-3" id="home-contact">{% trans "Əlaqə" %}</h5>
+            <h1 class="text-white mb-3">{% trans "Bizə yazın" %}</h1>
+            <p class="text-white mb-4">{% trans "Mesajınızı göndərin, tezliklə sizinlə əlaqə saxlayacağıq." %}</p>
+
+            {% if appeal_feedback == 'success' %}
+            <div class="alert alert-success rounded-3 py-2 px-3 mx-auto mb-3" style="max-width:720px;" role="alert">
+                <i class="fa fa-check-circle me-2"></i>{% trans "Mesajınız qəbul olundu." %}
             </div>
+            {% elif appeal_feedback == 'error' %}
+            <div class="alert alert-danger rounded-3 py-2 px-3 mx-auto mb-3" style="max-width:720px;" role="alert">
+                <i class="fa fa-exclamation-circle me-2"></i>{% trans "Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin." %}
+            </div>
+            {% endif %}
+
+            <form method="post" action="{% url 'services:home-page' %}#home-contact" class="mx-auto home-contact-compact" style="max-width:720px;" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="appeal">
+                {{ appeal_form.website }}
+                {{ appeal_form.subject }}
+
+                <div class="row g-2 align-items-start">
+                    <div class="col-12 col-md-5">
+                        {{ appeal_form.full_name }}
+                        {% if appeal_form.full_name.errors %}
+                        <div class="text-warning small mt-1">{{ appeal_form.full_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-12 col-md-3">
+                        {{ appeal_form.phone }}
+                        {% if appeal_form.phone.errors %}
+                        <div class="text-warning small mt-1">{{ appeal_form.phone.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-12 col-md-4">
+                        {{ appeal_form.email }}
+                        {% if appeal_form.email.errors %}
+                        <div class="text-warning small mt-1">{{ appeal_form.email.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-12">
+                        {{ appeal_form.info }}
+                        {% if appeal_form.info.errors %}
+                        <div class="text-warning small mt-1">{{ appeal_form.info.errors.0 }}</div>
+                        {% endif %}
+                        {% if appeal_form.non_field_errors %}
+                        <div class="text-warning small mt-1">{{ appeal_form.non_field_errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-12 d-grid d-sm-flex justify-content-center">
+                        <button type="submit" class="btn btn-primary btn-sm rounded-pill px-4 py-2">
+                            <i class="fa fa-paper-plane me-2" aria-hidden="true"></i>{% trans "Göndər" %}
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>

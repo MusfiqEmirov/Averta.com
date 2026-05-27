@@ -234,12 +234,20 @@ def get_background_image(page_type):
         'contact': 'is_contact_page_background_image',
         'service': 'is_service_page_background_image',
         'blog': 'is_blog_page_background_image',
+        'home_contact': 'is_home_contact_background_image',
+        'contact_booking': 'is_contact_booking_background_image',
     }
 
     if page_type not in image_map:
         return None
 
-    media = Media.objects.filter(**{image_map[page_type]: True}).first()
+    # If multiple images are marked as background, prefer the newest one.
+    media = (
+        Media.objects
+        .filter(**{image_map[page_type]: True}, image__isnull=False)
+        .order_by('-created_at', '-id')
+        .first()
+    )
     if media and media.image:
         return media.image.url
     return None

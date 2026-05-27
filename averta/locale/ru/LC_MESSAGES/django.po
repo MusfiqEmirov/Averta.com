@@ -118,3 +118,108 @@ msgstr "Готово"
 
 msgid "Qeyd"
 msgstr "Примечание"
+
+msgid "Haqqımızda"
+msgstr "О нас"
+
+msgid "Ətraflı"
+msgstr "Подробнее"
+
+msgid "Paketlər"
+msgstr "Пакеты"
+
+msgid "Əvvəlki"
+msgstr "Назад"
+
+msgid "Növbəti"
+msgstr "Далее"
+
+msgid "Xidmətlər"
+msgstr "Услуги"
+
+msgid "Xidmətlərimiz"
+msgstr "Наши услуги"
+
+msgid "Bütün xidmətlər"
+msgstr "Все услуги"
+
+msgid "Bloq"
+msgstr "Блог"
+
+msgid "Bütün yazılar"
+msgstr "Все записи"
+
+msgid "Tərəfdaşlar"
+msgstr "Партнёры"
+
+msgid "Bizə yazın"
+msgstr "Напишите нам"
+
+msgid "Mesajınızı göndərin, tezliklə sizinlə əlaqə saxlayacağıq."
+msgstr "Отправьте сообщение, и мы скоро свяжемся с вами."
+
+msgid "Mesajınız qəbul olundu."
+msgstr "Ваше сообщение получено."
+
+msgid "Müştərilərimiz nə deyir!"
+msgstr "Что говорят наши клиенты!"
+
+msgid "Əvvəlki rəylər"
+msgstr "Предыдущие отзывы"
+
+msgid "Növbəti rəylər"
+msgstr "Следующие отзывы"
+
+msgid "Rəyiniz uğurla göndərildi."
+msgstr "Ваш отзыв успешно отправлен."
+
+msgid "Rəyiniz göndərilmədi. Zəhmət olmasa yenidən cəhd edin."
+msgstr "Не удалось отправить отзыв. Пожалуйста, попробуйте снова."
+
+msgid "Rəy yaz"
+msgstr "Оставить отзыв"
+
+msgid "Rəyinizi yazın"
+msgstr "Напишите свой отзыв"
+
+msgid "Ad"
+msgstr "Имя"
+
+msgid "(ən çoxu 50 simvol)"
+msgstr "(не более 50 символов)"
+
+msgid "(saytda göstərilmir)"
+msgstr "(не отображается на сайте)"
+
+msgid "Xidmət və ya paket"
+msgstr "Услуга или пакет"
+
+msgid "Yalnız birini seçin."
+msgstr "Выберите только один вариант."
+
+msgid "Reytinq"
+msgstr "Рейтинг"
+
+msgid "Rəy"
+msgstr "Отзыв"
+
+msgid "(ən çoxu 190 simvol)"
+msgstr "(не более 190 символов)"
+
+msgid "Tez-tez verilən suallar"
+msgstr "Часто задаваемые вопросы"
+
+msgid "Bütün suallar"
+msgstr "Все вопросы"
+
+msgid "Daxil olan xidmətlər:"
+msgstr "Включённые услуги:"
+
+msgid "Bitmə tarixi"
+msgstr "Дата окончания"
+
+msgid "ətraflı"
+msgstr "подробнее"
+
+msgid "Sürətli keçidlər"
+msgstr "Быстрые ссылки"

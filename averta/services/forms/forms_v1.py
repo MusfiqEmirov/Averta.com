@@ -98,6 +98,52 @@ class AppealContactForm(forms.ModelForm):
         normalized = normalize_az_phone(raw)
         return normalized or raw
 
+    def __init__(self, *args, lang='az', **kwargs):
+        super().__init__(*args, **kwargs)
+        self.lang = lang
+        ui = {
+            'az': {
+                'full_name_label': 'Ad soyad *',
+                'full_name_ph': 'Ad soyad *',
+                'email_label': 'E-poçt',
+                'email_ph': 'E-poçt (istəyə görə)',
+                'phone_label': 'Mobil nömrə *',
+                'phone_ph': 'Mobil nömrə *',
+                'info_label': 'Mesajınız *',
+                'info_ph': 'Mesajınız *',
+            },
+            'en': {
+                'full_name_label': 'Full name *',
+                'full_name_ph': 'Full name *',
+                'email_label': 'Email',
+                'email_ph': 'Email (optional)',
+                'phone_label': 'Mobile number *',
+                'phone_ph': 'Mobile number *',
+                'info_label': 'Your message *',
+                'info_ph': 'Your message *',
+            },
+            'ru': {
+                'full_name_label': 'Имя и фамилия *',
+                'full_name_ph': 'Имя и фамилия *',
+                'email_label': 'Эл. почта',
+                'email_ph': 'Эл. почта (необязательно)',
+                'phone_label': 'Мобильный номер *',
+                'phone_ph': 'Мобильный номер *',
+                'info_label': 'Ваше сообщение *',
+                'info_ph': 'Ваше сообщение *',
+            },
+        }.get(lang)
+
+        if ui:
+            self.fields['full_name'].label = ui['full_name_label']
+            self.fields['full_name'].widget.attrs['placeholder'] = ui['full_name_ph']
+            self.fields['email'].label = ui['email_label']
+            self.fields['email'].widget.attrs['placeholder'] = ui['email_ph']
+            self.fields['phone'].label = ui['phone_label']
+            self.fields['phone'].widget.attrs['placeholder'] = ui['phone_ph']
+            self.fields['info'].label = ui['info_label']
+            self.fields['info'].widget.attrs['placeholder'] = ui['info_ph']
+
 
 class BookingForm(forms.ModelForm):
     """Ana səhifə hero sifariş formu."""

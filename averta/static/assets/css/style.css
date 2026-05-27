@@ -556,6 +556,9 @@
 .carousel-header .carousel-control-prev,
 .carousel-header .carousel-control-next {
     background: transparent;
+    z-index: 10;
+    width: 15%;
+    opacity: 1;
 }
 
 .carousel-header .carousel-control-prev .carousel-control-prev-icon {
@@ -570,11 +573,9 @@
     background-size: 55% 55%;
     background-position: center;
     background-repeat: no-repeat;
-    background-color: rgba(255, 255, 255, 0.18) !important;
+    background-color: var(--bs-primary) !important;
     border: 1px solid rgba(255, 255, 255, 0.35);
     box-shadow: 0 10px 30px rgba(0,0,0,.20);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     transition: transform .18s ease, background-color .18s ease, box-shadow .18s ease, border-color .18s ease;
 }
 
@@ -590,11 +591,9 @@
     background-size: 55% 55%;
     background-position: center;
     background-repeat: no-repeat;
-    background-color: rgba(255, 255, 255, 0.18) !important;
+    background-color: var(--bs-primary) !important;
     border: 1px solid rgba(255, 255, 255, 0.35);
     box-shadow: 0 10px 30px rgba(0,0,0,.20);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     transition: transform .18s ease, background-color .18s ease, box-shadow .18s ease, border-color .18s ease;
 
 }
@@ -602,7 +601,7 @@
 .carousel-header .carousel-control-prev:hover .carousel-control-prev-icon,
 .carousel-header .carousel-control-next:hover .carousel-control-next-icon {
     transform: translateY(-50%) scale(1.04);
-    background-color: rgba(255, 255, 255, 0.26) !important;
+    background-color: #0d2859 !important;
     border-color: rgba(255, 255, 255, 0.55);
     box-shadow: 0 14px 40px rgba(0,0,0,.28);
 }
@@ -620,12 +619,19 @@
 }
 
 @media (max-width: 767.98px) {
-    .carousel-header .carousel-control-prev .carousel-control-prev-icon,
-    .carousel-header .carousel-control-next .carousel-control-next-icon {
+    .carousel-header .carousel-control-prev .carousel-control-prev-icon {
         width: 46px;
         height: 46px;
         left: 10px;
+        right: auto;
+        background-size: 60% 60%;
+    }
+
+    .carousel-header .carousel-control-next .carousel-control-next-icon {
+        width: 46px;
+        height: 46px;
         right: 10px;
+        left: auto;
         background-size: 60% 60%;
     }
 }
@@ -661,6 +667,7 @@
     text-align: center;
     background: linear-gradient(rgba(0, 0, 0, .5), rgba(0, 0, 0, 0.5));
     background-size: cover;
+    pointer-events: none;
 }
 
 .carousel-header .hero-motto {
@@ -1493,11 +1500,6 @@
         min-height: 55vh;
     }
 
-    .carousel-header .carousel-control-prev .carousel-control-prev-icon,
-    .carousel-header .carousel-control-next .carousel-control-next-icon {
-        opacity: 0;
-    }
-
     .search-bar {
         margin-top: -28px;
     }
@@ -1904,6 +1906,68 @@
 .about-intro-home .about-intro-media-col,
 .about-intro-home .about-intro-content-col {
     align-self: flex-start;
+}
+
+/* Ana səhifə — mətn blokunun arxasında dekorativ təyyarə silueti */
+.about-intro-home .about-intro-content-col {
+    position: relative;
+    /* allow decoration to extend without clipping */
+    overflow: visible;
+}
+
+.about-intro-home .about-intro-text-deco {
+    position: absolute;
+    right: -18%;
+    bottom: -16%;
+    /* Responsive sizing: large on desktop, controlled on small screens */
+    width: clamp(620px, 60vw, 1020px);
+    aspect-ratio: 16 / 10;
+    height: auto;
+    background: url('../img/about-img-1.png') no-repeat center / contain;
+    opacity: 0.18;
+    /* PNG has a black background; filters make it work like a watermark */
+    filter: grayscale(1) brightness(1.15) contrast(1.1);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.about-intro-home .about-intro-text-deco {
+    /* default (mobile/tablet): responsive sizing above */
+}
+
+/* Desktop: keep the exact same look as ~1024px across all desktop widths */
+@media (min-width: 992px) {
+    .about-intro-home .about-intro-text-deco {
+        right: -160px;
+        bottom: -140px;
+        width: 920px;
+        max-width: none;
+        transform: none;
+    }
+}
+
+.about-intro-home .about-intro-content-col > :not(.about-intro-text-deco) {
+    position: relative;
+    z-index: 1;
+}
+
+@media (max-width: 991.98px) {
+    .about-intro-home .about-intro-text-deco {
+        right: 50%;
+        bottom: -4%;
+        transform: translateX(50%);
+        width: min(88vw, 560px);
+        aspect-ratio: 16 / 10;
+        opacity: 0.16;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .about-intro-home .about-intro-text-deco {
+        width: min(92vw, 420px);
+        aspect-ratio: 16 / 10;
+        opacity: 0.14;
+    }
 }
 
 .about-intro-home .about-intro-image {
@@ -5049,6 +5113,21 @@ body.page-home .partners-strip__head {
     margin-bottom: 1rem !important;
 }
 
+/* Home contact (subscribe block replacement) — compact form */
+.home-contact-compact .form-control.form-control-sm {
+    padding-top: 0.55rem;
+    padding-bottom: 0.55rem;
+    border-radius: 999px;
+}
+
+.home-contact-compact textarea.form-control.form-control-sm {
+    border-radius: 16px;
+}
+
+.home-contact-compact .text-warning.small {
+    margin-bottom: 0;
+}
+
 /* Mobile: even tighter */
 @media (max-width: 767.98px) {
     body.page-home .container-fluid.about,
@@ -5085,7 +5164,9 @@ body.page-home .partners-strip__head {
 
 /*** Subscribe Start ***/
 .subscribe {
-    background: linear-gradient(rgba(19, 53, 123, .6), rgba(19, 53, 123, .6)), url(../img/subscribe-img.jpg);
+    /* Base: solid dark-blue gradient (no image). Overridden by inline style when admin sets an image. */
+    background-color: #0c2347;
+    background-image: linear-gradient(rgba(19, 53, 123, .82), rgba(19, 53, 123, .82));
     background-attachment: fixed;
     background-position: center center;
     background-repeat: no-repeat;
@@ -5342,22 +5423,38 @@ body.page-home .partners-strip__head {
 }
 
 .site-footer__bottom {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.28);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.site-footer__copy {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.55);
+.site-footer__legal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
 }
 
-.site-footer__copy a {
-    color: rgba(255, 255, 255, 0.85);
+.site-footer__copy-line {
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.78);
+    letter-spacing: 0.01em;
+}
+
+.site-footer__credit {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.site-footer__credit a {
+    color: rgba(255, 255, 255, 0.82);
+    font-weight: 600;
     text-decoration: none;
     transition: color 0.2s ease;
 }
 
-.site-footer__copy a:hover {
-    color: #86b7fe;
+.site-footer__credit a:hover {
+    color: #ffc107;
 }
 
 @media (max-width: 991.98px) {
@@ -5463,9 +5560,13 @@ body.page-home .partners-strip__head {
         border-radius: 6px;
     }
 
-    .site-footer__copy {
-        font-size: 0.75rem;
-        line-height: 1.4;
+    .site-footer__copy-line {
+        font-size: 0.8rem;
+        line-height: 1.45;
+    }
+
+    .site-footer__credit {
+        font-size: 0.74rem;
     }
 }
 
@@ -5489,7 +5590,7 @@ body.page-home .partners-strip__head {
         font-size: 0.95rem;
     }
 
-    /* Sayt xəritəsi + Əlaqə yan-yana */
+    /* Sürətli keçidlər + Əlaqə yan-yana */
     .site-footer__nav {
         grid-template-columns: 1fr 1fr;
         gap: 0.05rem 0.45rem;
@@ -5995,7 +6096,7 @@ body.page-home .partners-strip__head {
 /*** Home packages — vertical card slider ***/
 
 .home-packages {
-    background: #f0f4ff;
+    background: #fff;
     padding-top: 3.5rem !important;
     padding-bottom: 3.5rem !important;
     overflow: visible;
@@ -6090,18 +6191,20 @@ body.page-home .partners-strip__head {
     height: 600px;
     scroll-snap-align: start;
     border-radius: 1.35rem;
-    background: #fff;
-    box-shadow: 0 4px 28px rgba(19, 53, 123, 0.11);
-    border: 1px solid rgba(19, 53, 123, 0.07);
+    /* warm tint so cards pop on white body */
+    background: linear-gradient(180deg, #fff 0%, #fffdf6 100%);
+    box-shadow: 0 4px 20px rgba(19, 53, 123, 0.08);
+    border: 1px solid rgba(255, 193, 7, 0.28);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 .pkg-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 36px rgba(19, 53, 123, 0.18);
+    box-shadow: 0 12px 32px rgba(19, 53, 123, 0.14);
+    border-color: rgba(255, 193, 7, 0.45);
 }
 
 /* ── Header with gradient + icon ── */
@@ -6114,18 +6217,21 @@ body.page-home .partners-strip__head {
     overflow: hidden;
 }
 
-/* Header gradient by icon type */
-.pkg-card--plane    .pkg-card__header { background: linear-gradient(145deg, #1a3a8f, #3b7de8); }
-.pkg-card--hike     .pkg-card__header { background: linear-gradient(145deg, #064e3b, #10b981); }
-.pkg-card--mountain .pkg-card__header { background: linear-gradient(145deg, #4c1d95, #a855f7); }
-.pkg-card--compass  .pkg-card__header { background: linear-gradient(145deg, #78350f, #f59e0b); }
-.pkg-card--beach    .pkg-card__header { background: linear-gradient(145deg, #0e7490, #22d3ee); }
-.pkg-card--boat     .pkg-card__header { background: linear-gradient(145deg, #164e63, #0ea5e9); }
-.pkg-card--camera   .pkg-card__header { background: linear-gradient(145deg, #9f1239, #f43f5e); }
-.pkg-card--city     .pkg-card__header { background: linear-gradient(145deg, #1e293b, #64748b); }
-.pkg-card--car      .pkg-card__header { background: linear-gradient(145deg, #312e81, #6366f1); }
-.pkg-card--tent     .pkg-card__header { background: linear-gradient(145deg, #451a03, #b45309); }
-.pkg-card .pkg-card__header { background: linear-gradient(145deg, #1a3a8f, #3b7de8); }
+/* Header — unified brand gradient (all icon types) */
+.pkg-card__header,
+.pkg-card--plane .pkg-card__header,
+.pkg-card--hike .pkg-card__header,
+.pkg-card--mountain .pkg-card__header,
+.pkg-card--compass .pkg-card__header,
+.pkg-card--beach .pkg-card__header,
+.pkg-card--boat .pkg-card__header,
+.pkg-card--camera .pkg-card__header,
+.pkg-card--city .pkg-card__header,
+.pkg-card--car .pkg-card__header,
+.pkg-card--tent .pkg-card__header,
+.pkg-card .pkg-card__header {
+    background: linear-gradient(145deg, #13357b 0%, #1a4a9e 55%, #2456a8 100%);
+}
 
 /* Subtle radial glow in header */
 .pkg-card__header::before {
@@ -6147,22 +6253,22 @@ body.page-home .partners-strip__head {
     position: absolute;
     top: 12px;
     right: 14px;
-    background: rgba(0, 0, 0, 0.28);
-    backdrop-filter: blur(6px);
-    color: #fff;
+    background: #ffc107;
+    color: #1b1b1b;
     font-size: 1rem;
     font-weight: 700;
-    padding: 3px 10px;
+    padding: 4px 12px;
     border-radius: 2rem;
     white-space: nowrap;
     letter-spacing: 0.01em;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
 /* ── Card name (static, not scrollable) ── */
 .pkg-card__name-wrap {
     padding: 1.1rem 1.4rem 0.6rem;
     flex: 0 0 auto;
-    border-bottom: 1px solid rgba(19, 53, 123, 0.08);
+    border-bottom: 1px solid rgba(255, 193, 7, 0.22);
 }
 
 .pkg-card__name {
@@ -6226,7 +6332,7 @@ body.page-home .partners-strip__head {
 .pkg-card__check {
     flex: 0 0 14px;
     margin-top: 2px;
-    color: #13357b;
+    color: #ffc107;
 }
 
 .pkg-card__divider {
@@ -6246,12 +6352,12 @@ body.page-home .partners-strip__head {
 .pkg-card__footer {
     flex: 0 0 auto;
     padding: 0.85rem 1.4rem 1.1rem;
-    border-top: 1px solid rgba(19, 53, 123, 0.08);
+    border-top: 1px solid rgba(255, 193, 7, 0.22);
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 0.6rem;
-    background: rgba(240, 244, 255, 0.55);
+    background: rgba(255, 193, 7, 0.07);
 }
 
 .pkg-card__deadline {

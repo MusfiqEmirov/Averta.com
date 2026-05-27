@@ -118,3 +118,108 @@ msgstr "Done"
 
 msgid "Qeyd"
 msgstr "Note"
+
+msgid "Haqqımızda"
+msgstr "About us"
+
+msgid "Ətraflı"
+msgstr "Read more"
+
+msgid "Paketlər"
+msgstr "Packages"
+
+msgid "Əvvəlki"
+msgstr "Previous"
+
+msgid "Növbəti"
+msgstr "Next"
+
+msgid "Xidmətlər"
+msgstr "Services"
+
+msgid "Xidmətlərimiz"
+msgstr "Our services"
+
+msgid "Bütün xidmətlər"
+msgstr "All services"
+
+msgid "Bloq"
+msgstr "Blog"
+
+msgid "Bütün yazılar"
+msgstr "All posts"
+
+msgid "Tərəfdaşlar"
+msgstr "Partners"
+
+msgid "Bizə yazın"
+msgstr "Write to us"
+
+msgid "Mesajınızı göndərin, tezliklə sizinlə əlaqə saxlayacağıq."
+msgstr "Send your message and we will contact you soon."
+
+msgid "Mesajınız qəbul olundu."
+msgstr "Your message has been received."
+
+msgid "Müştərilərimiz nə deyir!"
+msgstr "What our clients say!"
+
+msgid "Əvvəlki rəylər"
+msgstr "Previous reviews"
+
+msgid "Növbəti rəylər"
+msgstr "Next reviews"
+
+msgid "Rəyiniz uğurla göndərildi."
+msgstr "Your review has been sent successfully."
+
+msgid "Rəyiniz göndərilmədi. Zəhmət olmasa yenidən cəhd edin."
+msgstr "Your review could not be sent. Please try again."
+
+msgid "Rəy yaz"
+msgstr "Write a review"
+
+msgid "Rəyinizi yazın"
+msgstr "Write your review"
+
+msgid "Ad"
+msgstr "Name"
+
+msgid "(ən çoxu 50 simvol)"
+msgstr "(max 50 characters)"
+
+msgid "(saytda göstərilmir)"
+msgstr "(not shown on the site)"
+
+msgid "Xidmət və ya paket"
+msgstr "Service or package"
+
+msgid "Yalnız birini seçin."
+msgstr "Select only one."
+
+msgid "Reytinq"
+msgstr "Rating"
+
+msgid "Rəy"
+msgstr "Review"
+
+msgid "(ən çoxu 190 simvol)"
+msgstr "(max 190 characters)"
+
+msgid "Tez-tez verilən suallar"
+msgstr "Frequently asked questions"
+
+msgid "Bütün suallar"
+msgstr "All questions"
+
+msgid "Daxil olan xidmətlər:"
+msgstr "Included services:"
+
+msgid "Bitmə tarixi"
+msgstr "End date"
+
+msgid "ətraflı"
+msgstr "details"
+
+msgid "Sürətli keçidlər"
+msgstr "Quick links"

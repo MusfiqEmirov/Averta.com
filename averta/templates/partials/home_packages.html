@@ -1,14 +1,15 @@
+{% load i18n %}
 {% if packages %}
 <section id="packages" class="home-packages py-5">
 
     <div class="container">
         <div class="mx-auto text-center mb-5" style="max-width:700px;">
-            <h5 class="section-title px-3">Paketlər</h5>
+            <h5 class="section-title px-3">{% trans "Paketlər" %}</h5>
         </div>
     </div>
 
     <div class="pkg-slider-outer">
-        <button class="pkg-nav pkg-nav--prev" id="pkgPrev" aria-label="Əvvəlki" type="button">
+        <button class="pkg-nav pkg-nav--prev" id="pkgPrev" aria-label="{% trans 'Əvvəlki' %}" type="button">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
 
@@ -18,7 +19,7 @@
             {% endfor %}
         </div>
 
-        <button class="pkg-nav pkg-nav--next" id="pkgNext" aria-label="Növbəti" type="button">
+        <button class="pkg-nav pkg-nav--next" id="pkgNext" aria-label="{% trans 'Növbəti' %}" type="button">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
     </div>
