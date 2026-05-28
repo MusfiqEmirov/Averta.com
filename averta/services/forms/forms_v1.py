@@ -1,13 +1,55 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
 from services.models import AppealContact, Booking, Package, Review, Service
 from services.models.review_models import REVIEW_MESSAGE_MAX_LENGTH, REVIEW_NAME_MAX_LENGTH
 from services.utils import normalize_az_phone
 from services.utils.queries import get_localized_field_name, get_packages, get_services
+from services.utils.turnstile import verify_turnstile_response, is_turnstile_configured
 
 
-class AppealContactForm(forms.ModelForm):
+class TurnstileMixin:
+    """
+    Cloudflare Turnstile checkbox validation.
+    Expects the widget to post `cf-turnstile-response`.
+    """
+
+    def __init__(self, *args, request=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._turnstile_request = request
+        # NOTE: This mixin is not a Django Form subclass, so declaring a Field
+        # as a class attribute would not be picked up by Django's form metaclass.
+        # We must inject it into `self.fields` so templates render a BoundField.
+        self.fields.setdefault(
+            'turnstile',
+            forms.CharField(required=False, widget=forms.HiddenInput(), label=''),
+        )
+
+    def _turnstile_is_enabled(self) -> bool:
+        return is_turnstile_configured()
+
+    def _turnstile_verify(self) -> bool:
+        if not self._turnstile_is_enabled():
+            return True
+
+        token = (self.data.get('cf-turnstile-response') or '').strip()
+        if not token:
+            self.add_error('turnstile', _('Please verify that you are human.'))
+            return False
+
+        remote_ip = None
+        req = getattr(self, '_turnstile_request', None)
+        if req is not None:
+            remote_ip = req.META.get('REMOTE_ADDR')
+
+        ok = verify_turnstile_response(token, remote_ip=remote_ip)
+        if not ok:
+            self.add_error('turnstile', _('Captcha verification failed. Please try again.'))
+        return ok
+
+
+class AppealContactForm(TurnstileMixin, forms.ModelForm):
     website = forms.CharField(
         required=False,
         widget=forms.HiddenInput(),
@@ -83,6 +125,7 @@ class AppealContactForm(forms.ModelForm):
 
         if not email and not phone:
             raise ValidationError(_('E-poçt və ya mobil nömrədən ən azı biri mütləqdir.'))
+        self._turnstile_verify()
         return cleaned_data
 
     def clean_email(self):
@@ -508,7 +551,7 @@ class ReviewForm(forms.ModelForm):
             raise ValidationError(_('Mobil nömrə mütləqdir.'))
         if not Booking.objects.filter(phone=phone, is_customer=True, is_deleted=False).exists():
             not_customer_msg = {
-                'az': 'Rəy yazmaq üçün müştərimiz olmalısınız. Zəhmət olmasa əvvəlcə sifariş verin.',
+                'az': 'Sizin nömrəniz bizim müştəri siyahımızda yoxdur. Rəy yazmaq üçün əvvəlcə sifariş verin.',
                 'en': 'You must be our customer to leave a review. Please place a booking first.',
                 'ru': 'Чтобы оставить отзыв, вы должны быть нашим клиентом. Сначала оформите заказ.',
             }.get(getattr(self, 'lang', 'az'), 'Rəy yazmaq üçün müştərimiz olmalısınız.')

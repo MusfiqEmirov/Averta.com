@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.utils.translation import gettext as _
 from django.db.models import F
 from django.views import View
+from django.conf import settings
 
 from services.models import Blog
 from services.forms.forms_v1 import AppealContactForm, BookingForm, ReviewForm
@@ -35,6 +36,30 @@ from services.utils.queries import (
     serialize_service,
     get_other_services,
 )
+
+def _is_ajax(request) -> bool:
+    """True when browser asked for JSON (fetch/XHR)."""
+    return (request.headers.get('X-Requested-With') or '').lower() == 'xmlhttprequest'
+
+def _first_form_error_message(form) -> str:
+    """
+    Return the first useful error message from a Django form.
+    Prefers non-field errors, then first field error.
+    """
+    try:
+        nfe = form.non_field_errors()
+        if nfe:
+            return str(nfe[0])
+    except Exception:
+        pass
+    try:
+        for field in form.errors:
+            errors = form.errors.get(field)
+            if errors:
+                return str(errors[0])
+    except Exception:
+        pass
+    return ''
 
 
 class HomePageView(View):
@@ -64,11 +89,17 @@ class HomePageView(View):
         context = get_home_page_data(request, lang)
         context['language'] = lang
         context['active_nav'] = 'home'
+        # Turnstile (render + script) should work even if context processors are overridden
+        context['turnstile_site_key'] = (getattr(settings, 'TURNSTILE_SITE_KEY', '') or '').strip()
+        context['turnstile_enabled'] = bool(
+            context['turnstile_site_key']
+            and (getattr(settings, 'TURNSTILE_SECRET_KEY', '') or '').strip()
+        )
         context['review_form'] = ReviewForm(lang=lang)
         context['review_feedback'] = request.session.pop('review_feedback', None)
         context['booking_form'] = BookingForm(lang=lang, initial={'booking_type': 'package'})
         context['booking_feedback'] = request.session.pop('booking_feedback', None)
-        appeal_form = AppealContactForm(lang=lang)
+        appeal_form = AppealContactForm(lang=lang, request=request)
         appeal_form.fields['subject'].initial = 'Ana səhifə'
         context['appeal_form'] = self._compact_home_appeal_form(appeal_form)
         context['appeal_feedback'] = request.session.pop('appeal_feedback', None)
@@ -87,18 +118,58 @@ class HomePageView(View):
         return redirect(reverse('services:home-page'))
 
     def _handle_appeal_post(self, request, lang):
-        form = AppealContactForm(request.POST, lang=lang)
+        form = AppealContactForm(request.POST, lang=lang, request=request)
         # hide subject on home page, but still required
         self._compact_home_appeal_form(form)
         if form.is_valid():
             try:
                 appeal = form.save()
                 send_appeal_contact_notification(appeal)
-                request.session['appeal_feedback'] = 'success'
+                feedback = 'success'
             except Exception:
                 logging.getLogger(__name__).exception('Home contact form save failed.')
-                request.session['appeal_feedback'] = 'error'
-            return redirect(reverse('services:home-page') + '#home-contact')
+                feedback = 'error'
+
+            if _is_ajax(request):
+                return JsonResponse(
+                    {
+                        'ok': feedback == 'success',
+                        'message': (
+                            _('Mesajınız qəbul olundu.')
+                            if feedback == 'success'
+                            else _('Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.')
+                        ),
+                    },
+                    status=200 if feedback == 'success' else 500,
+                )
+
+            context = get_home_page_data(request, lang)
+            context['language'] = lang
+            context['active_nav'] = 'home'
+            context['turnstile_site_key'] = (getattr(settings, 'TURNSTILE_SITE_KEY', '') or '').strip()
+            context['turnstile_enabled'] = bool(
+                context['turnstile_site_key']
+                and (getattr(settings, 'TURNSTILE_SECRET_KEY', '') or '').strip()
+            )
+            context['review_form'] = ReviewForm(lang=lang)
+            context['review_feedback'] = None
+            context['booking_form'] = BookingForm(lang=lang, initial={'booking_type': 'package'})
+            context['booking_feedback'] = None
+            appeal_form = AppealContactForm(lang=lang, request=request)
+            appeal_form.fields['subject'].initial = 'Ana səhifə'
+            context['appeal_form'] = self._compact_home_appeal_form(appeal_form)
+            context['appeal_feedback'] = feedback
+            return render(request, self.template_name, context)
+
+        if _is_ajax(request):
+            return JsonResponse(
+                {
+                    'ok': False,
+                    'message': _first_form_error_message(form) or _('Zəhmət olmasa formadakı xətaları düzəldin.'),
+                    'errors': form.errors.get_json_data(),
+                },
+                status=400,
+            )
 
         context = get_home_page_data(request, lang)
         context['language'] = lang
@@ -118,11 +189,51 @@ class HomePageView(View):
             try:
                 booking = form.save()
                 send_booking_notification(booking)
-                request.session['booking_feedback'] = 'success'
+                feedback = 'success'
             except Exception:
                 logging.getLogger(__name__).exception('Booking form save failed.')
-                request.session['booking_feedback'] = 'error'
-            return redirect(reverse('services:home-page') + '#hero-booking')
+                feedback = 'error'
+
+            if _is_ajax(request):
+                return JsonResponse(
+                    {
+                        'ok': feedback == 'success',
+                        'message': (
+                            _('Sifarişiniz qəbul olundu. Tezliklə sizinlə əlaqə saxlayacağıq.')
+                            if feedback == 'success'
+                            else _('Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.')
+                        ),
+                    },
+                    status=200 if feedback == 'success' else 500,
+                )
+
+            context = get_home_page_data(request, lang)
+            context['language'] = lang
+            context['active_nav'] = 'home'
+            context['turnstile_site_key'] = (getattr(settings, 'TURNSTILE_SITE_KEY', '') or '').strip()
+            context['turnstile_enabled'] = bool(
+                context['turnstile_site_key']
+                and (getattr(settings, 'TURNSTILE_SECRET_KEY', '') or '').strip()
+            )
+            context['booking_form'] = BookingForm(lang=lang, initial={'booking_type': 'package'})
+            context['booking_feedback'] = feedback
+            context['review_form'] = ReviewForm(lang=lang)
+            context['review_feedback'] = None
+            appeal_form = AppealContactForm(lang=lang, request=request)
+            appeal_form.fields['subject'].initial = 'Ana səhifə'
+            context['appeal_form'] = self._compact_home_appeal_form(appeal_form)
+            context['appeal_feedback'] = None
+            return render(request, self.template_name, context)
+
+        if _is_ajax(request):
+            return JsonResponse(
+                {
+                    'ok': False,
+                    'message': _first_form_error_message(form) or _('Zəhmət olmasa formadakı xətaları düzəldin.'),
+                    'errors': form.errors.get_json_data(),
+                },
+                status=400,
+            )
 
         context = get_home_page_data(request, lang)
         context['language'] = lang
@@ -139,11 +250,51 @@ class HomePageView(View):
         if form.is_valid():
             try:
                 form.save()
-                request.session['review_feedback'] = 'success'
+                feedback = 'success'
             except Exception:
                 logging.getLogger(__name__).exception('Review form save failed.')
-                request.session['review_feedback'] = 'error'
-            return redirect(reverse('services:home-page') + '#testimonial')
+                feedback = 'error'
+
+            if _is_ajax(request):
+                return JsonResponse(
+                    {
+                        'ok': feedback == 'success',
+                        'message': (
+                            _('Rəyiniz uğurla göndərildi.')
+                            if feedback == 'success'
+                            else _('Rəyiniz göndərilmədi. Zəhmət olmasa yenidən cəhd edin.')
+                        ),
+                    },
+                    status=200 if feedback == 'success' else 500,
+                )
+
+            context = get_home_page_data(request, lang)
+            context['language'] = lang
+            context['active_nav'] = 'home'
+            context['turnstile_site_key'] = (getattr(settings, 'TURNSTILE_SITE_KEY', '') or '').strip()
+            context['turnstile_enabled'] = bool(
+                context['turnstile_site_key']
+                and (getattr(settings, 'TURNSTILE_SECRET_KEY', '') or '').strip()
+            )
+            context['review_form'] = ReviewForm(lang=lang)
+            context['review_feedback'] = feedback
+            context['booking_form'] = BookingForm(lang=lang, initial={'booking_type': 'package'})
+            context['booking_feedback'] = None
+            appeal_form = AppealContactForm(lang=lang, request=request)
+            appeal_form.fields['subject'].initial = 'Ana səhifə'
+            context['appeal_form'] = self._compact_home_appeal_form(appeal_form)
+            context['appeal_feedback'] = None
+            return render(request, self.template_name, context)
+
+        if _is_ajax(request):
+            return JsonResponse(
+                {
+                    'ok': False,
+                    'message': _first_form_error_message(form) or _('Zəhmət olmasa formadakı xətaları düzəldin.'),
+                    'errors': form.errors.get_json_data(),
+                },
+                status=400,
+            )
 
         context = get_home_page_data(request, lang)
         context['language'] = lang
@@ -218,10 +369,19 @@ class AboutPageView(View):
 class ContactPageView(View):
     template_name = 'contact.html'
 
+    @staticmethod
+    def _t(request, lang: str, *, az: str, en: str, ru: str) -> str:
+        """Small helper to pick a message without requiring locale catalogs."""
+        if lang == 'en':
+            return en
+        if lang == 'ru':
+            return ru
+        return az
+
     def get(self, request):
         lang = get_language_from_request(request)
         contact = get_contact(lang)
-        form = AppealContactForm(lang=lang)
+        form = AppealContactForm(lang=lang, request=request)
         page_heading = _('Contact')
 
         context = self._contact_page_context(
@@ -240,22 +400,89 @@ class ContactPageView(View):
         if form_type == 'booking':
             return self._handle_booking_post(request, lang)
 
-        form = AppealContactForm(request.POST, lang=lang)
+        form = AppealContactForm(request.POST, lang=lang, request=request)
 
         if form.is_valid():
             try:
                 appeal = form.save()
                 send_appeal_contact_notification(appeal)
+                if _is_ajax(request):
+                    return JsonResponse(
+                        {
+                            'ok': True,
+                            'message': self._t(
+                                request,
+                                lang,
+                                az='Təşəkkür edirik. Mesajınız qəbul olundu.',
+                                en='Thank you. We have received your message.',
+                                ru='Спасибо. Мы получили ваше сообщение.',
+                            ),
+                        },
+                        status=200,
+                    )
                 messages.success(
                     request,
-                    _('Thank you. We have received your message.'),
+                    self._t(
+                        request,
+                        lang,
+                        az='Təşəkkür edirik. Mesajınız qəbul olundu.',
+                        en='Thank you. We have received your message.',
+                        ru='Спасибо. Мы получили ваше сообщение.',
+                    ),
                 )
                 return redirect('services:contact-page')
             except Exception:
                 logging.getLogger(__name__).exception('Contact form save failed.')
-                messages.error(request, _('Something went wrong. Please try again.'))
+                if _is_ajax(request):
+                    return JsonResponse(
+                        {
+                            'ok': False,
+                            'message': self._t(
+                                request,
+                                lang,
+                                az='Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.',
+                                en='Something went wrong. Please try again.',
+                                ru='Произошла ошибка. Пожалуйста, попробуйте ещё раз.',
+                            ),
+                        },
+                        status=500,
+                    )
+                messages.error(
+                    request,
+                    self._t(
+                        request,
+                        lang,
+                        az='Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.',
+                        en='Something went wrong. Please try again.',
+                        ru='Произошла ошибка. Пожалуйста, попробуйте ещё раз.',
+                    ),
+                )
         else:
-            messages.error(request, _('Please correct the errors in the form.'))
+            if _is_ajax(request):
+                return JsonResponse(
+                    {
+                        'ok': False,
+                        'message': self._t(
+                            request,
+                            lang,
+                            az='Zəhmət olmasa formadakı xətaları düzəldin.',
+                            en='Please correct the errors in the form.',
+                            ru='Пожалуйста, исправьте ошибки в форме.',
+                        ),
+                        'errors': form.errors.get_json_data(),
+                    },
+                    status=400,
+                )
+            messages.error(
+                request,
+                self._t(
+                    request,
+                    lang,
+                    az='Zəhmət olmasa formadakı xətaları düzəldin.',
+                    en='Please correct the errors in the form.',
+                    ru='Пожалуйста, исправьте ошибки в форме.',
+                ),
+            )
 
         contact = get_contact(lang)
         page_heading = _('Contact')
@@ -280,6 +507,7 @@ class ContactPageView(View):
         booking_feedback,
         page_heading,
     ):
+        turnstile_site_key = (getattr(settings, 'TURNSTILE_SITE_KEY', '') or '').strip()
         return {
             'contact': serialize_contact(contact, lang) if contact else None,
             'language': lang,
@@ -291,6 +519,12 @@ class ContactPageView(View):
             'page_heading': page_heading,
             'page_motto': get_page_motto('contact', lang),
             'active_nav': 'contact',
+            # Ensure widget/script render reliably
+            'turnstile_site_key': turnstile_site_key,
+            'turnstile_enabled': bool(
+                turnstile_site_key
+                and (getattr(settings, 'TURNSTILE_SECRET_KEY', '') or '').strip()
+            ),
         }
 
     def _handle_booking_post(self, request, lang):
@@ -300,18 +534,71 @@ class ContactPageView(View):
             try:
                 booking = form.save()
                 send_booking_notification(booking)
-                request.session['booking_feedback'] = 'success'
+                feedback = 'success'
             except Exception:
                 logging.getLogger(__name__).exception('Booking form save failed (contact page).')
-                request.session['booking_feedback'] = 'error'
-            return redirect(reverse('services:contact-page') + '#contact-booking')
+                feedback = 'error'
+
+            if _is_ajax(request):
+                return JsonResponse(
+                    {
+                        'ok': feedback == 'success',
+                        'message': (
+                            self._t(
+                                request,
+                                lang,
+                                az='Sifarişiniz qəbul olundu. Tezliklə sizinlə əlaqə saxlayacağıq.',
+                                en='Your booking was received. We will contact you soon.',
+                                ru='Мы получили ваш заказ. Скоро свяжемся с вами.',
+                            )
+                            if feedback == 'success'
+                            else self._t(
+                                request,
+                                lang,
+                                az='Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.',
+                                en='Something went wrong. Please try again.',
+                                ru='Произошла ошибка. Пожалуйста, попробуйте ещё раз.',
+                            )
+                        ),
+                    },
+                    status=200 if feedback == 'success' else 500,
+                )
+
+            contact = get_contact(lang)
+            page_heading = _('Contact')
+            context = self._contact_page_context(
+                lang,
+                contact,
+                form=AppealContactForm(lang=lang, request=request),
+                booking_form=BookingForm(lang=lang, initial={'booking_type': 'package'}),
+                booking_feedback=feedback,
+                page_heading=page_heading,
+            )
+            return render(request, self.template_name, context)
+
+        if _is_ajax(request):
+            return JsonResponse(
+                {
+                    'ok': False,
+                    'message': _first_form_error_message(form)
+                    or self._t(
+                        request,
+                        lang,
+                        az='Zəhmət olmasa formadakı xətaları düzəldin.',
+                        en='Please correct the errors in the form.',
+                        ru='Пожалуйста, исправьте ошибки в форме.',
+                    ),
+                    'errors': form.errors.get_json_data(),
+                },
+                status=400,
+            )
 
         contact = get_contact(lang)
         page_heading = _('Contact')
         context = self._contact_page_context(
             lang,
             contact,
-            form=AppealContactForm(lang=lang),
+            form=AppealContactForm(lang=lang, request=request),
             booking_form=form,
             booking_feedback=None,
             page_heading=page_heading,

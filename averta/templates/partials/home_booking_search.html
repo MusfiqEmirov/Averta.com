@@ -17,8 +17,8 @@
       </div>
       {% endif %}
 
-      <form method="post" action="{% url 'services:home-page' %}#hero-booking"
-            class="hb-form" novalidate>
+      <form method="post" action="{% url 'services:home-page' %}"
+            class="hb-form" novalidate data-ajax="1">
         {% csrf_token %}
         <input type="hidden" name="form_type" value="booking">
         {{ booking_form.website }}

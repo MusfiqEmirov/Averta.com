@@ -109,7 +109,7 @@
             </div>
             {% endif %}
 
-            <form method="post" action="{% url 'services:home-page' %}#home-contact" class="mx-auto home-contact-compact" style="max-width:720px;" novalidate>
+            <form method="post" action="{% url 'services:home-page' %}" class="mx-auto home-contact-compact" style="max-width:720px;" novalidate data-ajax="1">
                 {% csrf_token %}
                 <input type="hidden" name="form_type" value="appeal">
                 {{ appeal_form.website }}
@@ -142,6 +142,9 @@
                         {% if appeal_form.non_field_errors %}
                         <div class="text-warning small mt-1">{{ appeal_form.non_field_errors.0 }}</div>
                         {% endif %}
+                    </div>
+                    <div class="col-12">
+                        {% include 'partials/turnstile_checkbox.html' with form=appeal_form %}
                     </div>
                     <div class="col-12 d-grid d-sm-flex justify-content-center">
                         <button type="submit" class="btn btn-primary btn-sm rounded-pill px-4 py-2">

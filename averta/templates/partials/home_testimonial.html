@@ -75,11 +75,17 @@
 
             <div class="modal-body pt-2">
                 <form id="reviewForm" method="post"
-                      action="{% url 'services:home-page' %}#testimonial"
-                      novalidate>
+                      action="{% url 'services:home-page' %}"
+                      novalidate data-ajax="1">
                     {% csrf_token %}
                     <input type="hidden" name="form_type" value="review">
                     {{ review_form.website }}
+
+                    {% if review_form.non_field_errors %}
+                    <div class="alert alert-warning py-2 px-3 rounded-3 mb-3" role="alert">
+                        {{ review_form.non_field_errors.0 }}
+                    </div>
+                    {% endif %}
 
                     <div class="mb-3">
                         <label class="form-label small fw-semibold mb-1" for="reviewName">

@@ -6742,6 +6742,14 @@ body.aglb-open {
     overflow: hidden;
 }
 
+/* --- Turnstile --- */
+.turnstile-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
 .aglb {
     position: fixed;
     inset: 0;

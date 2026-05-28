@@ -91,9 +91,11 @@
         {% block hero %}{% endblock %}
     </div>
 
-    {% if messages %}
-        {% include 'partials/messages.html' %}
-    {% endif %}
+    {% block messages %}
+        {% if messages %}
+            {% include 'partials/messages.html' %}
+        {% endif %}
+    {% endblock %}
 
     {% block content %}{% endblock %}
 
