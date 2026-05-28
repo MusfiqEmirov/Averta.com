@@ -53,4 +53,30 @@
     </div>
 
 </section>
+
+<div class="aglb" hidden aria-hidden="true" data-sdp-lightbox>
+    <div class="aglb__overlay" data-aglb-close></div>
+    <div class="aglb__dialog" role="dialog" aria-modal="true" aria-label="{{ service.name }} — Qalereya" tabindex="-1">
+        <button type="button" class="aglb__back" data-aglb-close aria-label="Geri">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i>
+            <span class="aglb__back-text">Geri</span>
+        </button>
+        <button type="button" class="aglb__close" data-aglb-close aria-label="Bağla">
+            <span aria-hidden="true">×</span>
+        </button>
+
+        <div class="aglb__content">
+            <div class="aglb__media" aria-live="polite">
+                <button type="button" class="aglb__nav aglb__nav--prev" data-aglb-prev aria-label="Əvvəlki şəkil"></button>
+                <figure class="aglb__figure">
+                    <img class="aglb__img" alt="" />
+                </figure>
+                <button type="button" class="aglb__nav aglb__nav--next" data-aglb-next aria-label="Növbəti şəkil"></button>
+                <div class="aglb__counter" aria-hidden="true"></div>
+            </div>
+
+            <div class="aglb__thumbs" role="tablist" aria-label="Thumbnail navigation"></div>
+        </div>
+    </div>
+</div>
 {% endif %}
