@@ -70,17 +70,19 @@
     var count = {{ about.gallery_images|length }};
     var $carousel = $('.about-gallery__owl');
     $carousel.owlCarousel({
-        loop: count > 3,
+        loop: count > 5,
         margin: 16,
         nav: false,
         dots: count > 1,
         autoplay: count > 1,
         autoplayTimeout: 4000,
         autoplayHoverPause: true,
+        slideBy: 'page',
         responsive: {
-            0:   { items: 1 },
-            576: { items: Math.min(count, 2) },
-            992: { items: Math.min(count, 3) }
+            0:   { items: Math.min(count, 2), slideBy: 2 },
+            576: { items: Math.min(count, 2), slideBy: 2 },
+            992: { items: Math.min(count, 3), slideBy: 3 },
+            1200:{ items: Math.min(count, 5), slideBy: 5 }
         }
     });
     $('.about-gallery__prev').on('click', function () {
@@ -89,6 +91,23 @@
     $('.about-gallery__next').on('click', function () {
         $carousel.trigger('next.owl.carousel');
     });
+
+    function bumpCenter() {
+        var $actives = $carousel.find('.owl-item.active');
+        if (!$actives.length) return;
+        var mid = Math.floor(($actives.length - 1) / 2);
+        var $card = $actives.eq(mid).find('.about-gallery__card');
+        if (!$card.length) return;
+        $card.addClass('is-bump');
+        window.setTimeout(function () { $card.removeClass('is-bump'); }, 260);
+    }
+
+    // When using custom buttons, give a hover-like feedback
+    $('.about-gallery__prev, .about-gallery__next').on('click', function () {
+        window.setTimeout(bumpCenter, 40);
+    });
+
+    $carousel.on('translated.owl.carousel', bumpCenter);
 })();
 {% endif %}
 

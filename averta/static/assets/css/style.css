@@ -5003,6 +5003,22 @@ body.page-service-detail .lightbox .lb-data .lb-number {
     justify-content: center;
     overflow: hidden;
     flex: 0 0 auto;
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
+    will-change: transform;
+}
+
+.partners-strip__item:hover .partners-strip__bubble,
+.partners-strip__item:focus-within .partners-strip__bubble {
+    transform: translateY(-2px) scale(1.03);
+    border-color: rgba(255, 193, 7, 0.55);
+    box-shadow:
+        0 14px 38px rgba(19, 53, 123, 0.10),
+        0 0 0 6px rgba(255, 193, 7, 0.16);
+}
+
+.partners-strip__item:hover .partners-strip__name,
+.partners-strip__item:focus-within .partners-strip__name {
+    color: rgba(255, 193, 7, 0.95);
 }
 
 .partners-strip__logo {
@@ -6094,7 +6110,8 @@ body.page-home .partners-strip__head {
 /*** Home packages — vertical card slider ***/
 
 .home-packages {
-    background: #fff;
+    /* Let tourism SVG decorations show through */
+    background: transparent !important;
     padding-top: 3.5rem !important;
     padding-bottom: 3.5rem !important;
     overflow: visible;
@@ -6109,10 +6126,21 @@ body.page-home .partners-strip__head {
     min-height: 640px;
     overflow: visible;
     box-sizing: border-box;
+    /* translucent panel so tourism SVG stays visible */
+    background: rgba(255, 255, 255, 0.62);
+    border: 1px solid rgba(19, 53, 123, 0.06);
+    border-radius: 24px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
 }
 
 .pkg-slider-outer.pkg-slider-outer--center {
     overflow: visible;
+    /* If cards don't overflow, don't hide background SVG */
+    background: transparent;
+    border-color: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
 }
 
 .pkg-track {
@@ -6549,6 +6577,8 @@ body.page-home .partners-strip__head {
 .about-gallery__stage {
     position: relative;
     width: 100%;
+    padding-left: clamp(12px, 3vw, 40px);
+    padding-right: clamp(12px, 3vw, 40px);
 }
 
 .about-gallery__owl {
@@ -6570,7 +6600,7 @@ body.page-home .partners-strip__head {
 
 .about-gallery__card-img {
     width: 100%;
-    height: 230px;
+    height: 260px;
     object-fit: cover;
     display: block;
     transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -6578,6 +6608,14 @@ body.page-home .partners-strip__head {
 
 .about-gallery__card:hover .about-gallery__card-img {
     transform: scale(1.05);
+}
+
+.about-gallery__card.is-bump .about-gallery__card-img {
+    transform: scale(1.05);
+}
+
+.about-gallery__card.is-bump .about-gallery__zoom {
+    background: rgba(19, 53, 123, 0.30);
 }
 
 .about-gallery__zoom {
@@ -6602,7 +6640,7 @@ body.page-home .partners-strip__head {
     top: 0;
     left: 0;
     right: 0;
-    height: 230px;
+    height: 260px;
     z-index: 12;
     display: flex;
     align-items: center;
@@ -6687,8 +6725,8 @@ body.page-home .partners-strip__head {
 }
 
 @media (max-width: 767.98px) {
-    .about-gallery__card-img { height: 175px; }
-    .about-gallery__toolbar { height: 175px; }
+    .about-gallery__card-img { height: 190px; }
+    .about-gallery__toolbar { height: 190px; }
     .about-gallery__prev,
     .about-gallery__next {
         width: 34px;
