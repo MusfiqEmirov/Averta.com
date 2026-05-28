@@ -2,11 +2,11 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
-
-load_dotenv('')
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from docker/.env (works both locally and in container)
+load_dotenv(BASE_DIR.parent / 'docker' / '.env')
 
 
 # Quick-start development settings - unsuitable for production
@@ -17,6 +17,11 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+# --- Cloudflare Turnstile (Captcha) ---
+# Checkbox widget uses `cf-turnstile-response` POST field.
+TURNSTILE_SITE_KEY = (os.getenv('TURNSTILE_SITE_KEY') or '').strip()
+TURNSTILE_SECRET_KEY = (os.getenv('TURNSTILE_SECRET_KEY') or '').strip()
 
 ALLOWED_HOSTS = [
     h.strip()
@@ -101,6 +106,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'services.context_processors.navbar_services',
                 'services.context_processors.site_contact',
+                'services.context_processors.turnstile',
             ],
         },
     },

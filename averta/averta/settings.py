@@ -17,6 +17,11 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# --- Cloudflare Turnstile (Captcha) ---
+# Checkbox widget uses `cf-turnstile-response` POST field.
+TURNSTILE_SITE_KEY = (os.getenv('TURNSTILE_SITE_KEY') or '').strip()
+TURNSTILE_SECRET_KEY = (os.getenv('TURNSTILE_SECRET_KEY') or '').strip()
+
 ALLOWED_HOSTS = [
     h.strip()
     for h in os.getenv('ALLOWED_HOSTS', 'averta.az,www.averta.az,localhost,127.0.0.1').split(',')
@@ -95,6 +100,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'services.context_processors.navbar_services',
                 'services.context_processors.site_contact',
+                'services.context_processors.turnstile',
             ],
         },
     },
@@ -222,3 +228,9 @@ EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'False').lower() in ('true', '1', 'ye
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
 CONTACT_RECEIVER_EMAIL = os.getenv('CONTACT_RECEIVER_EMAIL', EMAIL_HOST_USER)
 SITE_NAME = os.getenv('SITE_NAME', 'Averta.az')
+
+# Allow local overrides without changing DJANGO_SETTINGS_MODULE
+try:
+    from .settings_local import *  # noqa: F403,F401
+except Exception:
+    pass

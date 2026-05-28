@@ -3,6 +3,8 @@
 
 {% block title %}{% trans "Əlaqə" %} — Averta{% endblock %}
 
+{% block messages %}{% endblock %}
+
 {% block content %}
 {% include 'partials/page_header.html' %}
 
@@ -124,7 +126,10 @@
             <div class="col-lg-6">
                 <div class="contact-form-panel h-100">
                     <h2 class="contact-form-panel__title">{% trans "Mesaj göndərin" %}</h2>
-                    <form method="post" action="{% url 'services:contact-page' %}#contact-section" class="contact-form">
+                    {% if messages %}
+                        {% include 'partials/messages.html' %}
+                    {% endif %}
+                    <form method="post" action="{% url 'services:contact-page' %}" class="contact-form" data-ajax="1">
                         {% csrf_token %}
                         {{ form.website }}
                         <input type="hidden" name="form_type" value="contact">
@@ -152,6 +157,9 @@
                                 <label class="form-label contact-form-label" for="{{ form.info.id_for_label }}">{{ form.info.label }}</label>
                                 {{ form.info }}
                                 {% if form.info.errors %}<div class="text-danger small mt-1">{{ form.info.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-12">
+                                {% include 'partials/turnstile_checkbox.html' with form=form %}
                             </div>
                             <div class="col-12">
                                 <button class="btn btn-primary btn-lg rounded-pill w-100 py-3" type="submit">{% trans "Göndər" %}</button>

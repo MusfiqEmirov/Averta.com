@@ -68,7 +68,7 @@ class Review(models.Model):
 
     class Meta:
         verbose_name = 'Rəy'
-        verbose_name_plural = 'Reyler'
+        verbose_name_plural = 'Rəylər'
         ordering = ('-created_at',)
 
     def clean(self):

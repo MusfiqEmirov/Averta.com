@@ -1,5 +1,6 @@
 from services.models import Service
 from services.utils.queries import get_contact, get_language_from_request, serialize_contact, get_background_image
+from django.conf import settings
 
 
 def navbar_services(request):
@@ -54,4 +55,15 @@ def site_contact(request):
     return {
         'contact': contact_data,
         'home_contact_bg': _safe_bg('home_contact'),
+    }
+
+
+def turnstile(request):
+    """Expose Cloudflare Turnstile keys to templates."""
+    site_key = (getattr(settings, 'TURNSTILE_SITE_KEY', '') or '').strip()
+    secret_key = (getattr(settings, 'TURNSTILE_SECRET_KEY', '') or '').strip()
+    enabled = bool(site_key and secret_key)
+    return {
+        'turnstile_enabled': enabled,
+        'turnstile_site_key': site_key,
     }
