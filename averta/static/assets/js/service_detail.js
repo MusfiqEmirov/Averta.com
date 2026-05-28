@@ -76,21 +76,15 @@
             updateRelatedNav();
         }
 
-        // ── Lightbox ──────────────────────────────────────────────
-        if (typeof lightbox === 'undefined') {
+        // ── Lightbox (legacy) ─────────────────────────────────────
+        // Service detail üçün premium viewer istifadə edirik (service_gallery_lightbox.js).
+        // Əgər o aktivdirsə, burada Lightbox2 binding etməyək.
+        if (document.querySelector('.aglb[data-sdp-lightbox]')) {
             return;
         }
 
-        // Bütün şəkilləri öncədən yüklə
-        var preloaded = {};
-        function preload(url) {
-            if (!url || preloaded[url]) { return; }
-            preloaded[url] = true;
-            (new Image()).src = url;
-        }
-
-        if (window.serviceGalleryUrls && window.serviceGalleryUrls.length) {
-            window.serviceGalleryUrls.forEach(preload);
+        if (typeof lightbox === 'undefined') {
+            return;
         }
 
         lightbox.option({
@@ -101,17 +95,6 @@
             albumLabel: '%1 / %2',
             disableScrolling: true,
             alwaysShowNavOnTouchDevices: true,
-        });
-
-        // Kart klikləndikdə — indeksə görə gizli trigger-i işlət
-        // (Owl klon elementi lightbox-u qarışdırmasın deyə hidden trigger yanaşması)
-        $(document).on('click', '.sdp-gallery-card', function (e) {
-            e.preventDefault();
-            var idx = parseInt($(this).data('gallery-index')) || 0;
-            var $trigger = $('.sdp-gallery__triggers a').eq(idx);
-            if ($trigger.length) {
-                lightbox.start($trigger);
-            }
         });
 
     });

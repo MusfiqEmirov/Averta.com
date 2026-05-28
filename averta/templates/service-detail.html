@@ -2,6 +2,8 @@
 
 {% block title %}{{ service.name }} — Averta{% endblock %}
 
+{% block body_class %}page-service-detail{% endblock %}
+
 {% block content %}
 {% include 'partials/page_header.html' %}
 
@@ -100,4 +102,7 @@
     ];
 </script>
 <script src="{% static 'assets/js/service_detail.js' %}?v=5"></script>
+{% if service.gallery_images %}
+<script src="{% static 'assets/js/service_gallery_lightbox.js' %}?v=1"></script>
+{% endif %}
 {% endblock %}
