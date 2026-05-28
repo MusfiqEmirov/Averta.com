@@ -91,14 +91,22 @@ Content is designed to be edited by non-developers through the Django Admin pane
   - `EMAIL_HOST_PASSWORD`
   - `EMAIL_USE_TLS`
 
-### Captcha (planned)
+### Captcha (Cloudflare Turnstile)
 
-Captcha is **not implemented yet**, but the project is expected to add it later (e.g., for contact forms and other public-facing submissions). When added, this README should be updated with:
+Cloudflare Turnstile checkbox is implemented for **contact forms only**:
 
-- provider/library choice
-- required environment variables/keys
-- which forms/endpoints are protected
-- any UX/accessibility notes
+- Home page contact form (appeal/contact section)
+- Contact page “Mesaj göndərin” form
+
+Required environment variables:
+
+- `TURNSTILE_SITE_KEY`
+- `TURNSTILE_SECRET_KEY`
+
+Notes:
+
+- The widget posts a token via `cf-turnstile-response`, verified server-side.
+- Booking forms do **not** include captcha.
 
 ### Local run (high level)
 
@@ -117,6 +125,8 @@ Captcha is **not implemented yet**, but the project is expected to add it later 
 - Runs migrations and collects static files
 - Starts the app with Gunicorn
 
+Local Docker development uses `docker/docker-compose-local.yaml`. Environment variables are typically provided via `docker/.env`.
+
 ### Admin panel
 
 The admin route is defined by the `ADMIN_URL` environment variable. In production, always use a unique path.
@@ -134,4 +144,12 @@ AZ/EN/RU languages are enabled. Language switching is available via `i18n/setlan
 
 - `DEBUG` should be disabled in production and Django’s security checklist should be followed.
 - Static and media assets can be served from a dedicated storage/CDN in production.
+
+### Form UX (no page refresh)
+
+Public-facing forms are progressively enhanced to submit via AJAX (fetch) so users can see success/error feedback **without a full page refresh**.
+
+### Reviews (customer-only)
+
+Submitting a review requires the phone number to exist in bookings marked as a customer (an anti-spam/business rule). If the phone is not recognized, the form returns a clear error message.
 
