@@ -1,4 +1,44 @@
 
+/* ── BebasNeue Local Fonts ── */
+@font-face {
+    font-family: 'BebasNeue';
+    src: url('../fonts/BebasNeue Thin.otf') format('opentype');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'BebasNeue';
+    src: url('../fonts/BebasNeue Light.otf') format('opentype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'BebasNeue';
+    src: url('../fonts/BebasNeue Book.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'BebasNeue';
+    src: url('../fonts/BebasNeue Bold.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* ── Heading Typography ── */
+h1, h2, h3, h4, h5, h6,
+.display-1, .display-2, .display-3, .display-4, .display-5, .display-6 {
+    font-family: 'BebasNeue', 'Jost', sans-serif;
+    letter-spacing: 0.04em;
+}
+
 /*** Spinner Start ***/
 /*** Spinner ***/
 #spinner {
@@ -392,11 +432,18 @@
 }
 
 .navbar-light .navbar-brand img {
-    max-height: 60px;
+    max-height: 80px;
 }
 
 .sticky-top.navbar-light .navbar-brand img {
-    max-height: 60px;
+    max-height: 80px;
+}
+
+.navbar-logo {
+    height: 80px;
+    width: 80px;
+    object-fit: contain;
+    border-radius: 6px;
 }
 
 .navbar .dropdown-toggle::after {
@@ -473,7 +520,7 @@
     }
 
     .navbar-light .navbar-brand img {
-        max-height: 45px;
+        max-height: 80px;
     }
 }
 
@@ -5271,6 +5318,13 @@ body.page-home .partners-strip__head {
     font-size: 1.65rem;
     font-weight: 700;
     letter-spacing: 0.02em;
+}
+
+.site-footer__brand-logo {
+    height: 80px;
+    width: 80px;
+    object-fit: contain;
+    border-radius: 6px;
 }
 
 .site-footer__tagline {
