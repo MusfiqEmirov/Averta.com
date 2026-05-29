@@ -15,7 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 # --- Cloudflare Turnstile (Captcha) ---
 # Checkbox widget uses `cf-turnstile-response` POST field.
@@ -34,6 +34,10 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
 ]
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
+
 _extra_csrf = os.getenv('CSRF_TRUSTED_ORIGINS', '')
 if _extra_csrf:
     CSRF_TRUSTED_ORIGINS.extend(
@@ -76,7 +80,6 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware', 
-    'averta.middleware.CustomLocaleMiddleware',     
     'django.middleware.common.CommonMiddleware',
     'averta.middleware.CsrfNullOriginFixMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -181,12 +184,15 @@ LOCALE_PATHS = [
     BASE_DIR / 'locale',
 ]
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Baku'
 
 USE_I18N = True
 
 USE_TZ = True
 
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
