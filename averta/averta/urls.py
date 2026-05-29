@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 from django.views.generic import RedirectView
 from services.views.i18n_views import set_language
 
-FAVICON_URL = f'{settings.STATIC_URL}assets/img/favicon.jpg?v=1'
+FAVICON_URL = f'{settings.STATIC_URL}assets/img/averta-favicon.png'
 
 urlpatterns = [
     path('favicon.ico', RedirectView.as_view(url=FAVICON_URL, permanent=False)),
