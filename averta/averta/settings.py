@@ -24,13 +24,13 @@ TURNSTILE_SECRET_KEY = (os.getenv('TURNSTILE_SECRET_KEY') or '').strip()
 
 ALLOWED_HOSTS = [
     h.strip()
-    for h in os.getenv('ALLOWED_HOSTS', 'avertatravel.az,www.avertatravel.az,localhost,127.0.0.1').split(',')
+    for h in os.getenv('ALLOWED_HOSTS', 'avertatravel.com,www.avertatravel.com,localhost,127.0.0.1').split(',')
     if h.strip()
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://avertatravel.az',
-    'https://www.avertatravel.az',
+    'https://avertatravel.com',
+    'https://www.avertatravel.com',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
 ]
