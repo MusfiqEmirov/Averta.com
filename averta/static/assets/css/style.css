@@ -1664,6 +1664,33 @@ h1, h2, h3, h4, h5, h6,
     line-height: 1.3;
 }
 
+.hb-field-err--infield {
+    position: absolute;
+    left: 2.1rem;
+    right: 0.75rem;
+    top: 0;
+    bottom: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    font-size: 0.82rem;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.hb-field--has-error .hero-booking__input {
+    border-color: rgba(255, 169, 174, 0.85);
+}
+
+.hb-field--has-error .hero-booking__input:focus + .hb-field-err--infield,
+.hb-field--has-error .hero-booking__input:not(:placeholder-shown) + .hb-field-err--infield {
+    display: none;
+}
+
+.hb-field--has-error .hero-booking__input:placeholder-shown:not(:focus) {
+    color: transparent;
+}
+
 .hb-required-star {
     position: absolute;
     top: 0.35rem;

@@ -92,6 +92,87 @@
     return '';
   }
 
+  function clearInlineErrors(form) {
+    form.querySelectorAll('.ajax-field-error').forEach(function (el) { el.remove(); });
+    form.querySelectorAll('.hb-field--has-error').forEach(function (el) {
+      el.classList.remove('hb-field--has-error');
+    });
+    form.querySelectorAll('[aria-invalid="true"]').forEach(function (el) {
+      el.removeAttribute('aria-invalid');
+    });
+    form.querySelectorAll('.is-invalid').forEach(function (el) {
+      el.classList.remove('is-invalid');
+    });
+  }
+
+  function findFormInput(form, fieldName) {
+    var inputs = form.querySelectorAll('[name="' + fieldName + '"]');
+    for (var i = 0; i < inputs.length; i++) {
+      if (inputs[i].type === 'hidden') continue;
+      return inputs[i];
+    }
+    return inputs.length ? inputs[0] : null;
+  }
+
+  function errorMessageFromList(msgs) {
+    if (!msgs || !msgs.length) return '';
+    if (typeof msgs[0] === 'string') return msgs[0];
+    return (msgs[0] && msgs[0].message) ? msgs[0].message : String(msgs[0]);
+  }
+
+  function placeFieldError(input, msg) {
+    var hbField = input.closest('.hb-field');
+    if (hbField) {
+      hbField.classList.add('hb-field--has-error');
+      var errEl = document.createElement('p');
+      errEl.className = 'hb-field-err ajax-field-error';
+      errEl.textContent = msg;
+      if (!(input.value || '').trim()) {
+        errEl.classList.add('hb-field-err--infield');
+      }
+      hbField.appendChild(errEl);
+      input.setAttribute('aria-invalid', 'true');
+      return;
+    }
+
+    var errEl = document.createElement('div');
+    errEl.className = 'text-warning small mt-1 ajax-field-error';
+    errEl.textContent = msg;
+    var wrapper = input.closest('.form-floating')
+      || input.closest('.col-md-6')
+      || input.closest('.col-12')
+      || input.closest('[class*="col-"]')
+      || input.parentNode;
+    wrapper.appendChild(errEl);
+    input.setAttribute('aria-invalid', 'true');
+    input.classList.add('is-invalid');
+  }
+
+  function showInlineErrors(form, errors) {
+    clearInlineErrors(form);
+    if (!errors) return false;
+    var shown = false;
+    Object.keys(errors).forEach(function (fieldName) {
+      if (fieldName === '__all__') return;
+      var msgs = errors[fieldName];
+      var msg = errorMessageFromList(msgs);
+      if (!msg) return;
+      var input = findFormInput(form, fieldName);
+      if (!input) return;
+      shown = true;
+      placeFieldError(input, msg);
+    });
+    return shown;
+  }
+
+  function showMessageOnEmptyField(form, message, fieldName) {
+    if (!message || !fieldName) return false;
+    var input = findFormInput(form, fieldName);
+    if (!input || (input.value || '').trim()) return false;
+    placeFieldError(input, message);
+    return true;
+  }
+
   function resetTurnstileIfPresent(form) {
     try {
       if (typeof turnstile === 'undefined' || !turnstile || !turnstile.reset) return;
@@ -110,6 +191,7 @@
 
     var box = ensureFeedbackBox(form);
     clearFeedback(box);
+    clearInlineErrors(form);
 
     var fd = new FormData(form);
     var action = form.getAttribute('action') || window.location.href;
@@ -130,11 +212,29 @@
       .then(function (r) {
         var data = r.data || {};
         if (data.ok) {
+          clearInlineErrors(form);
           setFeedback(box, 'success', data.message || 'OK');
           form.reset();
         } else {
-          var msg = data.message || getFirstErrorText(data.errors) || 'Xəta baş verdi.';
-          setFeedback(box, 'danger', msg);
+          var hasInline = showInlineErrors(form, data.errors);
+          if (!hasInline && data.errors && data.errors.email) {
+            hasInline = showInlineErrors(form, { email: data.errors.email });
+          }
+          if (!hasInline) {
+            hasInline = showMessageOnEmptyField(
+              form,
+              data.message || getFirstErrorText(data.errors),
+              'email'
+            );
+          }
+          var nonFieldMsg = data.errors && data.errors.__all__ && data.errors.__all__.length
+            ? errorMessageFromList(data.errors.__all__)
+            : '';
+          if (nonFieldMsg || !hasInline) {
+            setFeedback(box, 'danger', nonFieldMsg || data.message || getFirstErrorText(data.errors) || 'Xəta baş verdi.');
+          } else {
+            clearFeedback(box);
+          }
         }
         resetTurnstileIfPresent(form);
       })

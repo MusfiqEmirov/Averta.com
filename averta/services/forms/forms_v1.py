@@ -70,7 +70,7 @@ class AppealContactForm(TurnstileMixin, forms.ModelForm):
             'class': 'form-control form-control-lg',
             'placeholder': _('Email address')
         }),
-        required=False,
+        required=True,
         label=_('Email address')
     )
     phone = forms.CharField(
@@ -150,8 +150,8 @@ class AppealContactForm(TurnstileMixin, forms.ModelForm):
             'az': {
                 'full_name_label': 'Ad soyad *',
                 'full_name_ph': 'Ad soyad *',
-                'email_label': 'E-poçt',
-                'email_ph': 'E-poçt (istəyə görə)',
+                'email_label': 'E-poçt *',
+                'email_ph': 'E-poçt *',
                 'phone_label': 'Mobil nömrə *',
                 'phone_ph': 'Mobil nömrə *',
                 'info_label': 'Mesajınız *',
@@ -160,8 +160,8 @@ class AppealContactForm(TurnstileMixin, forms.ModelForm):
             'en': {
                 'full_name_label': 'Full name *',
                 'full_name_ph': 'Full name *',
-                'email_label': 'Email',
-                'email_ph': 'Email (optional)',
+                'email_label': 'Email *',
+                'email_ph': 'Email *',
                 'phone_label': 'Mobile number *',
                 'phone_ph': 'Mobile number *',
                 'info_label': 'Your message *',
@@ -170,8 +170,8 @@ class AppealContactForm(TurnstileMixin, forms.ModelForm):
             'ru': {
                 'full_name_label': 'Имя и фамилия *',
                 'full_name_ph': 'Имя и фамилия *',
-                'email_label': 'Эл. почта',
-                'email_ph': 'Эл. почта (необязательно)',
+                'email_label': 'Эл. почта *',
+                'email_ph': 'Эл. почта *',
                 'phone_label': 'Мобильный номер *',
                 'phone_ph': 'Мобильный номер *',
                 'info_label': 'Ваше сообщение *',
@@ -225,7 +225,7 @@ class BookingForm(forms.ModelForm):
             'placeholder': _('E-poçt (istəyə görə)'),
             'autocomplete': 'email',
         }),
-        required=False,
+        required=True,
         label=_('E-poçt'),
     )
     phone = forms.CharField(
@@ -325,8 +325,8 @@ class BookingForm(forms.ModelForm):
             'az': {
                 'full_name_label': 'Ad soyad',
                 'full_name_ph': 'Ad soyad *',
-                'email_label': 'E-poçt',
-                'email_ph': 'E-poçt (istəyə görə)',
+                'email_label': 'E-poçt *',
+                'email_ph': 'E-poçt *',
                 'phone_label': 'Mobil nömrə',
                 'phone_ph': 'Mobil nömrə *',
                 'date_from_label': 'Gediş tarixi',
@@ -339,8 +339,8 @@ class BookingForm(forms.ModelForm):
             'en': {
                 'full_name_label': 'Full name',
                 'full_name_ph': 'Full name *',
-                'email_label': 'Email',
-                'email_ph': 'Email (optional)',
+                'email_label': 'Email *',
+                'email_ph': 'Email *',
                 'phone_label': 'Mobile number',
                 'phone_ph': 'Mobile number *',
                 'date_from_label': 'Departure date',
@@ -353,8 +353,8 @@ class BookingForm(forms.ModelForm):
             'ru': {
                 'full_name_label': 'Имя и фамилия',
                 'full_name_ph': 'Имя и фамилия *',
-                'email_label': 'Эл. почта',
-                'email_ph': 'Эл. почта (необязательно)',
+                'email_label': 'Эл. почта *',
+                'email_ph': 'Эл. почта *',
                 'phone_label': 'Мобильный номер',
                 'phone_ph': 'Мобильный номер *',
                 'date_from_label': 'Дата вылета',
