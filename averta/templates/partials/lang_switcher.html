@@ -9,13 +9,13 @@
                 aria-expanded="false"
                 aria-label="{% trans 'Dil seçimi' %}">
             {% if language == 'en' %}
-            <img src="{% static 'assets/img/flag-en.svg' %}" alt="EN" class="lang-flag" width="24" height="18">
+            <img src="{% static 'assets/img/flag-en.webp' %}" alt="EN" class="lang-flag" width="24" height="18">
             <span class="lang-code">EN</span>
             {% elif language == 'ru' %}
-            <img src="{% static 'assets/img/flag-ru.svg' %}" alt="RU" class="lang-flag" width="24" height="18">
+            <img src="{% static 'assets/img/flag-ru.webp' %}" alt="RU" class="lang-flag" width="24" height="18">
             <span class="lang-code">RU</span>
             {% else %}
-            <img src="{% static 'assets/img/flag-az.svg' %}" alt="AZ" class="lang-flag" width="24" height="18">
+            <img src="{% static 'assets/img/flag-az.webp' %}" alt="AZ" class="lang-flag" width="24" height="18">
             <span class="lang-code">AZ</span>
             {% endif %}
         </button>
@@ -23,21 +23,21 @@
             <li>
                 <button type="submit" name="language" value="az"
                         class="dropdown-item lang-switcher-item d-flex align-items-center gap-2{% if language == 'az' or not language %} active{% endif %}">
-                    <img src="{% static 'assets/img/flag-az.svg' %}" alt="" class="lang-flag" width="24" height="18">
+                    <img src="{% static 'assets/img/flag-az.webp' %}" alt="" class="lang-flag" width="24" height="18">
                     <span class="lang-code">AZ</span>
                 </button>
             </li>
             <li>
                 <button type="submit" name="language" value="en"
                         class="dropdown-item lang-switcher-item d-flex align-items-center gap-2{% if language == 'en' %} active{% endif %}">
-                    <img src="{% static 'assets/img/flag-en.svg' %}" alt="" class="lang-flag" width="24" height="18">
+                    <img src="{% static 'assets/img/flag-en.webp' %}" alt="" class="lang-flag" width="24" height="18">
                     <span class="lang-code">EN</span>
                 </button>
             </li>
             <li>
                 <button type="submit" name="language" value="ru"
                         class="dropdown-item lang-switcher-item d-flex align-items-center gap-2{% if language == 'ru' %} active{% endif %}">
-                    <img src="{% static 'assets/img/flag-ru.svg' %}" alt="" class="lang-flag" width="24" height="18">
+                    <img src="{% static 'assets/img/flag-ru.webp' %}" alt="" class="lang-flag" width="24" height="18">
                     <span class="lang-code">RU</span>
                 </button>
             </li>

@@ -28,8 +28,20 @@ class Booking(models.Model):
         max_length=40,
         verbose_name='Mobil nömrə',
     )
+    date_from = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name='Gediş tarixi',
+        help_text='Səyahətin gediş tarixi.',
+    )
+    date_to = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name='Qayıdış tarixi',
+        help_text='Səyahətin qayıdış tarixi.',
+    )
     note = models.TextField(
-        validators=[MaxLengthValidator(200)],
+        validators=[MaxLengthValidator(600)],
         null=True,
         blank=True,
         verbose_name='Mesaj',

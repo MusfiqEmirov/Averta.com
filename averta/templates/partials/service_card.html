@@ -18,7 +18,9 @@
             <h5 class="service-card__title">
                 <a href="{% url 'services:service-detail' service.slug %}" class="service-card__title-link">{{ service.name }}</a>
             </h5>
-            <p class="service-card__excerpt">{{ service.description|striptags|truncatewords:22 }}</p>
+            {% if service.description_preview %}
+            <div class="service-card__excerpt">{{ service.description_preview }}</div>
+            {% endif %}
             {% include 'partials/service_card_actions.html' %}
         </div>
     </article>

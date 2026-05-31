@@ -38,12 +38,12 @@
 
     <div class="testimonial-inner py-3">
         {% if review_feedback == 'success' %}
-        <div class="alert alert-success text-center rounded-3 mb-4 mx-auto review-feedback-alert" style="max-width:520px;" role="alert">
+        <div class="alert alert-success text-center rounded-3 mb-4 mx-auto review-feedback-alert form-feedback-alert" style="max-width:520px;" role="alert" data-form-feedback>
             <i class="fa fa-check-circle me-2"></i>
             {% trans "Rəyiniz uğurla göndərildi." %}
         </div>
         {% elif review_feedback == 'error' %}
-        <div class="alert alert-danger text-center rounded-3 mb-4 mx-auto review-feedback-alert" style="max-width:520px;" role="alert">
+        <div class="alert alert-danger text-center rounded-3 mb-4 mx-auto review-feedback-alert form-feedback-alert" style="max-width:520px;" role="alert" data-form-feedback>
             <i class="fa fa-exclamation-circle me-2"></i>
             {% trans "Rəyiniz göndərilmədi. Zəhmət olmasa yenidən cəhd edin." %}
         </div>

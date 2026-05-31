@@ -1,6 +1,7 @@
-{% load static i18n %}
+{% load i18n %}
+{% if hero_carousel %}
 <div class="carousel-header">
-    <div id="carouselId" class="carousel slide" data-bs-ride="carousel">
+    <div id="carouselId" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="8000">
         {% if hero_carousel|length > 1 %}
         <ol class="carousel-indicators">
             {% for slide in hero_carousel %}
@@ -10,8 +11,14 @@
         {% endif %}
         <div class="carousel-inner" role="listbox">
             {% for slide in hero_carousel %}
-            <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                <img src="{{ slide.image_url }}" class="img-fluid" alt="">
+            <div class="carousel-item hero-carousel-slide {% if forloop.first %}active{% endif %}"
+                 style="background-image: url('{{ slide.image_url }}');">
+                <img src="{{ slide.image_url }}"
+                     class="img-fluid hero-carousel-slide__img"
+                     alt=""
+                     loading="eager"
+                     decoding="async"
+                     {% if forloop.first %}fetchpriority="high"{% endif %}>
                 <div class="carousel-caption">
                     <div class="p-3" style="max-width: 900px;">
                         {% if slide.motto %}
@@ -19,13 +26,6 @@
                         {% endif %}
                         {# CTA removed per request (Paketlər button) #}
                     </div>
-                </div>
-            </div>
-            {% empty %}
-            <div class="carousel-item active">
-                <img src="{% static 'assets/img/carousel-2.jpg' %}" class="img-fluid" alt="">
-                <div class="carousel-caption">
-                    <h1 class="display-4 text-white">Averta</h1>
                 </div>
             </div>
             {% endfor %}
@@ -42,3 +42,4 @@
         {% endif %}
     </div>
 </div>
+{% endif %}

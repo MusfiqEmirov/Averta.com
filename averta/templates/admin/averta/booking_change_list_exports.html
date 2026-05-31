@@ -1,6 +1,11 @@
 {% extends "admin/averta/change_list.html" %}
 {% load i18n %}
 
+{% block content %}
+{% if booking_export_json %}{{ booking_export_json|json_script:"bookingExportListData" }}{% endif %}
+{{ block.super }}
+{% endblock %}
+
 {% block object-tools-items %}
   <li>
     <a href="#" class="button" id="bookingExportListCsvBtn" title="{% trans 'Cari siyahını CSV kimi yüklə' %}">
