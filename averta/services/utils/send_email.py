@@ -36,7 +36,7 @@ def send_appeal_contact_notification(instance):
         if not (instance.email or '').strip():
             logger.info('Contact form email skipped: sender email is empty.')
             return
-        subject = f'Yeni əlaqə müraciəti: {instance.subject}'
+        subject = 'Saytdan gələn müraciət'
         message = format_appeal_contact_message(instance)
         recipient = settings.CONTACT_RECEIVER_EMAIL
         if not recipient:
@@ -92,7 +92,7 @@ def send_booking_notification(instance):
         if not (instance.email or '').strip():
             logger.info('Booking email skipped: sender email is empty.')
             return
-        subject = f'Yeni sifariş: {instance.full_name}'
+        subject = 'Saytdan gələn sifariş'
         message = format_booking_message(instance)
         recipient = settings.CONTACT_RECEIVER_EMAIL
         if not recipient:
