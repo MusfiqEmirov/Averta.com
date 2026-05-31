@@ -184,10 +184,43 @@
     }
   }
 
+  function getSubmitButton(form, submitter) {
+    if (submitter && submitter.type === 'submit' && form.contains(submitter)) {
+      return submitter;
+    }
+    return form.querySelector('button[type="submit"], input[type="submit"]');
+  }
+
+  function setSubmitLoading(btn, loading) {
+    if (!btn) return;
+    if (loading) {
+      if (btn.classList.contains('is-submit-loading')) return;
+      btn.classList.add('is-submit-loading');
+      btn.disabled = true;
+      btn.setAttribute('aria-busy', 'true');
+      if (!btn.dataset.submitOriginalHtml) {
+        btn.dataset.submitOriginalHtml = btn.innerHTML;
+      }
+      var label = btn.textContent.replace(/\s+/g, ' ').trim();
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i><span>' + label + '</span>';
+      return;
+    }
+    btn.classList.remove('is-submit-loading');
+    btn.disabled = false;
+    btn.removeAttribute('aria-busy');
+    if (btn.dataset.submitOriginalHtml) {
+      btn.innerHTML = btn.dataset.submitOriginalHtml;
+      delete btn.dataset.submitOriginalHtml;
+    }
+  }
+
   function onSubmit(e) {
     var form = e.target;
     if (!isAjaxForm(form)) return;
     e.preventDefault();
+
+    var submitBtn = getSubmitButton(form, e.submitter);
+    setSubmitLoading(submitBtn, true);
 
     var box = ensureFeedbackBox(form);
     clearFeedback(box);
@@ -236,10 +269,12 @@
             clearFeedback(box);
           }
         }
-        resetTurnstileIfPresent(form);
       })
       .catch(function () {
         setFeedback(box, 'danger', 'Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.');
+      })
+      .finally(function () {
+        setSubmitLoading(submitBtn, false);
         resetTurnstileIfPresent(form);
       });
   }
