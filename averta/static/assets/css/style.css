@@ -1,4 +1,4 @@
-﻿
+
 /* â”€â”€ Brand Colour Overrides â”€â”€ */
 :root {
     --bs-primary:        #512071;
@@ -533,6 +533,42 @@ h1, h2, h3, h4, h5, h6,
     .navbar-light .navbar-brand img {
         max-height: 80px;
     }
+
+    .navbar-light .navbar-mobile-order {
+        margin-top: 0.75rem;
+        padding-top: 0.85rem;
+        border-top: 1px solid rgba(81, 32, 113, 0.12);
+        text-decoration: none;
+    }
+
+    .navbar-light .navbar-mobile-order__inner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.55rem;
+        width: 100%;
+        padding: 0.72rem 1.25rem;
+        border-radius: 999px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #fff !important;
+        background: linear-gradient(135deg, var(--bs-primary) 0%, #6b2d96 100%);
+        box-shadow: 0 8px 22px rgba(81, 32, 113, 0.28);
+        transition:
+            background 0.28s ease,
+            box-shadow 0.28s ease,
+            transform 0.18s ease;
+    }
+
+    .navbar-light .navbar-mobile-order__inner i {
+        font-size: 0.9rem;
+        opacity: 0.95;
+    }
+
+    .navbar-light .navbar-mobile-order:active .navbar-mobile-order__inner {
+        transform: scale(0.98);
+        box-shadow: 0 4px 14px rgba(81, 32, 113, 0.22);
+    }
 }
 
 @media (min-width: 992px) {
@@ -611,6 +647,42 @@ h1, h2, h3, h4, h5, h6,
 }
 
 /*** Carousel Hero Header Start ***/
+/* Dark base — deployda slayd keçidində ağ flash olmasın */
+.carousel-header,
+.carousel-header .carousel,
+.carousel-header .carousel-inner {
+    background-color: #2a1536;
+}
+
+.carousel-header .carousel.carousel-fade .carousel-inner {
+    position: relative;
+    min-height: 100vh;
+}
+
+.carousel-header .carousel.carousel-fade .carousel-inner .carousel-item {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    min-height: 100%;
+    background-color: #2a1536;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.carousel-header .carousel-inner .carousel-item.hero-carousel-slide {
+    background-color: #2a1536;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.carousel-header .carousel-inner .carousel-item img.hero-carousel-slide__img {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform: translateZ(0);
+}
+
 /* Hit area = only the round button (not full 15% strip) */
 .carousel-header .carousel-control-prev,
 .carousel-header .carousel-control-next {
@@ -712,6 +784,24 @@ h1, h2, h3, h4, h5, h6,
         width: 46px;
         height: 46px;
         background-size: 60% 60%;
+    }
+
+    .carousel-header .carousel-inner .carousel-item .carousel-caption {
+        padding-left: 62px;
+        padding-right: 62px;
+        box-sizing: border-box;
+    }
+
+    .carousel-header .carousel-inner .carousel-item .carousel-caption .p-3 {
+        width: 100%;
+        max-width: 100% !important;
+        padding-left: 0.35rem !important;
+        padding-right: 0.35rem !important;
+    }
+
+    .carousel-header .hero-motto {
+        position: relative;
+        z-index: 1;
     }
 }
 
@@ -903,6 +993,51 @@ h1, h2, h3, h4, h5, h6,
 .hb-alert--ok  { background: rgba(25,135,84,0.2);  border: 1px solid rgba(25,135,84,0.4);  color: #c3ffd8; }
 .hb-alert--err { background: rgba(220,53,69,0.2);  border: 1px solid rgba(220,53,69,0.4);  color: #ffd4d8; }
 
+/* ---- form reply alerts (dismissible) ---- */
+.form-feedback-alert {
+    position: relative;
+    padding-right: 2.25rem !important;
+}
+
+.form-feedback-alert__text {
+    display: block;
+    padding-right: 0.25rem;
+}
+
+.form-feedback-alert__close {
+    position: absolute;
+    top: 50%;
+    right: 0.45rem;
+    transform: translateY(-50%);
+    border: 0;
+    background: transparent;
+    color: inherit;
+    opacity: 0.55;
+    font-size: 1.15rem;
+    font-weight: 400;
+    line-height: 1;
+    width: 1.35rem;
+    height: 1.35rem;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.form-feedback-alert__close:hover,
+.form-feedback-alert__close:focus {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.08);
+    outline: none;
+}
+
+.hb-alert.form-feedback-alert .form-feedback-alert__close:hover,
+.hb-alert.form-feedback-alert .form-feedback-alert__close:focus {
+    background: rgba(255, 255, 255, 0.14);
+}
+
 /* ---- heading ---- */
 .hb-heading { margin-bottom: 1rem; }
 
@@ -1065,6 +1200,35 @@ h1, h2, h3, h4, h5, h6,
     border-color: var(--bs-primary);
     color: #fff;
     box-shadow: 0 4px 12px rgba(81, 32, 113,0.45);
+    padding-right: 0.45rem;
+}
+
+.hb-pill-clear {
+    flex-shrink: 0;
+    width: 1.15rem;
+    height: 1.15rem;
+    border: 0;
+    border-radius: 50%;
+    background: #111;
+    color: #fff;
+    font-size: 0.9rem;
+    line-height: 1;
+    padding: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease;
+}
+
+.hb-pill-clear:hover,
+.hb-pill-clear:focus {
+    background: #000;
+    outline: none;
+}
+
+.hb-pill-clear[hidden] {
+    display: none !important;
 }
 
 /* ---- rows ---- */
@@ -1102,6 +1266,276 @@ h1, h2, h3, h4, h5, h6,
 
 .hb-row5 {
     /* qeyd tam en tutur */
+}
+
+/* ---- date row (hero search form) ---- */
+.hb-date-row {
+    grid-template-columns: 1fr 1fr;
+    margin-bottom: 0.5rem;
+}
+
+.hb-date-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    background: rgba(255,255,255,0.08);
+    border: 1.5px solid rgba(255,255,255,0.18);
+    border-radius: 0.45rem;
+    padding: 0.35rem 0.65rem 0.3rem;
+    cursor: pointer;
+}
+
+.hb-date-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1;
+    white-space: nowrap;
+    margin-bottom: 0;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.hb-date-icon {
+    color: #ffc107;
+    font-size: 0.72rem;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    flex-shrink: 0;
+}
+
+.hb-date-wrap {
+    position: relative;
+    flex: 1;
+    width: 100%;
+    min-height: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    cursor: pointer;
+}
+
+.hb-date-wrap .hb-date-text,
+.hb-date-wrap .hb-date-input {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.hb-date-chevron {
+    font-size: 0.65rem;
+    color: #ffc107;
+    flex-shrink: 0;
+    pointer-events: none;
+    transition: transform 0.2s ease;
+}
+
+.hb-date-cell.is-open .hb-date-chevron {
+    transform: rotate(180deg);
+}
+
+.hb-date-input {
+    position: relative;
+    color: #fff !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    height: auto !important;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.4;
+    cursor: pointer;
+    width: 100%;
+    outline: none;
+    box-shadow: none !important;
+}
+
+.hb-date-cell:focus-within {
+    border-color: rgba(255, 193, 7, 0.6);
+    box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.15);
+}
+
+/* embed form (contact page) — date fields */
+.hb-embed-date {
+    position: relative;
+    cursor: pointer;
+}
+
+.hb-embed-date .hb-date-text,
+.hb-embed-date .hb-date-input {
+    display: block;
+    width: 100%;
+    color: #333 !important;
+    background: #fff !important;
+    border: 0 !important;
+    padding: 1rem 2.2rem 0.4rem 0.75rem !important;
+    height: calc(3.5rem + 2px) !important;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    cursor: pointer;
+    box-shadow: none !important;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.hb-embed-date .hb-date-text::placeholder {
+    color: rgba(33, 37, 41, 0.45);
+}
+
+.hb-embed-date .hb-date-text:focus {
+    border-color: rgba(81, 32, 113, 0.5) !important;
+    box-shadow: 0 0 0 0.2rem rgba(81, 32, 113, 0.15);
+}
+
+.hb-embed-date-chevron,
+.hb-embed-date-icon {
+    color: #ffc107;
+}
+
+.hb-embed-date-chevron {
+    position: absolute;
+    right: 0.85rem;
+    top: 50%;
+    transform: translateY(-20%);
+    font-size: 0.7rem;
+    pointer-events: none;
+    z-index: 2;
+    transition: transform 0.2s ease;
+}
+
+.hb-embed-date-icon {
+    font-size: 0.85em;
+}
+
+.hb-embed-date.is-open .hb-embed-date-chevron {
+    transform: translateY(-20%) rotate(180deg);
+}
+
+.hb-embed-date > label {
+    z-index: 3;
+    pointer-events: none;
+    transition: opacity 0.1s ease-in-out, transform 0.1s ease-in-out;
+}
+
+.hb-embed-date.has-value .hb-date-text,
+.hb-embed-date.has-value .hb-date-input,
+.hb-embed-date:focus-within .hb-date-text,
+.hb-embed-date:focus-within .hb-date-input {
+    padding-top: 1.625rem !important;
+    padding-bottom: 0.625rem !important;
+}
+
+.hb-embed-date.has-value > label,
+.hb-embed-date:focus-within > label {
+    opacity: 0.65;
+    transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+}
+
+.hb-embed-date.has-value .hb-date-text::placeholder,
+.hb-embed-date.has-value .hb-date-input::placeholder {
+    color: transparent;
+}
+
+.hb-date-cell.has-value .hb-date-text::placeholder,
+.hb-date-cell.has-value .hb-date-input::placeholder {
+    color: transparent;
+}
+
+/* embed — qeyd sahəsi (label yuxarıda, scroll zamanı üst-üstə düşməsin) */
+.hb-embed-note-field {
+    background: #fff;
+    border-radius: 0.375rem;
+    overflow: hidden;
+}
+
+.hb-embed-note-label {
+    display: block;
+    margin: 0;
+    padding: 0.75rem 0.75rem 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: rgba(33, 37, 41, 0.65);
+    line-height: 1.2;
+    pointer-events: none;
+}
+
+.hb-embed-note-input {
+    display: block;
+    width: 100%;
+    min-height: 100px;
+    max-height: 220px;
+    resize: vertical;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0 0.75rem 0.75rem !important;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #333;
+}
+
+.hb-embed-note-input:focus {
+    outline: none;
+    box-shadow: none !important;
+}
+
+.hb-field--note .hero-booking__input::placeholder {
+    color: transparent;
+}
+
+/* ── Air Datepicker — hero (dark theme) ── */
+.hb-airdp--hero.air-datepicker {
+    --adp-background-color: rgba(22, 18, 38, 0.98);
+    --adp-border-color: rgba(255,255,255,0.13);
+    --adp-border-color-inner: rgba(255,255,255,0.08);
+    --adp-border-radius: 0.65rem;
+    --adp-box-shadow: 0 16px 48px rgba(0,0,0,0.55);
+    --adp-color: rgba(255,255,255,0.92);
+    --adp-color-secondary: rgba(255,255,255,0.38);
+    --adp-accent-color: #ffc107;
+    --adp-color-current-date: #ffc107;
+    --adp-day-name-color: rgba(255,193,7,0.75);
+    --adp-day-name-color-hover: #ffc107;
+    --adp-cell-background-color-hover: rgba(255,193,7,0.15);
+    --adp-cell-background-color-selected: #ffc107;
+    --adp-cell-background-color-selected-other-month: rgba(255,193,7,0.4);
+    --adp-cell-background-color-in-range: rgba(255,193,7,0.12);
+    --adp-cell-font-color-selected: #1a1428;
+    --adp-nav-arrow-color: rgba(255,255,255,0.75);
+    --adp-nav-color-secondary: rgba(255,255,255,0.55);
+    --adp-btn-color: rgba(255,255,255,0.85);
+    --adp-btn-color-hover: #ffc107;
+    --adp-btn-border-color: rgba(255,255,255,0.18);
+    --adp-btn-border-color-hover: #ffc107;
+    --adp-month-name-color: rgba(255,255,255,0.92);
+    --adp-title-color: rgba(255,255,255,0.92);
+    --adp-other-months-color: rgba(255,255,255,0.25);
+    z-index: 10050 !important;
+}
+
+/* ── Air Datepicker — embed (light/brand theme) ── */
+.hb-airdp--embed.air-datepicker {
+    --adp-accent-color: #512071;
+    --adp-color-current-date: #512071;
+    --adp-cell-background-color-selected: #512071;
+    --adp-cell-background-color-hover: rgba(81,32,113,0.1);
+    --adp-border-color: rgba(81,32,113,0.15);
+    --adp-box-shadow: 0 12px 36px rgba(81,32,113,0.18);
+    --adp-border-radius: 0.65rem;
+    z-index: 10050 !important;
+}
+
+.air-datepicker-cell.hb-day-hidden {
+    visibility: hidden;
+    pointer-events: none;
 }
 
 /* hidden counter inputs */
@@ -1561,6 +1995,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 @media (max-width: 991.98px) {
+    .carousel-header .carousel.carousel-fade .carousel-inner,
     .carousel-header .carousel-inner .carousel-item {
         min-height: 65vh;
     }
@@ -1575,6 +2010,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 @media (max-width: 767.98px) {
+    .carousel-header .carousel.carousel-fade .carousel-inner,
     .carousel-header .carousel-inner .carousel-item {
         min-height: 55vh;
     }
@@ -1607,6 +2043,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 @media (max-width: 575.98px) {
+    .carousel-header .carousel.carousel-fade .carousel-inner,
     .carousel-header .carousel-inner .carousel-item {
         min-height: 48vh;
     }
@@ -1633,6 +2070,8 @@ h1, h2, h3, h4, h5, h6,
 
     .carousel-header .carousel-inner .carousel-item .carousel-caption {
         padding-top: 30px;
+        padding-left: 56px;
+        padding-right: 56px;
     }
 
     .carousel-header .hero-motto {
@@ -1879,6 +2318,14 @@ h1, h2, h3, h4, h5, h6,
     padding: 0.3rem 0.55rem;
 }
 
+@media (max-width: 991.98px) and (hover: hover) and (pointer: fine) {
+    .navbar-light .navbar-mobile-order:hover .navbar-mobile-order__inner {
+        background: linear-gradient(135deg, #ffc107 0%, #e6b800 100%);
+        color: #1e0933 !important;
+        box-shadow: 0 8px 22px rgba(255, 193, 7, 0.35);
+    }
+}
+
 @media (max-width: 991.98px) {
     .navbar-light .navbar-mobile-actions .navbar-toggler {
         padding: 0.35rem 0.55rem;
@@ -1945,6 +2392,42 @@ h1, h2, h3, h4, h5, h6,
     margin-left: auto;
     margin-right: auto;
     letter-spacing: 0.01em;
+    text-align: center;
+}
+
+@media (max-width: 991.98px) {
+    body:not(.page-home) .bg-breadcrumb {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: clamp(11rem, 38vw, 15rem);
+        padding: 5.25rem 1rem 2.25rem;
+        background-attachment: scroll;
+    }
+
+    body:not(.page-home) .bg-breadcrumb > .container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        max-width: 100% !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        margin: 0 auto;
+    }
+
+    body:not(.page-home) .page-banner-motto {
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 0 0.75rem;
+        text-align: center;
+    }
+
+    body:not(.page-home) .bg-breadcrumb-spacer {
+        min-height: 0;
+        width: 100%;
+    }
 }
 /*** Single Page Hero Header End ***/
 
@@ -1999,7 +2482,7 @@ h1, h2, h3, h4, h5, h6,
     width: clamp(620px, 60vw, 1020px);
     aspect-ratio: 16 / 10;
     height: auto;
-    background: url('../img/about-img-1.png') no-repeat center / contain;
+    background: url('../img/about-img-1.webp') no-repeat center / contain;
     opacity: 0.18;
     /* PNG has a black background; filters make it work like a watermark */
     filter: grayscale(1) brightness(1.15) contrast(1.1);
@@ -2277,6 +2760,26 @@ h1, h2, h3, h4, h5, h6,
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
     overflow: hidden;
+}
+
+.service-card__excerpt p {
+    margin-bottom: 0.5rem;
+}
+
+.service-card__excerpt p:last-child {
+    margin-bottom: 0;
+}
+
+.service-card__excerpt ul,
+.service-card__excerpt ol {
+    margin-bottom: 0.5rem;
+    padding-left: 1.25rem;
+}
+
+.service-card__excerpt img,
+.service-card__excerpt iframe,
+.service-card__excerpt video {
+    display: none;
 }
 
 .service-card__title-link {
@@ -2951,7 +3454,7 @@ h1, h2, h3, h4, h5, h6,
     background: #fff;
     border: 1px solid rgba(0, 0, 0, 0.08);
     color: #212529;
-    height: var(--hb-input-h);
+    height: calc(3.5rem + 2px);
 }
 
 #contact-booking-form-root .hb-guests-btn:hover {
@@ -3215,20 +3718,22 @@ a:focus-visible .card-link-action__icon i {
 }
 
 .blog-card-topic {
+    font-family: var(--averta-header-font);
     font-size: 0.8rem;
     font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    text-transform: none;
     color: var(--bs-primary);
     margin: 0;
     line-height: 1.3;
 }
 
 .blog-detail-topic {
+    font-family: var(--averta-header-font);
     font-size: 0.85rem;
     font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    text-transform: none;
     color: var(--bs-primary);
     margin: 0 0 0.5rem;
 }
@@ -3241,6 +3746,9 @@ a:focus-visible .card-link-action__icon i {
 }
 
 .blog-card-title {
+    font-family: var(--averta-header-font) !important;
+    letter-spacing: normal !important;
+    text-transform: none;
     color: var(--bs-dark);
     transition: color 0.2s ease;
 }
@@ -3353,6 +3861,9 @@ a:focus-visible .card-link-action__icon i {
 }
 
 .blog-detail-title {
+    font-family: var(--averta-header-font) !important;
+    letter-spacing: normal !important;
+    text-transform: none;
     font-size: clamp(1.75rem, 4vw, 2.5rem);
     font-weight: 600;
     color: var(--bs-dark);
@@ -4332,6 +4843,9 @@ body.page-service-detail .lightbox .lb-data .lb-number {
 }
 
 .blog-related-title {
+    font-family: var(--averta-header-font) !important;
+    letter-spacing: normal !important;
+    text-transform: none;
     font-size: 1.2rem;
     font-weight: 600;
     color: var(--bs-dark);
@@ -4402,10 +4916,11 @@ body.page-service-detail .lightbox .lb-data .lb-number {
 }
 
 .blog-related-card-topic {
+    font-family: var(--averta-header-font);
     font-size: 0.68rem;
     font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    text-transform: none;
     color: var(--bs-primary);
     margin: 0 0 0.25rem;
     line-height: 1.2;
@@ -4416,6 +4931,9 @@ body.page-service-detail .lightbox .lb-data .lb-number {
 }
 
 .blog-related-card-title {
+    font-family: var(--averta-header-font) !important;
+    letter-spacing: normal !important;
+    text-transform: none;
     font-size: 0.82rem;
     font-weight: 600;
     line-height: 1.35;
@@ -5118,8 +5636,37 @@ body.page-service-detail .lightbox .lb-data .lb-number {
 }
 
 .partners-strip__carousel {
+    display: flex;
+    align-items: center;
     width: 100%;
+    padding: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x;
+    cursor: grab;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.partners-strip__carousel::-webkit-scrollbar {
+    display: none;
+}
+
+.partners-marquee-track {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 1.25rem;
     padding: 0 1.25rem;
+}
+
+.partners-strip__carousel.is-dragging {
+    cursor: grabbing;
+    user-select: none;
+    touch-action: none;
 }
 
 .partners-strip__item {
@@ -5129,6 +5676,7 @@ body.page-service-detail .lightbox .lb-data .lb-number {
     justify-content: center;
     gap: 0.35rem;
     padding: 0.75rem 1rem;
+    flex: 0 0 auto;
 }
 
 .partners-strip__bubble {
@@ -5193,31 +5741,6 @@ body.page-service-detail .lightbox .lb-data .lb-number {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-/* marquee container */
-.partners-strip__carousel {
-    display: flex;
-    overflow: hidden;
-    width: 100%;
-    padding: 0;
-}
-
-@keyframes partners-marquee {
-    0%   { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-}
-
-.partners-marquee-track {
-    display: flex;
-    flex-shrink: 0;
-    align-items: center;
-    gap: 1.25rem;
-    animation: partners-marquee 22s linear infinite;
-}
-
-.partners-strip__carousel:hover .partners-marquee-track {
-    animation-play-state: paused;
 }
 
 @media (max-width: 575.98px) {

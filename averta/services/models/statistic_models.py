@@ -36,108 +36,132 @@ class Statistic(models.Model):
     icon_one = models.CharField(
         max_length=64,
         choices=STAT_ICON_CHOICES,
-        default=STAT_ICON_DEFAULTS[0],
+        blank=True,
+        null=True,
         verbose_name='1-ci kart — ikon',
         help_text='Kartda görünən Font Awesome ikonu.',
     )
     value_one = models.PositiveIntegerField(
+        blank=True,
+        null=True,
         verbose_name='1-ci kart — böyük rəqəm',
         help_text='Məsələn: 25. Ana səhifə və Haqqımızda səhifəsində sol tərəfdəki birinci rəqəm.',
     )
     icon_two = models.CharField(
         max_length=64,
         choices=STAT_ICON_CHOICES,
-        default=STAT_ICON_DEFAULTS[1],
+        blank=True,
+        null=True,
         verbose_name='2-ci kart — ikon',
     )
     value_two = models.PositiveIntegerField(
+        blank=True,
+        null=True,
         verbose_name='2-ci kart — böyük rəqəm',
         help_text='Məsələn: 150. İkinci statistika kartındakı rəqəm.',
     )
     icon_three = models.CharField(
         max_length=64,
         choices=STAT_ICON_CHOICES,
-        default=STAT_ICON_DEFAULTS[2],
+        blank=True,
+        null=True,
         verbose_name='3-cü kart — ikon',
     )
     value_three = models.PositiveIntegerField(
+        blank=True,
+        null=True,
         verbose_name='3-cü kart — böyük rəqəm',
         help_text='Məsələn: 500. Üçüncü statistika kartındakı rəqəm.',
     )
     icon_four = models.CharField(
         max_length=64,
         choices=STAT_ICON_CHOICES,
-        default=STAT_ICON_DEFAULTS[3],
+        blank=True,
+        null=True,
         verbose_name='4-cü kart — ikon',
     )
     value_four = models.PositiveIntegerField(
+        blank=True,
+        null=True,
         verbose_name='4-cü kart — böyük rəqəm',
         help_text='Məsələn: 1000. Dördüncü statistika kartındakı rəqəm.',
     )
     caption_one_az = models.CharField(
         max_length=255,
         blank=True,
+        null=True,
         verbose_name='1-ci kart — alt yazı (AZ)',
         help_text='Rəqəmin altında görünən qısa mətn. Məs: İllik təcrübə',
     )
     caption_one_en = models.CharField(
         max_length=255,
         blank=True,
+        null=True,
         verbose_name='1-ci kart — alt yazı (EN)',
         help_text='English version of the caption below the first number.',
     )
     caption_one_ru = models.CharField(
         max_length=255,
         blank=True,
+        null=True,
         verbose_name='1-ci kart — alt yazı (RU)',
         help_text='Русская версия подписи под первым числом.',
     )
     caption_two_az = models.CharField(
         max_length=255,
         blank=True,
+        null=True,
         verbose_name='2-ci kart — alt yazı (AZ)',
         help_text='Məs: Xidmət növü',
     )
     caption_two_en = models.CharField(
         max_length=255,
         blank=True,
+        null=True,
         verbose_name='2-ci kart — alt yazı (EN)',
     )
     caption_two_ru = models.CharField(
         max_length=255,
         blank=True,
+        null=True,
         verbose_name='2-ci kart — alt yazı (RU)',
     )
     caption_three_az = models.CharField(
         max_length=255,
         blank=True,
+        null=True,
         verbose_name='3-cü kart — alt yazı (AZ)',
         help_text='Məs: Müştəri sayı',
     )
     caption_three_en = models.CharField(
         max_length=255,
         blank=True,
+        null=True,
         verbose_name='3-cü kart — alt yazı (EN)',
     )
     caption_three_ru = models.CharField(
         max_length=255,
         blank=True,
+        null=True,
         verbose_name='3-cü kart — alt yazı (RU)',
     )
     caption_four_az = models.CharField(
         max_length=255,
         blank=True,
+        null=True,
         verbose_name='4-cü kart — alt yazı (AZ)',
         help_text='Məs: Layihə sayı',
     )
     caption_four_en = models.CharField(
         max_length=255,
         blank=True,
+        null=True,
         verbose_name='4-cü kart — alt yazı (EN)',
     )
     caption_four_ru = models.CharField(
         max_length=255,
         blank=True,
+        null=True,
         verbose_name='4-cü kart — alt yazı (RU)',
     )
 

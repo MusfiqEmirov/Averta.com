@@ -2,12 +2,9 @@
 <nav class="navbar navbar-expand-lg navbar-light px-4 px-lg-5 py-3 py-lg-0">
     {% with language|default:request.LANGUAGE_CODE as lang %}
     <a href="{% url 'services:home-page' %}" class="navbar-brand p-0">
-        <img src="{% static 'assets/img/averta-logo.png' %}" alt="Averta Travel" class="navbar-logo">
+        <img src="{% static 'assets/img/averta-logo.webp' %}" alt="Averta Travel" class="navbar-logo">
     </a>
     <div class="d-flex align-items-center ms-auto d-lg-none navbar-mobile-actions">
-        <a href="{% url 'services:contact-page' %}#contact-booking" class="btn btn-primary rounded-pill py-2 px-4 navbar-contact-btn">
-            {% if lang == 'en' %}Order{% elif lang == 'ru' %}Заказать{% else %}Sifariş et{% endif %}
-        </a>
         {% include 'partials/lang_switcher.html' with mobile=True %}
         <button class="navbar-toggler ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-label="{% if lang == 'en' %}Menu{% elif lang == 'ru' %}Меню{% else %}Menyu{% endif %}">
             <span class="fa fa-bars"></span>
@@ -26,12 +23,14 @@
                     {% if lang == 'en' %}Services{% elif lang == 'ru' %}Услуги{% else %}Xidmətlər{% endif %}
                 </a>
                 <div class="dropdown-menu m-0">
-                    {% for nav_service in navbar_services %}
-                    <a href="{% url 'services:service-detail' nav_service.slug %}" class="dropdown-item">{{ nav_service.name }}</a>
-                    {% empty %}
                     <a href="{% url 'services:service-page' %}" class="dropdown-item">
                         {% if lang == 'en' %}All services{% elif lang == 'ru' %}Все услуги{% else %}Bütün xidmətlər{% endif %}
                     </a>
+                    {% if navbar_services %}
+                    <div class="dropdown-divider"></div>
+                    {% endif %}
+                    {% for nav_service in navbar_services %}
+                    <a href="{% url 'services:service-detail' nav_service.slug %}" class="dropdown-item">{{ nav_service.name }}</a>
                     {% endfor %}
                 </div>
             </div>
@@ -46,6 +45,12 @@
             </a>
             <a href="{% url 'services:contact-page' %}#contact-section" class="nav-item nav-link {% if active_nav == 'contact' %}active{% endif %}">
                 {% if lang == 'en' %}Contact{% elif lang == 'ru' %}Контакты{% else %}Əlaqə{% endif %}
+            </a>
+            <a href="{% url 'services:contact-page' %}#contact-booking" class="nav-item navbar-mobile-order d-lg-none">
+                <span class="navbar-mobile-order__inner">
+                    <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                    {% if lang == 'en' %}Order{% elif lang == 'ru' %}Заказать{% else %}Sifariş et{% endif %}
+                </span>
             </a>
         </div>
         <a href="{% url 'services:contact-page' %}#contact-booking" class="btn btn-primary rounded-pill py-2 px-4 ms-lg-4 navbar-contact-btn d-none d-lg-inline-block">

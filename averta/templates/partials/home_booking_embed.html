@@ -1,17 +1,19 @@
-﻿{% load static i18n %}
+{% load static i18n %}
 
 <div id="contact-booking-form-root"
+     data-lang="{{ language|default:request.LANGUAGE_CODE|default:'az' }}"
      data-i18n-package="{% trans 'Paket' %}"
      data-i18n-service="{% trans 'Xidmət' %}"
      data-i18n-adults="{% trans 'Böyük' %}"
-     data-i18n-children="{% trans 'Uşaq' %}">
+     data-i18n-children="{% trans 'Uşaq' %}"
+     data-i18n-clear="{% trans 'Seçimi sil' %}">
 
   {% if booking_feedback == 'success' %}
-  <div class="alert alert-success rounded-pill py-2 px-4 mb-3">
+  <div class="alert alert-success rounded-pill py-2 px-4 mb-3 form-feedback-alert" role="alert" data-form-feedback>
     <i class="fas fa-check-circle me-2"></i>{% trans "Sifarişiniz qəbul olundu. Tezliklə sizinlə əlaqə saxlayacağıq." %}
   </div>
   {% elif booking_feedback == 'error' %}
-  <div class="alert alert-danger rounded-pill py-2 px-4 mb-3">
+  <div class="alert alert-danger rounded-pill py-2 px-4 mb-3 form-feedback-alert" role="alert" data-form-feedback>
     <i class="fas fa-exclamation-circle me-2"></i>{% trans "Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin." %}
   </div>
   {% endif %}
@@ -172,12 +174,34 @@
         </div>
       </div>
 
+      <div class="col-md-6">
+        <div class="form-floating hb-embed-date" data-hb-date-cell>
+          {{ booking_form.date_from }}
+          <i class="fas fa-chevron-down hb-embed-date-chevron" aria-hidden="true"></i>
+          <label for="id_date_from"><i class="fas fa-plane-departure hb-embed-date-icon me-1"></i>{% trans "Gediş tarixi" %} *</label>
+        </div>
+        {% if booking_form.date_from.errors %}
+        <div class="text-warning small mt-1">{{ booking_form.date_from.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <div class="col-md-6">
+        <div class="form-floating hb-embed-date" data-hb-date-cell data-hb-date-to="1">
+          {{ booking_form.date_to }}
+          <i class="fas fa-chevron-down hb-embed-date-chevron" aria-hidden="true"></i>
+          <label for="id_date_to"><i class="fas fa-plane-arrival hb-embed-date-icon me-1"></i>{% trans "Qayıdış tarixi" %} *</label>
+        </div>
+        {% if booking_form.date_to.errors %}
+        <div class="text-warning small mt-1">{{ booking_form.date_to.errors.0 }}</div>
+        {% endif %}
+      </div>
+
       <div class="col-12">
-        <div class="form-floating">
-          <textarea class="form-control bg-white border-0"
-                    id="bk_note" name="note" style="height:100px"
-                    placeholder="{% trans 'Qısa qeyd (istəyə görə)' %}">{{ booking_form.note.value|default:'' }}</textarea>
-          <label for="bk_note">{% trans "Qısa qeyd (istəyə görə)" %}</label>
+        <div class="hb-embed-note-field" data-hb-note-field>
+          <label class="hb-embed-note-label" for="bk_note">{% trans "Qısa qeyd (istəyə görə)" %}</label>
+          <textarea class="form-control bg-white border-0 hb-embed-note-input"
+                    id="bk_note" name="note"
+                    rows="4">{{ booking_form.note.value|default:'' }}</textarea>
         </div>
         {% if booking_form.note.errors %}
         <div class="text-warning small mt-1">{{ booking_form.note.errors.0 }}</div>

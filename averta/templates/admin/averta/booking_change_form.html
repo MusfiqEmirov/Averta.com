@@ -30,6 +30,16 @@
             <label>Qonaqlar</label>
             <span>{{ original.adults_count }} böyük · {{ original.children_count }} uşaq</span>
         </div>
+        {% if original.date_from or original.date_to %}
+        <div class="booking-admin-meta__item">
+            <label>Gediş / Qayıdış</label>
+            <span>
+                {% if original.date_from %}{{ original.date_from|date:"d-m-Y" }}{% else %}—{% endif %}
+                →
+                {% if original.date_to %}{{ original.date_to|date:"d-m-Y" }}{% else %}—{% endif %}
+            </span>
+        </div>
+        {% endif %}
     </div>
 
     <div class="booking-admin-actions" style="margin:0 0 1rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
@@ -37,23 +47,7 @@
         <a href="#" class="button" id="bookingExportOneXlsBtn">Excel (bu sifariş)</a>
     </div>
 
-    <script type="application/json" id="bookingExportOneCsvData">
-      {
-        "id": {{ original.id|default:"null" }},
-        "created_at": "{{ original.created_at|date:'d.m.Y H:i' }}",
-        "full_name": "{{ original.full_name|default:''|escapejs }}",
-        "phone": "{{ original.phone|default:''|escapejs }}",
-        "email": "{{ original.email|default:''|escapejs }}",
-        "note": "{{ original.note|default:''|escapejs }}",
-        "adults_count": {{ original.adults_count|default:0 }},
-        "children_count": {{ original.children_count|default:0 }},
-        "is_read": {{ original.is_read|yesno:"true,false" }},
-        "is_customer": {{ original.is_customer|yesno:"true,false" }},
-        "is_deleted": {{ original.is_deleted|yesno:"true,false" }},
-        "services": [{% for s in original.services.all %}"{{ s|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}],
-        "packages": [{% for p in original.packages.all %}"{{ p|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}]
-      }
-    </script>
+    {% if booking_export_json %}{{ booking_export_json|json_script:"bookingExportOneData" }}{% endif %}
     {% endif %}
 
     <div class="booking-admin-form-wrap">

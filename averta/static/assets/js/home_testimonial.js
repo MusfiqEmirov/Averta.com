@@ -163,17 +163,8 @@
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Feedback alert — 2 saniyə sonra yox olur                           */
+    /*  Feedback alert — bağlama düyməsi ajax_forms.js tərəfindən idarə olunur */
     /* ------------------------------------------------------------------ */
-    function dismissReviewFeedbackAlert() {
-        var feedbackAlert = document.querySelector('.review-feedback-alert');
-        if (!feedbackAlert) { return; }
-        setTimeout(function () {
-            feedbackAlert.style.transition = 'opacity 0.4s ease';
-            feedbackAlert.style.opacity    = '0';
-            setTimeout(function () { feedbackAlert.remove(); }, 400);
-        }, 2000);
-    }
 
     /* ------------------------------------------------------------------ */
     /*  Modal — server xətası varsa avtomatik aç                           */
@@ -341,7 +332,6 @@
         initReviewTargetSelects();
         initTestimonialCarousel();
         initReviewMessageCounter();
-        dismissReviewFeedbackAlert();
         openReviewModalIfErrors();
 
         /* Form submit — əvvəlcə client-side yoxla */

@@ -6,7 +6,6 @@ from django.utils import translation
 from django.utils.translation import gettext as _
 from django.utils.safestring import mark_safe
 from django.template.defaultfilters import truncatewords_html
-from django.templatetags.static import static
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from services.models.media_models import media_not_marked_as_background_q
@@ -266,13 +265,6 @@ def get_home_background_images(limit=6):
 # Motto / hero carousel
 # ---------------------------------------------------------------------------
 
-HERO_FALLBACK_IMAGE_PATHS = (
-    'assets/img/hero_1.jpg',
-    'assets/img/hero_2.jpg',
-    'assets/img/hero_3.jpg',
-)
-
-
 PAGE_MOTTO_FLAGS = {
     'about': 'is_about_page',
     'contact': 'is_contact_page',
@@ -312,8 +304,6 @@ def build_hero_carousel(lang):
     motto_texts = get_motto_texts(lang)
     urls = list(get_home_background_images(limit=6))
     if not urls:
-        urls = [static(p) for p in HERO_FALLBACK_IMAGE_PATHS]
-    if not urls:
         return []
 
     n_images = len(urls)
@@ -347,59 +337,48 @@ def get_statistics(lang='az'):
     from services.models.statistic_models import STAT_ICON_DEFAULTS
 
     statistic = Statistic.objects.first()
-    if statistic:
+    if not statistic:
+        return {}
 
-        def caption(base):
-            return (_localized_with_az_fallback(statistic, lang, base) or '').strip()
+    def caption(base):
+        return (_localized_with_az_fallback(statistic, lang, base) or '').strip()
 
-        icons = (
-            _stat_icon(statistic.icon_one, STAT_ICON_DEFAULTS[0]),
-            _stat_icon(statistic.icon_two, STAT_ICON_DEFAULTS[1]),
-            _stat_icon(statistic.icon_three, STAT_ICON_DEFAULTS[2]),
-            _stat_icon(statistic.icon_four, STAT_ICON_DEFAULTS[3]),
-        )
+    card_defs = (
+        (statistic.value_one, 'caption_one', statistic.icon_one, STAT_ICON_DEFAULTS[0], 1),
+        (statistic.value_two, 'caption_two', statistic.icon_two, STAT_ICON_DEFAULTS[1], 2),
+        (statistic.value_three, 'caption_three', statistic.icon_three, STAT_ICON_DEFAULTS[2], 3),
+        (statistic.value_four, 'caption_four', statistic.icon_four, STAT_ICON_DEFAULTS[3], 4),
+    )
 
-        return {
-            'value_one': statistic.value_one,
-            'value_two': statistic.value_two,
-            'value_three': statistic.value_three,
-            'value_four': statistic.value_four,
-            'caption_one': caption('caption_one'),
-            'caption_two': caption('caption_two'),
-            'caption_three': caption('caption_three'),
-            'caption_four': caption('caption_four'),
-            'icon_one': icons[0],
-            'icon_two': icons[1],
-            'icon_three': icons[2],
-            'icon_four': icons[3],
-            'cards': [
-                {
-                    'value': statistic.value_one,
-                    'caption': caption('caption_one'),
-                    'icon': icons[0],
-                    'variant': 1,
-                },
-                {
-                    'value': statistic.value_two,
-                    'caption': caption('caption_two'),
-                    'icon': icons[1],
-                    'variant': 2,
-                },
-                {
-                    'value': statistic.value_three,
-                    'caption': caption('caption_three'),
-                    'icon': icons[2],
-                    'variant': 3,
-                },
-                {
-                    'value': statistic.value_four,
-                    'caption': caption('caption_four'),
-                    'icon': icons[3],
-                    'variant': 4,
-                },
-            ],
-        }
-    return {}
+    cards = []
+    for value, caption_base, icon_val, default_icon, variant in card_defs:
+        if value is None:
+            continue
+        cards.append({
+            'value': value,
+            'caption': caption(caption_base),
+            'icon': _stat_icon(icon_val, default_icon),
+            'variant': variant,
+        })
+
+    if not cards:
+        return {}
+
+    return {
+        'value_one': statistic.value_one,
+        'value_two': statistic.value_two,
+        'value_three': statistic.value_three,
+        'value_four': statistic.value_four,
+        'caption_one': caption('caption_one'),
+        'caption_two': caption('caption_two'),
+        'caption_three': caption('caption_three'),
+        'caption_four': caption('caption_four'),
+        'icon_one': _stat_icon(statistic.icon_one, STAT_ICON_DEFAULTS[0]),
+        'icon_two': _stat_icon(statistic.icon_two, STAT_ICON_DEFAULTS[1]),
+        'icon_three': _stat_icon(statistic.icon_three, STAT_ICON_DEFAULTS[2]),
+        'icon_four': _stat_icon(statistic.icon_four, STAT_ICON_DEFAULTS[3]),
+        'cards': cards,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -468,8 +447,6 @@ def serialize_service(service, lang='az'):
     if service is None:
         return None
 
-    name_field = get_localized_field_name('name', lang)
-    desc_field = get_localized_field_name('description', lang)
     bullet_field = get_localized_field_name('bullet_list', lang)
     bullet_raw = getattr(service, bullet_field, None) or service.bullet_list_az
     medias = [
@@ -482,14 +459,17 @@ def serialize_service(service, lang='az'):
     ]
     images = [m['image'] for m in medias if m['image']]
     videos = [m['video'] for m in medias if m['video']]
-    raw_description = getattr(service, desc_field, service.description_az) or ''
+    raw_description = _localized_with_az_fallback(service, lang, 'description')
+    description_html = prepare_rich_html(raw_description)
+    description_preview_html = build_about_description_preview(description_html, word_count=22)
 
     return {
         'id': service.id,
         'slug': service.slug,
-        'name': getattr(service, name_field, service.name_az),
+        'name': _localized_with_az_fallback(service, lang, 'name') or service.name_az,
         'description': raw_description,
-        'description_html': prepare_rich_html(raw_description),
+        'description_html': mark_safe(description_html),
+        'description_preview': mark_safe(description_preview_html),
         'bullet_items': parse_bullet_list(bullet_raw),
         'is_active': service.is_active,
         'on_main_page': service.on_main_page,

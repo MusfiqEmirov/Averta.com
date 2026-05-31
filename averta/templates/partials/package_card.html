@@ -43,7 +43,7 @@
         {% else %}
         <span></span>
         {% endif %}
-        <a href="{% url 'services:contact-page' %}"
+        <a href="{% url 'services:contact-page' %}?package={{ package.id }}#contact-booking"
            class="hb-submit pkg-card__cta"
            role="button">
             <i class="fas fa-paper-plane" aria-hidden="true"></i>

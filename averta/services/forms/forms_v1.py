@@ -1,7 +1,9 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
+from datetime import timedelta
 from services.models import AppealContact, Booking, Package, Review, Service
 from services.models.review_models import REVIEW_MESSAGE_MAX_LENGTH, REVIEW_NAME_MAX_LENGTH
 from services.utils import normalize_az_phone
@@ -237,11 +239,40 @@ class BookingForm(forms.ModelForm):
         }),
         label=_('Mobil nömrə'),
     )
+    date_from = forms.DateField(
+        required=True,
+        input_formats=['%d-%m-%Y', '%d.%m.%Y', '%Y-%m-%d'],
+        widget=forms.DateInput(
+            format='%d-%m-%Y',
+            attrs={
+                'class': 'hero-booking__input hb-date-input hb-date-text',
+                'placeholder': '.....',
+                'autocomplete': 'off',
+                'readonly': 'readonly',
+            },
+        ),
+        label=_('Gediş tarixi'),
+    )
+    date_to = forms.DateField(
+        required=True,
+        input_formats=['%d-%m-%Y', '%d.%m.%Y', '%Y-%m-%d'],
+        widget=forms.DateInput(
+            format='%d-%m-%Y',
+            attrs={
+                'class': 'hero-booking__input hb-date-input hb-date-text',
+                'placeholder': '.....',
+                'autocomplete': 'off',
+                'readonly': 'readonly',
+            },
+        ),
+        label=_('Qayıdış tarixi'),
+    )
     note = forms.CharField(
         widget=forms.TextInput(attrs={
             'class': 'hero-booking__input',
-            'placeholder': _('Qeyd (istəyə görə)'),
             'maxlength': '200',
+            'placeholder': ' ',
+            'autocomplete': 'off',
         }),
         required=False,
         label=_('Qeyd'),
@@ -280,6 +311,8 @@ class BookingForm(forms.ModelForm):
             'full_name',
             'email',
             'phone',
+            'date_from',
+            'date_to',
             'note',
             'adults_count',
             'children_count',
@@ -296,6 +329,8 @@ class BookingForm(forms.ModelForm):
                 'email_ph': 'E-poçt (istəyə görə)',
                 'phone_label': 'Mobil nömrə',
                 'phone_ph': 'Mobil nömrə *',
+                'date_from_label': 'Gediş tarixi',
+                'date_to_label': 'Qayıdış tarixi',
                 'note_label': 'Qeyd',
                 'note_ph': 'Qeyd (istəyə görə)',
                 'svc': 'Xidmət',
@@ -308,6 +343,8 @@ class BookingForm(forms.ModelForm):
                 'email_ph': 'Email (optional)',
                 'phone_label': 'Mobile number',
                 'phone_ph': 'Mobile number *',
+                'date_from_label': 'Departure date',
+                'date_to_label': 'Return date',
                 'note_label': 'Note',
                 'note_ph': 'Note (optional)',
                 'svc': 'Service',
@@ -320,6 +357,8 @@ class BookingForm(forms.ModelForm):
                 'email_ph': 'Эл. почта (необязательно)',
                 'phone_label': 'Мобильный номер',
                 'phone_ph': 'Мобильный номер *',
+                'date_from_label': 'Дата вылета',
+                'date_to_label': 'Дата возврата',
                 'note_label': 'Комментарий',
                 'note_ph': 'Комментарий (необязательно)',
                 'svc': 'Услуга',
@@ -334,8 +373,12 @@ class BookingForm(forms.ModelForm):
             self.fields['email'].widget.attrs['placeholder'] = ui['email_ph']
             self.fields['phone'].label = ui['phone_label']
             self.fields['phone'].widget.attrs['placeholder'] = ui['phone_ph']
+            self.fields['date_from'].label = ui['date_from_label']
+            self.fields['date_to'].label = ui['date_to_label']
+            for name in ('date_from', 'date_to'):
+                self.fields[name].widget.format = '%d-%m-%Y'
             self.fields['note'].label = ui['note_label']
-            self.fields['note'].widget.attrs['placeholder'] = ui['note_ph']
+            self.fields['note'].widget.attrs['placeholder'] = ' '
             self.fields['services'].label = ui['svc']
             self.fields['packages'].label = ui['pkg']
         name_field = get_localized_field_name('name', lang)
@@ -370,6 +413,17 @@ class BookingForm(forms.ModelForm):
             if not services:
                 self.add_error('services', _('Ən azı bir xidmət seçin.'))
             cleaned_data['packages'] = []
+
+        date_from = cleaned_data.get('date_from')
+        date_to = cleaned_data.get('date_to')
+        today = timezone.localdate()
+
+        if date_from and date_from < today:
+            self.add_error('date_from', _('Gediş tarixi keçmiş ola bilməz.'))
+
+        if date_from and date_to and date_to < date_from:
+            cleaned_data['date_to'] = date_from + timedelta(days=1)
+
         return cleaned_data
 
     def clean_email(self):

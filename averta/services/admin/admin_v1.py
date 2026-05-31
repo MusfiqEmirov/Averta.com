@@ -1,5 +1,8 @@
 from django import forms
 from django.contrib import admin
+from django.template.response import TemplateResponse
+from django.utils import timezone
+from django.utils.formats import date_format
 from django.utils.html import format_html, mark_safe
 from django.utils.translation import gettext_lazy as _
 from ckeditor.widgets import CKEditorWidget
@@ -511,6 +514,8 @@ class BookingAdmin(AdminPageHelpMixin, admin.ModelAdmin):
     list_display = (
         'full_name',
         'booking_target',
+        'date_from_display',
+        'date_to_display',
         'adults_count',
         'children_count',
         'email',
@@ -528,6 +533,8 @@ class BookingAdmin(AdminPageHelpMixin, admin.ModelAdmin):
         'full_name',
         'email',
         'phone',
+        'date_from_display',
+        'date_to_display',
         'note',
         'services',
         'packages',
@@ -541,7 +548,7 @@ class BookingAdmin(AdminPageHelpMixin, admin.ModelAdmin):
             'fields': ('full_name', 'email', 'phone', 'note'),
         }),
         (_('Sifariş'), {
-            'fields': ('services', 'packages', 'adults_count', 'children_count'),
+            'fields': ('services', 'packages', 'date_from_display', 'date_to_display', 'adults_count', 'children_count'),
         }),
         (_('Status'), {
             'fields': ('is_read', 'is_customer', 'is_deleted', 'created_at'),
@@ -550,6 +557,51 @@ class BookingAdmin(AdminPageHelpMixin, admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return False
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related('services', 'packages')
+
+    def booking_export_payload(self, obj):
+        services = [str(s) for s in obj.services.all()]
+        packages = [str(p) for p in obj.packages.all()]
+        target_labels = services + packages
+        return {
+            'id': obj.pk,
+            'created_at': date_format(timezone.localtime(obj.created_at), 'd.m.Y H:i') if obj.created_at else '',
+            'full_name': obj.full_name or '',
+            'phone': obj.phone or '',
+            'email': obj.email or '',
+            'date_from': date_format(obj.date_from, 'd-m-Y') if obj.date_from else '',
+            'date_to': date_format(obj.date_to, 'd-m-Y') if obj.date_to else '',
+            'note': obj.note or '',
+            'adults_count': obj.adults_count,
+            'children_count': obj.children_count,
+            'booking_target': ', '.join(target_labels) if target_labels else '—',
+            'services': services,
+            'packages': packages,
+            'is_read': bool(obj.is_read),
+            'is_customer': bool(obj.is_customer),
+            'is_deleted': bool(obj.is_deleted),
+        }
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        response = super().changelist_view(request, extra_context=extra_context)
+        if isinstance(response, TemplateResponse):
+            cl = response.context_data.get('cl')
+            if cl is not None:
+                response.context_data['booking_export_json'] = [
+                    self.booking_export_payload(obj) for obj in cl.result_list
+                ]
+        return response
+
+    def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
+        extra_context = extra_context or {}
+        if object_id:
+            obj = self.get_object(request, object_id)
+            if obj is not None:
+                extra_context['booking_export_json'] = self.booking_export_payload(obj)
+        return super().changeform_view(request, object_id, form_url, extra_context)
 
     def has_delete_permission(self, request, obj=None):
         return True
@@ -562,9 +614,20 @@ class BookingAdmin(AdminPageHelpMixin, admin.ModelAdmin):
             ),
         }
         js = (
-            'assets/js/admin_booking_detail_export.js',
-            'assets/js/admin_booking_list_export.js',
+            'assets/js/admin_booking_export.js',
         )
+
+    @admin.display(description=_('Gediş tarixi'), ordering='date_from')
+    def date_from_display(self, obj):
+        if not obj.date_from:
+            return '—'
+        return date_format(obj.date_from, 'd-m-Y')
+
+    @admin.display(description=_('Qayıdış tarixi'), ordering='date_to')
+    def date_to_display(self, obj):
+        if not obj.date_to:
+            return '—'
+        return date_format(obj.date_to, 'd-m-Y')
 
     @admin.display(description=_('Seçim'))
     def booking_target(self, obj):
