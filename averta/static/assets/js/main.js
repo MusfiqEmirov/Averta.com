@@ -135,12 +135,8 @@
             track.className = 'partners-marquee-track';
             items.forEach(function (item) { track.appendChild(item); });
 
-            var clone = track.cloneNode(true);
-            clone.setAttribute('aria-hidden', 'true');
-
-            strip.appendChild(track);
-            strip.appendChild(clone);
-
+            var originalItems = Array.from(track.children);
+            var clone = null;
             var loopWidth = 0;
             var autoPaused = false;
             var resumeTimer = null;
@@ -158,8 +154,37 @@
                 return loopWidth / (getLoopDuration() / 16.67);
             }
 
-            function canAutoScroll() {
-                return loopWidth > strip.clientWidth + 1;
+            function rebuildClone() {
+                strip.querySelectorAll('.partners-marquee-track[aria-hidden="true"]').forEach(function (node) {
+                    node.remove();
+                });
+                clone = track.cloneNode(true);
+                clone.setAttribute('aria-hidden', 'true');
+                strip.appendChild(clone);
+            }
+
+            function expandTrack() {
+                while (track.children.length > originalItems.length) {
+                    track.lastChild.remove();
+                }
+
+                var minWidth = Math.max(strip.clientWidth + 1, 1);
+                var safety = 0;
+
+                while (track.scrollWidth < minWidth && safety < 50) {
+                    originalItems.forEach(function (item) {
+                        track.appendChild(item.cloneNode(true));
+                    });
+                    safety += 1;
+                }
+
+                measureLoop();
+            }
+
+            function bindImages() {
+                strip.querySelectorAll('img').forEach(function (img) {
+                    img.draggable = false;
+                });
             }
 
             function normalizeScroll() {
@@ -185,7 +210,7 @@
             }
 
             function tick() {
-                if (!autoPaused && canAutoScroll()) {
+                if (!autoPaused && loopWidth > 0) {
                     suppressScrollPause = true;
                     strip.scrollLeft += autoSpeed();
                     if (strip.scrollLeft >= loopWidth) {
@@ -197,6 +222,16 @@
                 }
                 rafId = requestAnimationFrame(tick);
             }
+
+            function refreshLayout() {
+                expandTrack();
+                rebuildClone();
+                bindImages();
+                normalizeScroll();
+            }
+
+            strip.appendChild(track);
+            refreshLayout();
 
             strip.addEventListener('pointerdown', function (e) {
                 pauseAuto();
@@ -246,12 +281,7 @@
                 scheduleResume();
             }, { passive: true });
 
-            strip.querySelectorAll('img').forEach(function (img) {
-                img.draggable = false;
-            });
-
-            measureLoop();
-            window.addEventListener('resize', measureLoop);
+            window.addEventListener('resize', refreshLayout);
             rafId = requestAnimationFrame(tick);
         });
     })();
