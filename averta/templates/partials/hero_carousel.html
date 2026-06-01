@@ -1,7 +1,7 @@
 {% load i18n %}
 {% if hero_carousel %}
 <div class="carousel-header">
-    <div id="carouselId" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="8000">
+    <div id="carouselId" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000" data-bs-pause="false">
         {% if hero_carousel|length > 1 %}
         <ol class="carousel-indicators">
             {% for slide in hero_carousel %}
