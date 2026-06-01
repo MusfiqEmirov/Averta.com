@@ -492,11 +492,13 @@ def serialize_package(package, lang='az'):
     services = package.service.filter(is_active=True)
 
     desc = getattr(package, desc_field, package.description_az) or ''
+    description_html = prepare_rich_html(desc)
 
     return {
         'id': package.id,
         'name': getattr(package, name_field, package.name_az),
         'description': desc,
+        'description_html': mark_safe(description_html),
         'price': package.price,
         'currency': package.currency,
         'price_display': (

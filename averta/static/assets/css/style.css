@@ -7111,6 +7111,36 @@ body.page-home .partners-strip__head {
     margin-bottom: 0;
 }
 
+.pkg-card__desc p {
+    margin-bottom: 0.5rem;
+}
+
+.pkg-card__desc p:last-child {
+    margin-bottom: 0;
+}
+
+.pkg-card__desc ul,
+.pkg-card__desc ol {
+    margin-bottom: 0.5rem;
+    padding-left: 1.25rem;
+}
+
+.pkg-card__desc li {
+    margin-bottom: 0.25rem;
+}
+
+.pkg-card__desc strong,
+.pkg-card__desc b {
+    font-weight: 600;
+    color: #4b5563;
+}
+
+.pkg-card__desc img,
+.pkg-card__desc iframe,
+.pkg-card__desc video {
+    display: none;
+}
+
 /* â”€â”€ Footer (deadline + CTA) â”€â”€ */
 .pkg-card__footer {
     flex: 0 0 auto;

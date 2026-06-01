@@ -25,9 +25,9 @@
         </ul>
         {% endif %}
 
-        {% if package.description %}
+        {% if package.description_html %}
         {% if package.services %}<hr class="pkg-card__divider">{% endif %}
-        <p class="pkg-card__desc">{{ package.description|striptags }}</p>
+        <div class="pkg-card__desc">{{ package.description_html }}</div>
         {% endif %}
     </div>
 
