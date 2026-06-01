@@ -40,7 +40,6 @@
         });
     })();
 
-
     // Sticky Navbar (smooth size transition via CSS on .sticky-top)
     $(window).on('scroll', function () {
         var $navbar = $('.navbar');
