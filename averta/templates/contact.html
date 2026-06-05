@@ -22,7 +22,7 @@
                     <div class="contact-info-card">
                         <span class="contact-info-card__icon" aria-hidden="true"><i class="fas fa-map-marker-alt"></i></span>
                         <div>
-                            <h3 class="contact-info-card__title">Ünvan</h3>
+                            <h3 class="contact-info-card__title">{% trans "Ünvan" %}</h3>
                             <p class="mb-0">{{ contact.address }}</p>
                         </div>
                     </div>
@@ -31,7 +31,7 @@
                     <div class="contact-info-card">
                         <span class="contact-info-card__icon" aria-hidden="true"><i class="fas fa-phone-alt"></i></span>
                         <div>
-                            <h3 class="contact-info-card__title">Telefon</h3>
+                            <h3 class="contact-info-card__title">{% trans "Telefon" %}</h3>
                             <p class="mb-0"><a href="tel:{{ contact.phone }}">{{ contact.phone }}</a></p>
                         </div>
                     </div>
@@ -49,7 +49,7 @@
                     <div class="contact-info-card">
                         <span class="contact-info-card__icon" aria-hidden="true"><i class="fas fa-envelope"></i></span>
                         <div>
-                            <h3 class="contact-info-card__title">E-poçt</h3>
+                            <h3 class="contact-info-card__title">{% trans "E-poçt" %}</h3>
                             <p class="mb-0"><a href="mailto:{{ contact.email }}">{{ contact.email }}</a></p>
                             {% if contact.email_two %}
                             <p class="mb-0 mt-1"><a href="mailto:{{ contact.email_two }}">{{ contact.email_two }}</a></p>
@@ -80,7 +80,7 @@
                     {% endif %}
 
                     {% if contact.map_embed_url %}
-                    <div class="contact-info-card contact-info-card--map">
+                    <div class="contact-info-card contact-info-card--map" id="contact-map">
                         <div class="contact-map-wrap">
                             <iframe
                                 class="contact-map-iframe"
@@ -106,7 +106,7 @@
                     <form method="post" action="{% url 'services:contact-page' %}" class="contact-form" data-ajax="1">
                         {% csrf_token %}
                         {{ form.website }}
-                        <input type="hidden" name="subject" value="Əlaqə">
+                        <input type="hidden" name="subject" value="{% trans 'Əlaqə' %}">
                         <input type="hidden" name="form_type" value="contact">
                         <div class="row g-4">
                             <div class="col-md-6">

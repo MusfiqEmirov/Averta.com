@@ -1,7 +1,8 @@
+{% load i18n %}
 {% if service.bullet_items %}
 <section class="sdp-features sdp-features--main" aria-labelledby="sdp-features-heading">
     <div class="sdp-features__head">
-        <h2 id="sdp-features-heading" class="sdp-features__title">Xidmətə daxildir</h2>
+        <h2 id="sdp-features-heading" class="sdp-features__title">{% trans "Xidmətə daxildir" %}</h2>
     </div>
     <ul class="sdp-features__grid">
         {% for item in service.bullet_items %}

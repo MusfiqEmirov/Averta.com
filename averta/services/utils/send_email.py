@@ -34,10 +34,6 @@ def format_appeal_contact_message(instance):
 
 def send_appeal_contact_notification(instance):
     try:
-        customer_email = (instance.email or '').strip()
-        if not customer_email:
-            logger.info('Contact form email skipped: sender email is empty.')
-            return
         subject = 'Saytdan gələn müraciət'
         message = format_appeal_contact_message(instance)
         recipient = settings.CONTACT_RECEIVER_EMAIL
@@ -49,7 +45,7 @@ def send_appeal_contact_notification(instance):
             subject=subject,
             message=message,
             sender_name=instance.full_name,
-            sender_email=customer_email,
+            sender_email=(instance.email or '').strip(),
         )
     except Exception:
         logger.exception('Contact form notification email failed.')
@@ -92,10 +88,6 @@ def format_booking_message(instance):
 
 def send_booking_notification(instance):
     try:
-        customer_email = (instance.email or '').strip()
-        if not customer_email:
-            logger.info('Booking email skipped: sender email is empty.')
-            return
         subject = 'Saytdan gələn sifariş'
         message = format_booking_message(instance)
         recipient = settings.CONTACT_RECEIVER_EMAIL
@@ -107,7 +99,7 @@ def send_booking_notification(instance):
             subject=subject,
             message=message,
             sender_name=instance.full_name,
-            sender_email=customer_email,
+            sender_email=(instance.email or '').strip(),
         )
     except Exception:
         logger.exception('Booking notification email failed.')
@@ -115,13 +107,16 @@ def send_booking_notification(instance):
 
 def send_mail_func(recipient, subject, message, sender_name='', sender_email=''):
     smtp_user = getattr(settings, 'EMAIL_HOST_USER', None) or settings.DEFAULT_FROM_EMAIL
+    sender_name = (sender_name or '').strip()
+    sender_email = (sender_email or '').strip()
 
     if sender_email:
         display = sender_email
         from_email = formataddr((display, smtp_user))
         reply_to = [formataddr((sender_name, sender_email)) if sender_name else sender_email]
     else:
-        from_email = smtp_user
+        display = sender_name or smtp_user
+        from_email = formataddr((display, smtp_user))
         reply_to = []
 
     email = EmailMessage(

@@ -1,3 +1,4 @@
+{% load i18n %}
 {% if about.video %}
 <div class="about-video-block">
     <div class="about-video-poster position-relative rounded-3 overflow-hidden shadow"
@@ -5,7 +6,7 @@
          tabindex="0"
          data-bs-toggle="modal"
          data-bs-target="#aboutVideoModal"
-         aria-label="Videonu oxut">
+         aria-label="{% trans 'Videonu oxut' %}">
         {% if about.video_poster %}
         <img src="{{ about.video_poster }}" class="w-100 about-video-poster-img" alt="{{ about.main_title }}">
         {% elif about.first_image %}
@@ -27,7 +28,7 @@
         <div class="modal-content about-video-modal-content border-0">
             <div class="modal-header border-0 pb-0">
                 <h5 class="modal-title text-white" id="aboutVideoModalLabel">{{ about.main_title }}</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Bağla"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="{% trans 'Bağla' %}"></button>
             </div>
             <div class="modal-body p-2 pt-0">
                 <video id="aboutVideoPlayer" class="w-100 rounded" controls playsinline preload="metadata">

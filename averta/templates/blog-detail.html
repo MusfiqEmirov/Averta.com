@@ -39,9 +39,9 @@
             <aside class="col-lg-3">
                 <section class="blog-related" aria-labelledby="blog-related-heading">
                     <div class="blog-related-head">
-                        <h2 id="blog-related-heading" class="blog-related-title">Digər yazılar</h2>
+                        <h2 id="blog-related-heading" class="blog-related-title">{% trans "Digər yazılar" %}</h2>
                         <a href="{% url 'services:blog-page' %}" class="blog-related-all card-link-action card-link-action--compact">
-                            <span class="card-link-action__label">Hamısı</span>
+                            <span class="card-link-action__label">{% trans "Hamısı" %}</span>
                             <span class="card-link-action__icon" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
                         </a>
                     </div>
@@ -52,7 +52,7 @@
                         {% endfor %}
                     </div>
                     {% else %}
-                    <p class="text-muted mb-0">Başqa yazı yoxdur.</p>
+                    <p class="text-muted mb-0">{% trans "Başqa yazı yoxdur." %}</p>
                     {% endif %}
                 </section>
             </aside>

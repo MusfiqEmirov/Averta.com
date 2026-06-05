@@ -7,6 +7,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
 
 msgid "Yüklənir..."
 msgstr "Загрузка..."
@@ -439,3 +440,45 @@ msgstr "Предыдущее изображение"
 
 msgid "Paket bir neçə səyahət xidmətini (viza, uçuş, otel və s.) bir yerdə təklif edir. Uyğun paketi seçin — formu doldurub göndərdikdə sorğunuz komandamıza çatır və tezliklə sizinlə əlaqə saxlanılır."
 msgstr "Пакет объединяет несколько туристических услуг (виза, перелёт, отель и др.) в одном предложении. Выберите подходящий пакет — после заполнения и отправки формы ваш запрос поступит нашей команде, и мы скоро свяжемся с вами."
+
+msgid "Oxu"
+msgstr "Читать"
+
+msgid "Sürətli əlaqə"
+msgstr "Быстрая связь"
+
+msgid "Zəng et"
+msgstr "Позвонить"
+
+msgid "Footer naviqasiya"
+msgstr "Навигация в подвале"
+
+msgid "Videonu oxut"
+msgstr "Воспроизвести видео"
+
+msgid "Əvvəlki xidmət"
+msgstr "Предыдущая услуга"
+
+msgid "Növbəti xidmət"
+msgstr "Следующая услуга"
+
+msgid "%(rating)s ulduz"
+msgstr "%(rating)s звёзд"
+
+msgid "%(count)s şəkil"
+msgid_plural "%(count)s şəkil"
+msgstr[0] "%(count)s фото"
+msgstr[1] "%(count)s фото"
+msgstr[2] "%(count)s фото"
+
+msgid "%(name)s — şəkil %(num)s"
+msgstr "%(name)s — фото %(num)s"
+
+msgid "%(name)s — Qalereya"
+msgstr "%(name)s — Галерея"
+
+msgid "© 2026 Averta Travel. Bütün hüquqlar qorunur."
+msgstr "© 2026 Averta Travel. Все права защищены."
+
+msgid "Menyu"
+msgstr "Меню"
