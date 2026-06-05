@@ -16,14 +16,15 @@ def format_appeal_contact_message(instance):
     created_label = date_format(created_at, 'd.m.Y H:i')
 
     phone = instance.phone.strip() if instance.phone else '—'
+    email = (instance.email or '').strip()
+    email_line = f'Email:        {email}\n' if email else ''
 
     return (
         'Yeni əlaqə formu müraciəti\n'
         '────────────────────────────\n\n'
         f'Ad soyad:     {instance.full_name}\n'
-        f'Email:        {instance.email}\n'
-        f'Mobil nömrə:  {phone}\n'
-        f'Mövzu:        {instance.subject}\n\n'
+        f'{email_line}'
+        f'Mobil nömrə:  {phone}\n\n'
         'Mesaj:\n'
         f'{instance.info}\n\n'
         '────────────────────────────\n'
@@ -33,7 +34,8 @@ def format_appeal_contact_message(instance):
 
 def send_appeal_contact_notification(instance):
     try:
-        if not (instance.email or '').strip():
+        customer_email = (instance.email or '').strip()
+        if not customer_email:
             logger.info('Contact form email skipped: sender email is empty.')
             return
         subject = 'Saytdan gələn müraciət'
@@ -47,7 +49,7 @@ def send_appeal_contact_notification(instance):
             subject=subject,
             message=message,
             sender_name=instance.full_name,
-            sender_email=instance.email,
+            sender_email=customer_email,
         )
     except Exception:
         logger.exception('Contact form notification email failed.')
@@ -60,7 +62,8 @@ def format_booking_message(instance):
     created_label = date_format(created_at, 'd.m.Y H:i')
 
     phone = instance.phone.strip() if instance.phone else '—'
-    email = instance.email.strip() if instance.email else '—'
+    email = (instance.email or '').strip()
+    email_line = f'Email:            {email}\n' if email else ''
     note = instance.note.strip() if instance.note else '—'
 
     services = ', '.join(str(s) for s in instance.services.all()) or '—'
@@ -73,7 +76,7 @@ def format_booking_message(instance):
         'Yeni sifariş müraciəti\n'
         '────────────────────────────\n\n'
         f'Ad soyad:         {instance.full_name}\n'
-        f'Email:            {email}\n'
+        f'{email_line}'
         f'Mobil nömrə:      {phone}\n'
         f'Gediş tarixi:     {date_from}\n'
         f'Qayıdış tarixi:   {date_to}\n'
@@ -89,7 +92,8 @@ def format_booking_message(instance):
 
 def send_booking_notification(instance):
     try:
-        if not (instance.email or '').strip():
+        customer_email = (instance.email or '').strip()
+        if not customer_email:
             logger.info('Booking email skipped: sender email is empty.')
             return
         subject = 'Saytdan gələn sifariş'
@@ -103,7 +107,7 @@ def send_booking_notification(instance):
             subject=subject,
             message=message,
             sender_name=instance.full_name,
-            sender_email=instance.email or '',
+            sender_email=customer_email,
         )
     except Exception:
         logger.exception('Booking notification email failed.')

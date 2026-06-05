@@ -104,6 +104,7 @@ TEMPLATES = [
                 'services.context_processors.navbar_services',
                 'services.context_processors.site_contact',
                 'services.context_processors.turnstile',
+                'services.context_processors.modal_booking_form',
             ],
         },
     },

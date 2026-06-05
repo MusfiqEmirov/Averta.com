@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% block title %}{{ blog.name }} — Averta{% endblock %}
 
@@ -9,7 +10,7 @@
     <div class="container py-5">
         <header class="blog-detail-header">
             <a href="{% url 'services:blog-page' %}" class="blog-detail-back">
-                <i class="fas fa-arrow-left me-2" aria-hidden="true"></i>Bloq
+                <i class="fas fa-arrow-left me-2" aria-hidden="true"></i>{% trans "Bloqlar" %}
             </a>
             {% if blog.topic %}
             <p class="blog-detail-topic">{{ blog.topic }}</p>
@@ -23,7 +24,7 @@
         </header>
 
         <div class="row g-5">
-            <div class="col-lg-8">
+            <div class="col-lg-9">
                 {% if blog.image %}
                 <figure class="blog-detail-figure mb-4">
                     <img src="{{ blog.image }}" class="img-fluid rounded w-100" alt="{{ blog.name }}">
@@ -35,7 +36,7 @@
                 </div>
                 {% endif %}
             </div>
-            <aside class="col-lg-4">
+            <aside class="col-lg-3">
                 <section class="blog-related" aria-labelledby="blog-related-heading">
                     <div class="blog-related-head">
                         <h2 id="blog-related-heading" class="blog-related-title">Digər yazılar</h2>

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static i18n %}
 
-{% block title %}Bloq — Averta{% endblock %}
+{% block title %}{% trans "Bloqlar" %} — Averta{% endblock %}
 
 {% block content %}
 {% include 'partials/page_header.html' %}
@@ -9,7 +9,7 @@
 <div class="container-fluid blog py-5">
     <div class="container py-5">
         <div class="mx-auto text-center mb-5" style="max-width: 900px;">
-            <h5 class="section-title px-3">Bloq</h5>
+            <h5 class="section-title px-3">{% trans "Bloqlar" %}</h5>
         </div>
         {% if blogs %}
         <div class="row g-4">

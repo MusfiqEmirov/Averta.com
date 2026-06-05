@@ -1,8 +1,8 @@
 {% load static i18n %}
 <div class="hb-wrap" id="hero-booking"
      data-lang="{{ language|default:request.LANGUAGE_CODE|default:'az' }}"
-     data-i18n-package="{% trans 'Paket' %}"
-     data-i18n-service="{% trans 'Xidmət' %}"
+     data-i18n-package="{% trans 'Paketinizi seçin' %}"
+     data-i18n-service="{% trans 'Xidmətinizi seçin' %}"
      data-i18n-adults="{% trans 'Böyük' %}"
      data-i18n-children="{% trans 'Uşaq' %}"
      data-i18n-clear="{% trans 'Seçimi sil' %}">
@@ -49,8 +49,11 @@
         {# ── Row 2: Picker ── #}
         <div class="hb-picker{% if booking_form.booking_type.value == 'service' %} d-none{% endif %}"
              data-booking-panel="package">
+          <p class="hb-picker-hint">
+            {% trans "Paket bir neçə səyahət xidmətini (viza, uçuş, otel və s.) bir yerdə təklif edir. Uyğun paketi seçin — formu doldurub göndərdikdə sorğunuz komandamıza çatır və tezliklə sizinlə əlaqə saxlanılır." %}
+          </p>
           <button type="button" class="hb-picker-btn" data-hb-picker="package" aria-expanded="false">
-            <span class="hb-picker-btn__value" data-hb-picker-value="package">{% trans "Paket" %}</span>
+            <span class="hb-picker-btn__value" data-hb-picker-value="package">{% trans "Paketinizi seçin" %}</span>
             <i class="fas fa-chevron-down" aria-hidden="true"></i>
           </button>
           {% if booking_form.packages.errors %}
@@ -70,7 +73,7 @@
         <div class="hb-picker{% if booking_form.booking_type.value != 'service' %} d-none{% endif %}"
              data-booking-panel="service">
           <button type="button" class="hb-picker-btn" data-hb-picker="service" aria-expanded="false">
-            <span class="hb-picker-btn__value" data-hb-picker-value="service">{% trans "Xidmət" %}</span>
+            <span class="hb-picker-btn__value" data-hb-picker-value="service">{% trans "Xidmətinizi seçin" %}</span>
             <i class="fas fa-chevron-down" aria-hidden="true"></i>
           </button>
           {% if booking_form.services.errors %}
@@ -139,7 +142,7 @@
 
           {# Guests dropdown #}
           <div class="hb-cnt-cell hb-guests-cell">
-            <span class="hb-cnt-label"><i class="fas fa-users"></i> {% trans "Qonaqlar" %}</span>
+            <span class="hb-cnt-label">{% trans "Qonaq sayını seçin" %}</span>
             <button type="button" class="hb-guests-btn" data-guests-open aria-expanded="false">
               <span data-guests-summary>
                 {% blocktrans with a=booking_form.adults_count.value|default:1 c=booking_form.children_count.value|default:0 %}Böyük: {{ a }} • Uşaq: {{ c }}{% endblocktrans %}
@@ -186,10 +189,16 @@
           </div>
 
           <div class="hb-cnt-cell hb-row4-note">
-            <span class="hb-cnt-label"><i class="fas fa-pen"></i> {% trans "Qeyd" %}</span>
+            <span class="hb-cnt-label">{% trans "Qeyd" %}</span>
             <div class="hb-field hb-field--note" style="flex:1" data-hb-note-field>
-              <span class="hb-field-icon"><i class="fas fa-pen"></i></span>
-              {{ booking_form.note }}
+              <input type="text"
+                     name="note"
+                     id="{{ booking_form.note.id_for_label }}"
+                     class="hero-booking__input"
+                     maxlength="200"
+                     autocomplete="off"
+                     placeholder="{% trans 'Əlavə qeydiniz varsa, yazın' %}"
+                     value="{{ booking_form.note.value|default_if_none:'' }}">
               {% if booking_form.note.errors %}<p class="hb-field-err">{{ booking_form.note.errors.0 }}</p>{% endif %}
             </div>
           </div>

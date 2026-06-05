@@ -70,7 +70,7 @@ class AppealContactForm(TurnstileMixin, forms.ModelForm):
             'class': 'form-control form-control-lg',
             'placeholder': _('Email address')
         }),
-        required=True,
+        required=False,
         label=_('Email address')
     )
     phone = forms.CharField(
@@ -150,8 +150,8 @@ class AppealContactForm(TurnstileMixin, forms.ModelForm):
             'az': {
                 'full_name_label': 'Ad soyad *',
                 'full_name_ph': 'Ad soyad *',
-                'email_label': 'E-poçt *',
-                'email_ph': 'E-poçt *',
+                'email_label': 'E-poçt (istəyə görə)',
+                'email_ph': 'E-poçt (istəyə görə)',
                 'phone_label': 'Mobil nömrə *',
                 'phone_ph': 'Mobil nömrə *',
                 'info_label': 'Mesajınız *',
@@ -160,8 +160,8 @@ class AppealContactForm(TurnstileMixin, forms.ModelForm):
             'en': {
                 'full_name_label': 'Full name *',
                 'full_name_ph': 'Full name *',
-                'email_label': 'Email *',
-                'email_ph': 'Email *',
+                'email_label': 'Email (optional)',
+                'email_ph': 'Email (optional)',
                 'phone_label': 'Mobile number *',
                 'phone_ph': 'Mobile number *',
                 'info_label': 'Your message *',
@@ -170,8 +170,8 @@ class AppealContactForm(TurnstileMixin, forms.ModelForm):
             'ru': {
                 'full_name_label': 'Имя и фамилия *',
                 'full_name_ph': 'Имя и фамилия *',
-                'email_label': 'Эл. почта *',
-                'email_ph': 'Эл. почта *',
+                'email_label': 'Эл. почта (необязательно)',
+                'email_ph': 'Эл. почта (необязательно)',
                 'phone_label': 'Мобильный номер *',
                 'phone_ph': 'Мобильный номер *',
                 'info_label': 'Ваше сообщение *',
@@ -225,8 +225,8 @@ class BookingForm(forms.ModelForm):
             'placeholder': _('E-poçt (istəyə görə)'),
             'autocomplete': 'email',
         }),
-        required=True,
-        label=_('E-poçt'),
+        required=False,
+        label=_('E-poçt (istəyə görə)'),
     )
     phone = forms.CharField(
         max_length=40,
@@ -271,7 +271,7 @@ class BookingForm(forms.ModelForm):
         widget=forms.TextInput(attrs={
             'class': 'hero-booking__input',
             'maxlength': '200',
-            'placeholder': ' ',
+            'placeholder': 'Əlavə qeydiniz varsa, yazın',
             'autocomplete': 'off',
         }),
         required=False,
@@ -325,42 +325,42 @@ class BookingForm(forms.ModelForm):
             'az': {
                 'full_name_label': 'Ad soyad',
                 'full_name_ph': 'Ad soyad *',
-                'email_label': 'E-poçt *',
-                'email_ph': 'E-poçt *',
+                'email_label': 'E-poçt (istəyə görə)',
+                'email_ph': 'E-poçt (istəyə görə)',
                 'phone_label': 'Mobil nömrə',
                 'phone_ph': 'Mobil nömrə *',
                 'date_from_label': 'Gediş tarixi',
                 'date_to_label': 'Qayıdış tarixi',
                 'note_label': 'Qeyd',
-                'note_ph': 'Qeyd (istəyə görə)',
+                'note_ph': 'Əlavə qeydiniz varsa, yazın',
                 'svc': 'Xidmət',
                 'pkg': 'Paket',
             },
             'en': {
                 'full_name_label': 'Full name',
                 'full_name_ph': 'Full name *',
-                'email_label': 'Email *',
-                'email_ph': 'Email *',
+                'email_label': 'Email (optional)',
+                'email_ph': 'Email (optional)',
                 'phone_label': 'Mobile number',
                 'phone_ph': 'Mobile number *',
                 'date_from_label': 'Departure date',
                 'date_to_label': 'Return date',
                 'note_label': 'Note',
-                'note_ph': 'Note (optional)',
+                'note_ph': 'If you have an additional note, write it',
                 'svc': 'Service',
                 'pkg': 'Package',
             },
             'ru': {
                 'full_name_label': 'Имя и фамилия',
                 'full_name_ph': 'Имя и фамилия *',
-                'email_label': 'Эл. почта *',
-                'email_ph': 'Эл. почта *',
+                'email_label': 'Эл. почта (необязательно)',
+                'email_ph': 'Эл. почта (необязательно)',
                 'phone_label': 'Мобильный номер',
                 'phone_ph': 'Мобильный номер *',
                 'date_from_label': 'Дата вылета',
                 'date_to_label': 'Дата возврата',
                 'note_label': 'Комментарий',
-                'note_ph': 'Комментарий (необязательно)',
+                'note_ph': 'Если есть дополнительная заметка, напишите',
                 'svc': 'Услуга',
                 'pkg': 'Пакет',
             },
@@ -378,7 +378,7 @@ class BookingForm(forms.ModelForm):
             for name in ('date_from', 'date_to'):
                 self.fields[name].widget.format = '%d-%m-%Y'
             self.fields['note'].label = ui['note_label']
-            self.fields['note'].widget.attrs['placeholder'] = ' '
+            self.fields['note'].widget.attrs['placeholder'] = ui['note_ph']
             self.fields['services'].label = ui['svc']
             self.fields['packages'].label = ui['pkg']
         name_field = get_localized_field_name('name', lang)
@@ -508,18 +508,22 @@ class ReviewForm(forms.ModelForm):
         required=True,
         initial=0,
     )
+    target = forms.ChoiceField(
+        required=True,
+        choices=[],
+        widget=forms.Select(attrs={'class': 'form-select', 'id': 'reviewTarget'}),
+        label=_('Aldığınız xidmət və ya paketi seçin'),
+    )
     service = forms.ModelChoiceField(
         queryset=Service.objects.none(),
         required=False,
-        empty_label=_('Xidmət seçin'),
-        widget=forms.Select(attrs={'class': 'form-select', 'id': 'reviewService'}),
+        widget=forms.HiddenInput(),
         label=_('Xidmət'),
     )
     package = forms.ModelChoiceField(
         queryset=Package.objects.none(),
         required=False,
-        empty_label=_('Paket seçin'),
-        widget=forms.Select(attrs={'class': 'form-select', 'id': 'reviewPackage'}),
+        widget=forms.HiddenInput(),
         label=_('Paket'),
     )
 
@@ -538,10 +542,8 @@ class ReviewForm(forms.ModelForm):
                 'phone_ph': 'Mobil nömrə (məs: 050 123 45 67)',
                 'msg_label': 'Rəy',
                 'msg_ph': 'Rəyiniz',
-                'svc_label': 'Xidmət',
-                'svc_empty': 'Xidmət seçin',
-                'pkg_label': 'Paket',
-                'pkg_empty': 'Paket seçin',
+                'target_label': 'Aldığınız xidmət və ya paketi seçin',
+                'target_empty': 'Aldığınız xidmət və ya paketi seçin',
             },
             'en': {
                 'name_label': 'Name',
@@ -550,10 +552,8 @@ class ReviewForm(forms.ModelForm):
                 'phone_ph': 'Mobile number (e.g. +994 50 123 45 67)',
                 'msg_label': 'Review',
                 'msg_ph': 'Your review',
-                'svc_label': 'Service',
-                'svc_empty': 'Select a service',
-                'pkg_label': 'Package',
-                'pkg_empty': 'Select a package',
+                'target_label': 'Select the service or package you purchased',
+                'target_empty': 'Select the service or package you purchased',
             },
             'ru': {
                 'name_label': 'Имя',
@@ -562,10 +562,8 @@ class ReviewForm(forms.ModelForm):
                 'phone_ph': 'Мобильный номер (пример: +994 50 123 45 67)',
                 'msg_label': 'Отзыв',
                 'msg_ph': 'Ваш отзыв',
-                'svc_label': 'Услуга',
-                'svc_empty': 'Выберите услугу',
-                'pkg_label': 'Пакет',
-                'pkg_empty': 'Выберите пакет',
+                'target_label': 'Выберите приобретённую услугу или пакет',
+                'target_empty': 'Выберите приобретённую услугу или пакет',
             },
         }.get(lang)
 
@@ -576,10 +574,10 @@ class ReviewForm(forms.ModelForm):
             self.fields['phone'].widget.attrs['placeholder'] = ui['phone_ph']
             self.fields['message'].label = ui['msg_label']
             self.fields['message'].widget.attrs['placeholder'] = ui['msg_ph']
-            self.fields['service'].label = ui['svc_label']
-            self.fields['service'].empty_label = ui['svc_empty']
-            self.fields['package'].label = ui['pkg_label']
-            self.fields['package'].empty_label = ui['pkg_empty']
+            self.fields['target'].label = ui['target_label']
+            target_empty = ui['target_empty']
+        else:
+            target_empty = _('Aldığınız xidmət və ya paketi seçin')
         name_field = get_localized_field_name('name', lang)
 
         def label_instance(obj):
@@ -589,27 +587,40 @@ class ReviewForm(forms.ModelForm):
         package_qs = get_packages(lang=lang, is_active=True)
         self.fields['service'].queryset = service_qs
         self.fields['package'].queryset = package_qs
-        self.fields['service'].label_from_instance = label_instance
-        self.fields['package'].label_from_instance = label_instance
+
+        target_choices = [('', target_empty)]
+        for service in service_qs:
+            target_choices.append((f'service:{service.pk}', label_instance(service)))
+        for package in package_qs:
+            target_choices.append((f'package:{package.pk}', label_instance(package)))
+        self.fields['target'].choices = target_choices
 
     def clean(self):
         cleaned_data = super().clean()
-        service = cleaned_data.get('service')
-        package = cleaned_data.get('package')
-        if service and package:
-            raise ValidationError(_('Yalnız xidmət və ya paket seçin.'))
-        if not service and not package:
-            raise ValidationError(_('Xidmət və ya paket seçin.'))
-        phone = (cleaned_data.get('phone') or '').strip()
-        if not phone:
-            raise ValidationError(_('Mobil nömrə mütləqdir.'))
-        if not Booking.objects.filter(phone=phone, is_customer=True, is_deleted=False).exists():
-            not_customer_msg = {
-                'az': 'Rəy yazmaq üçün müştərimiz olmalısınız. Zəhmət olmasa əvvəlcə sifariş verin.',
-                'en': 'You must be our customer to leave a review. Please place a booking first.',
-                'ru': 'Чтобы оставить отзыв, вы должны быть нашим клиентом. Сначала оформите заказ.',
-            }.get(getattr(self, 'lang', 'az'), 'Rəy yazmaq üçün müştərimiz olmalısınız.')
-            raise ValidationError(not_customer_msg)
+        target = (cleaned_data.get('target') or '').strip()
+        if not target:
+            raise ValidationError(_('Aldığınız xidmət və ya paketi seçin.'))
+
+        prefix, _, pk_str = target.partition(':')
+        try:
+            pk = int(pk_str)
+        except (TypeError, ValueError):
+            raise ValidationError(_('Aldığınız xidmət və ya paketi seçin.'))
+
+        if prefix == 'service':
+            try:
+                cleaned_data['service'] = self.fields['service'].queryset.get(pk=pk)
+            except Service.DoesNotExist:
+                raise ValidationError(_('Aldığınız xidmət və ya paketi seçin.'))
+            cleaned_data['package'] = None
+        elif prefix == 'package':
+            try:
+                cleaned_data['package'] = self.fields['package'].queryset.get(pk=pk)
+            except Package.DoesNotExist:
+                raise ValidationError(_('Aldığınız xidmət və ya paketi seçin.'))
+            cleaned_data['service'] = None
+        else:
+            raise ValidationError(_('Aldığınız xidmət və ya paketi seçin.'))
         return cleaned_data
 
     def clean_website(self):
@@ -632,3 +643,10 @@ class ReviewForm(forms.ModelForm):
         if rating > 5:
             raise ValidationError(_('Reytinq 1 ilə 5 arasında olmalıdır.'))
         return rating
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.is_active = False
+        if commit:
+            instance.save()
+        return instance

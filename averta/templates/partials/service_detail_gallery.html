@@ -8,10 +8,10 @@
         {% endfor %}
     </div>
 
-    {# Header: etiket + say + nav düymələri #}
+    {# Header: etiket + say + nav düymələri (desktop) #}
     <div class="sdp-gallery__header">
         <h2 class="sdp-gallery__title">Qalereya</h2>
-        <div class="sdp-gallery__controls">
+        <div class="sdp-gallery__controls sdp-gallery__controls--desktop">
             <span class="sdp-gallery__count">{{ service.gallery_images|length }} şəkil</span>
             <button class="sdp-gallery-btn sdp-gallery-btn--prev" aria-label="Əvvəlki şəkil" type="button">
                 <i class="fas fa-chevron-left" aria-hidden="true"></i>
@@ -24,6 +24,14 @@
 
     {# Carousel — mobil tam en (sdp-gallery__stage) #}
     <div class="sdp-gallery__stage">
+    <div class="sdp-gallery__toolbar sdp-gallery__toolbar--mobile">
+        <button class="sdp-gallery-btn sdp-gallery-btn--prev" aria-label="Əvvəlki şəkil" type="button">
+            <i class="fas fa-chevron-left" aria-hidden="true"></i>
+        </button>
+        <button class="sdp-gallery-btn sdp-gallery-btn--next" aria-label="Növbəti şəkil" type="button">
+            <i class="fas fa-chevron-right" aria-hidden="true"></i>
+        </button>
+    </div>
     <div class="sdp-gallery__carousel owl-carousel" id="sdpGalleryCarousel">
         {% for image in service.gallery_images %}
         <div
@@ -50,6 +58,7 @@
         </div>
         {% endfor %}
     </div>
+    <span class="sdp-gallery__count sdp-gallery__count--mobile">{{ service.gallery_images|length }} şəkil</span>
     </div>
 
 </section>

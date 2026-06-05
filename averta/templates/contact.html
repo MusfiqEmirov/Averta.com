@@ -9,32 +9,6 @@
 {% include 'partials/page_header.html' %}
 
 <section class="contact-page">
-    {# Booking section first #}
-    <div class="container-fluid booking py-5" id="contact-booking"{% if contact_booking_bg %} style="background-image:linear-gradient(rgba(81,32,113,.8),rgba(81,32,113,.8)),url('{{ contact_booking_bg }}');background-size:cover;background-position:center;background-repeat:no-repeat;background-attachment:scroll;"{% endif %}>
-        <div class="container py-5">
-            <div class="mx-auto text-center mb-5" style="max-width: 720px;">
-                <h5 class="section-title px-3 text-white">{% trans "Sifariş et" %}</h5>
-            </div>
-            <div class="row g-5 align-items-center">
-                <div class="col-lg-6">
-                    <h5 class="section-booking-title pe-3">Booking</h5>
-                    <div class="text-white contact-booking-copy">
-                        <p class="mb-3">{% blocktrans %}Səyahət planlamaq çətin olmamalıdır.<br>Doğru komanda ilə bu proses rahat, sürətli və güvənli olur.{% endblocktrans %}</p>
-                        <p class="mb-3">{% blocktrans %}Averta Travel olaraq bütün xidmətləri bir məkanda təqdim edirik: viza, aviabilet, transfer, otel — hamısı bir paketdə.{% endblocktrans %}</p>
-                        <p class="mb-3">{% blocktrans %}Planlama və sənədləşmə işlərini biz görürük, sən isə sadəcə səyahətin dadını çıxarırsan.{% endblocktrans %}</p>
-                        <p class="mb-3">{% blocktrans %}2013-cü ildən qazandığımız təcrübə, minlərlə məmnun müştəri və daimi dəstək komandamızla hər addımda yanındayıq.{% endblocktrans %}</p>
-                        <p class="mb-3">{% blocktrans %}Rahatlıq, komfort və etibar axtarırsansa, doğru seçim bəllidir.{% endblocktrans %}</p>
-                        <p class="mb-0 fw-semibold">{% blocktrans %}Bizə yaz və növbəti səyahətini Averta Travel ilə planla!{% endblocktrans %}</p>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    {% include 'partials/home_booking_embed.html' %}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {# Contact section second #}
     <div class="container py-5" id="contact-section">
         <div class="mx-auto text-center mb-5" style="max-width: 720px;">
             <h5 class="section-title px-3">{% trans "Əlaqə" %}</h5>
@@ -132,6 +106,7 @@
                     <form method="post" action="{% url 'services:contact-page' %}" class="contact-form" data-ajax="1">
                         {% csrf_token %}
                         {{ form.website }}
+                        <input type="hidden" name="subject" value="Əlaqə">
                         <input type="hidden" name="form_type" value="contact">
                         <div class="row g-4">
                             <div class="col-md-6">
@@ -144,14 +119,10 @@
                                 {{ form.email }}
                                 {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors }}</div>{% endif %}
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-12">
                                 <label class="form-label contact-form-label" for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
                                 {{ form.phone }}
                                 {% if form.phone.errors %}<div class="text-danger small mt-1">{{ form.phone.errors }}</div>{% endif %}
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label contact-form-label" for="{{ form.subject.id_for_label }}">{{ form.subject.label }}</label>
-                                {{ form.subject }}
                             </div>
                             <div class="col-12">
                                 <label class="form-label contact-form-label" for="{{ form.info.id_for_label }}">{{ form.info.label }}</label>
@@ -172,13 +143,4 @@
 
     </div>
 </section>
-{% endblock %}
-
-{% block extra_head %}
-{% include 'partials/booking_date_picker_head.html' %}
-{% endblock %}
-
-{% block extra_js %}
-{% include 'partials/booking_date_picker_scripts.html' %}
-<script src="{% static 'assets/js/home_booking.js' %}?v=20260601f"></script>
 {% endblock %}

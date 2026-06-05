@@ -183,7 +183,8 @@ class HomePageView(View):
         return render(request, self.template_name, context)
 
     def _handle_booking_post(self, request, lang):
-        form = BookingForm(request.POST, lang=lang)
+        prefix = 'modal' if request.POST.get('modal-booking_type') is not None else None
+        form = BookingForm(request.POST, lang=lang, prefix=prefix)
 
         if form.is_valid():
             try:
@@ -260,7 +261,7 @@ class HomePageView(View):
                     {
                         'ok': feedback == 'success',
                         'message': (
-                            _('Rəyiniz uğurla göndərildi.')
+                            _('Rəyiniz qəbul edildi. Təsdiqdən sonra saytda görünəcək.')
                             if feedback == 'success'
                             else _('Rəyiniz göndərilmədi. Zəhmət olmasa yenidən cəhd edin.')
                         ),
@@ -388,18 +389,12 @@ class ContactPageView(View):
             lang,
             contact,
             form=form,
-            booking_form=BookingForm(lang=lang, initial={'booking_type': 'package'}),
-            booking_feedback=request.session.pop('booking_feedback', None),
             page_heading=page_heading,
         )
         return render(request, self.template_name, context)
 
     def post(self, request):
         lang = get_language_from_request(request)
-        form_type = request.POST.get('form_type')
-        if form_type == 'booking':
-            return self._handle_booking_post(request, lang)
-
         form = AppealContactForm(request.POST, lang=lang, request=request)
 
         if form.is_valid():
@@ -491,8 +486,6 @@ class ContactPageView(View):
             lang,
             contact,
             form=form,
-            booking_form=BookingForm(lang=lang, initial={'booking_type': 'package'}),
-            booking_feedback=request.session.pop('booking_feedback', None),
             page_heading=page_heading,
         )
         return render(request, self.template_name, context)
@@ -503,8 +496,6 @@ class ContactPageView(View):
         contact,
         *,
         form,
-        booking_form,
-        booking_feedback,
         page_heading,
     ):
         turnstile_site_key = (getattr(settings, 'TURNSTILE_SITE_KEY', '') or '').strip()
@@ -512,10 +503,7 @@ class ContactPageView(View):
             'contact': serialize_contact(contact, lang) if contact else None,
             'language': lang,
             'background_image': get_background_image('contact'),
-            'contact_booking_bg': get_background_image('contact_booking'),
             'form': form,
-            'booking_form': booking_form,
-            'booking_feedback': booking_feedback,
             'page_heading': page_heading,
             'page_motto': get_page_motto('contact', lang),
             'active_nav': 'contact',
@@ -526,84 +514,6 @@ class ContactPageView(View):
                 and (getattr(settings, 'TURNSTILE_SECRET_KEY', '') or '').strip()
             ),
         }
-
-    def _handle_booking_post(self, request, lang):
-        form = BookingForm(request.POST, lang=lang)
-
-        if form.is_valid():
-            try:
-                booking = form.save()
-                send_booking_notification(booking)
-                feedback = 'success'
-            except Exception:
-                logging.getLogger(__name__).exception('Booking form save failed (contact page).')
-                feedback = 'error'
-
-            if _is_ajax(request):
-                return JsonResponse(
-                    {
-                        'ok': feedback == 'success',
-                        'message': (
-                            self._t(
-                                request,
-                                lang,
-                                az='Sifarişiniz qəbul olundu. Tezliklə sizinlə əlaqə saxlayacağıq.',
-                                en='Your booking was received. We will contact you soon.',
-                                ru='Мы получили ваш заказ. Скоро свяжемся с вами.',
-                            )
-                            if feedback == 'success'
-                            else self._t(
-                                request,
-                                lang,
-                                az='Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.',
-                                en='Something went wrong. Please try again.',
-                                ru='Произошла ошибка. Пожалуйста, попробуйте ещё раз.',
-                            )
-                        ),
-                    },
-                    status=200 if feedback == 'success' else 500,
-                )
-
-            contact = get_contact(lang)
-            page_heading = _('Contact')
-            context = self._contact_page_context(
-                lang,
-                contact,
-                form=AppealContactForm(lang=lang, request=request),
-                booking_form=BookingForm(lang=lang, initial={'booking_type': 'package'}),
-                booking_feedback=feedback,
-                page_heading=page_heading,
-            )
-            return render(request, self.template_name, context)
-
-        if _is_ajax(request):
-            return JsonResponse(
-                {
-                    'ok': False,
-                    'message': _first_form_error_message(form)
-                    or self._t(
-                        request,
-                        lang,
-                        az='Zəhmət olmasa formadakı xətaları düzəldin.',
-                        en='Please correct the errors in the form.',
-                        ru='Пожалуйста, исправьте ошибки в форме.',
-                    ),
-                    'errors': form.errors.get_json_data(),
-                },
-                status=400,
-            )
-
-        contact = get_contact(lang)
-        page_heading = _('Contact')
-        context = self._contact_page_context(
-            lang,
-            contact,
-            form=AppealContactForm(lang=lang, request=request),
-            booking_form=form,
-            booking_feedback=None,
-            page_heading=page_heading,
-        )
-        return render(request, self.template_name, context)
 
 
 class FAQPageView(View):

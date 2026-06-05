@@ -13,7 +13,7 @@
 {% block content %}
 {# ——— Dinamik: Haqqımızda (admin panel → About) ——— #}
 {% if about %}
-{% include 'partials/about_intro.html' with show_read_more=True show_video=False %}
+{% include 'partials/about_intro.html' with show_read_more=True show_video=True %}
 {% else %}
 <div class="container-fluid about py-5">
     <div class="container py-5">
@@ -45,7 +45,7 @@
 <div class="container-fluid blog py-5">
     <div class="container py-5">
         <div class="mx-auto text-center mb-5" style="max-width: 900px;">
-            <h5 class="section-title px-3">{% trans "Bloq" %}</h5>
+            <h5 class="section-title px-3">{% trans "Bloqlar" %}</h5>
         </div>
         <div class="row g-4">
             {% for blog in home_blogs %}
@@ -158,12 +158,35 @@
 </div>
 {% endblock %}
 
-{% block extra_head %}
-{% include 'partials/booking_date_picker_head.html' %}
-{% endblock %}
-
 {% block extra_js %}
-{% include 'partials/booking_date_picker_scripts.html' %}
-<script src="{% static 'assets/js/home_booking.js' %}?v=20260601f"></script>
 <script src="{% static 'assets/js/home_testimonial.js' %}"></script>
+{% if about and about.video %}
+<script>
+(function () {
+    var modalEl = document.getElementById('aboutVideoModal');
+    if (!modalEl) return;
+    var video = document.getElementById('aboutVideoPlayer');
+    modalEl.addEventListener('hidden.bs.modal', function () {
+        if (video) {
+            video.pause();
+            video.currentTime = 0;
+        }
+    });
+    modalEl.addEventListener('shown.bs.modal', function () {
+        if (video) {
+            video.play().catch(function () {});
+        }
+    });
+    var poster = document.querySelector('.about-video-poster');
+    if (poster) {
+        poster.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                poster.click();
+            }
+        });
+    }
+})();
+</script>
+{% endif %}
 {% endblock %}
