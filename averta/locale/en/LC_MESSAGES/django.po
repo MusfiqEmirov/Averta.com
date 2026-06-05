@@ -439,3 +439,44 @@ msgstr "Previous image"
 
 msgid "Paket bir neçə səyahət xidmətini (viza, uçuş, otel və s.) bir yerdə təklif edir. Uyğun paketi seçin — formu doldurub göndərdikdə sorğunuz komandamıza çatır və tezliklə sizinlə əlaqə saxlanılır."
 msgstr "A package combines several travel services (visa, flights, hotel, etc.) in one offer. Choose a suitable package — when you complete and submit the form, your request reaches our team and we will contact you shortly."
+
+msgid "Oxu"
+msgstr "Read"
+
+msgid "Sürətli əlaqə"
+msgstr "Quick contact"
+
+msgid "Zəng et"
+msgstr "Call"
+
+msgid "Footer naviqasiya"
+msgstr "Footer navigation"
+
+msgid "Videonu oxut"
+msgstr "Play video"
+
+msgid "Əvvəlki xidmət"
+msgstr "Previous service"
+
+msgid "Növbəti xidmət"
+msgstr "Next service"
+
+msgid "%(rating)s ulduz"
+msgstr "%(rating)s stars"
+
+msgid "%(count)s şəkil"
+msgid_plural "%(count)s şəkil"
+msgstr[0] "%(count)s image"
+msgstr[1] "%(count)s images"
+
+msgid "%(name)s — şəkil %(num)s"
+msgstr "%(name)s — image %(num)s"
+
+msgid "%(name)s — Qalereya"
+msgstr "%(name)s — Gallery"
+
+msgid "© 2026 Averta Travel. Bütün hüquqlar qorunur."
+msgstr "© 2026 Averta Travel. All rights reserved."
+
+msgid "Menyu"
+msgstr "Menu"

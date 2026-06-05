@@ -1,14 +1,15 @@
+{% load i18n %}
 {% if other_services %}
 <section class="sdp-related-widget" aria-labelledby="sdp-related-heading">
     <div class="sdp-related-widget__head">
-        <h2 id="sdp-related-heading" class="sdp-related-widget__title">Digər xidmətlər</h2>
+        <h2 id="sdp-related-heading" class="sdp-related-widget__title">{% trans "Digər xidmətlər" %}</h2>
         <a href="{% url 'services:service-page' %}" class="sdp-related-widget__all">
-            Hamısı <i class="fas fa-arrow-right ms-1" aria-hidden="true"></i>
+            {% trans "Hamısı" %} <i class="fas fa-arrow-right ms-1" aria-hidden="true"></i>
         </a>
     </div>
 
     <div class="sdp-related-carousel">
-        <button type="button" class="sdp-related-nav sdp-related-nav--up" aria-label="Əvvəlki xidmət">
+        <button type="button" class="sdp-related-nav sdp-related-nav--up" aria-label="{% trans 'Əvvəlki xidmət' %}">
             <i class="fas fa-chevron-up" aria-hidden="true"></i>
         </button>
 
@@ -39,7 +40,7 @@
             {% endfor %}
         </div>
 
-        <button type="button" class="sdp-related-nav sdp-related-nav--down" aria-label="Növbəti xidmət">
+        <button type="button" class="sdp-related-nav sdp-related-nav--down" aria-label="{% trans 'Növbəti xidmət' %}">
             <i class="fas fa-chevron-down" aria-hidden="true"></i>
         </button>
     </div>

@@ -1,6 +1,7 @@
+{% load i18n %}
 {% if contact %}
 {% if contact.whatsapp_url or contact.phone_tel %}
-<div class="fab-contact" aria-label="Sürətli əlaqə">
+<div class="fab-contact" aria-label="{% trans 'Sürətli əlaqə' %}">
     {% if contact.whatsapp_url %}
     <a href="{{ contact.whatsapp_url }}"
        class="fab-contact__btn fab-contact__btn--whatsapp"
@@ -13,7 +14,7 @@
     {% if contact.phone_tel %}
     <a href="{{ contact.phone_tel }}"
        class="fab-contact__btn fab-contact__btn--call"
-       aria-label="Zəng et">
+       aria-label="{% trans 'Zəng et' %}">
         <i class="fas fa-phone-alt" aria-hidden="true"></i>
     </a>
     {% endif %}

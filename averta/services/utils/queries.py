@@ -601,6 +601,8 @@ def serialize_contact(contact, lang='az'):
 
     address_field = get_localized_field_name('address', lang)
     whatsapp_raw = (contact.whatsapp_number or '').strip()
+    map_embed = (contact.map_embed_url or '').strip()
+    map_url = map_embed.replace('/maps/embed', '/maps', 1) if map_embed else ''
 
     return {
         'id': contact.id,
@@ -616,7 +618,8 @@ def serialize_contact(contact, lang='az'):
         'youtube': contact.youtube,
         'linkedn': contact.linkedn,
         'tiktok': contact.tiktok,
-        'map_embed_url': (contact.map_embed_url or '').strip(),
+        'map_embed_url': map_embed,
+        'map_url': map_url,
     }
 
 

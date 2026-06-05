@@ -7,10 +7,10 @@
                     <a href="{% url 'services:home-page' %}" class="site-footer__brand">
                         <img src="{% static 'assets/img/averta-logo.webp' %}" alt="Averta Travel" class="site-footer__brand-logo">
                     </a>
-                    <p class="site-footer__tagline">Səyahət və turizm xidmətləri — etibarlı tərəfdaşınız.</p>
+                    <p class="site-footer__tagline">{% trans "Səyahət və turizm xidmətləri — etibarlı tərəfdaşınız." %}</p>
                     {% if contact %}
                     {% if contact.facebook or contact.instagram or contact.linkedn or contact.youtube %}
-                    <div class="site-footer__social" aria-label="Sosial şəbəkələr">
+                    <div class="site-footer__social" aria-label="{% trans 'Sosial şəbəkələr' %}">
                         {% if contact.facebook %}
                         <a class="site-footer__social-link" href="{{ contact.facebook }}" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
                         {% endif %}
@@ -33,32 +33,36 @@
                         </a>
                         {% endif %}
                         <a href="{% url 'services:contact-page' %}" class="site-footer__cta-btn site-footer__cta-btn--contact">
-                            Əlaqə saxla
+                            {% trans "Əlaqə saxla" %}
                         </a>
                     </div>
                 </div>
 
                 <div class="col-6 col-lg-4">
                     <h4 class="site-footer__title">{% trans "Sürətli keçidlər" %}</h4>
-                    <nav class="site-footer__nav" aria-label="Footer naviqasiya">
-                        <a href="{% url 'services:home-page' %}">Ana səhifə</a>
-                        <a href="{% url 'services:about-page' %}">Haqqımızda</a>
-                        <a href="{% url 'services:service-page' %}">Xidmətlər</a>
-                        <a href="{% url 'services:home-page' %}#packages">Paketlər</a>
-                        <a href="{% url 'services:home-page' %}#testimonial">Rəylər</a>
-                        <a href="{% url 'services:blog-page' %}">Bloqlar</a>
-                        <a href="{% url 'services:faq-page' %}">Tez-tez verilən suallar</a>
-                        <a href="{% url 'services:contact-page' %}">Əlaqə</a>
+                    <nav class="site-footer__nav" aria-label="{% trans 'Footer naviqasiya' %}">
+                        <a href="{% url 'services:home-page' %}">{% trans "Ana səhifə" %}</a>
+                        <a href="{% url 'services:about-page' %}">{% trans "Haqqımızda" %}</a>
+                        <a href="{% url 'services:service-page' %}">{% trans "Xidmətlər" %}</a>
+                        <a href="{% url 'services:home-page' %}#packages">{% trans "Paketlər" %}</a>
+                        <a href="{% url 'services:home-page' %}#testimonial">{% trans "Rəylər" %}</a>
+                        <a href="{% url 'services:blog-page' %}">{% trans "Bloqlar" %}</a>
+                        <a href="{% url 'services:faq-page' %}">{% trans "Tez-tez verilən suallar" %}</a>
+                        <a href="{% url 'services:contact-page' %}">{% trans "Əlaqə" %}</a>
                     </nav>
                 </div>
 
                 <div class="col-6 col-lg-4">
-                    <h4 class="site-footer__title">Əlaqə</h4>
+                    <h4 class="site-footer__title">{% trans "Əlaqə" %}</h4>
                     <ul class="site-footer__contact-list">
                         {% if contact and contact.address %}
                         <li>
                             <span class="site-footer__contact-icon" aria-hidden="true"><i class="fas fa-map-marker-alt"></i></span>
+                            {% if contact.map_url %}
+                            <a href="{{ contact.map_url }}" target="_blank" rel="noopener noreferrer">{{ contact.address }}</a>
+                            {% else %}
                             <span>{{ contact.address }}</span>
+                            {% endif %}
                         </li>
                         {% endif %}
                         {% if contact and contact.phone %}
@@ -88,15 +92,15 @@
     <div class="site-footer__bottom">
         <div class="container site-footer__inner-bottom py-3 py-lg-4">
             <div class="site-footer__legal text-center">
-                <p class="site-footer__copy-line mb-0">© 2026 Averta Travel. Bütün hüquqlar qorunur.</p>
+                <p class="site-footer__copy-line mb-0">{% blocktrans %}© 2026 Averta Travel. Bütün hüquqlar qorunur.{% endblocktrans %}</p>
                 <p class="site-footer__credit mb-0">
-                    Hazırlayan <a href="https://digiboom.az/" target="_blank" rel="noopener noreferrer">DigiBoom</a>
+                    {% trans "Hazırlayan" %} <a href="https://digiboom.az/" target="_blank" rel="noopener noreferrer">DigiBoom</a>
                 </p>
             </div>
         </div>
     </div>
 </footer>
 
-<button type="button" class="btn btn-primary back-to-top" aria-label="Yuxarı qalx">
+<button type="button" class="btn btn-primary back-to-top" aria-label="{% trans 'Yuxarı qalx' %}">
     <i class="fa fa-arrow-up" aria-hidden="true"></i>
 </button>

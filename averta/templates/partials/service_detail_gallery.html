@@ -1,34 +1,32 @@
+{% load i18n %}
 {% if service.gallery_images %}
-<section class="sdp-gallery" aria-label="Qalereya">
+<section class="sdp-gallery" aria-label="{% trans 'Qalereya' %}">
 
-    {# Hidden lightbox triggers — carousel klonlarından fərqli olaraq bu DOM-da əsl elementlərdir #}
     <div class="sdp-gallery__triggers" aria-hidden="true">
         {% for image in service.gallery_images %}
         <a href="{{ image }}" data-lightbox="service-{{ service.slug }}" tabindex="-1"></a>
         {% endfor %}
     </div>
 
-    {# Header: etiket + say + nav düymələri (desktop) #}
     <div class="sdp-gallery__header">
-        <h2 class="sdp-gallery__title">Qalereya</h2>
+        <h2 class="sdp-gallery__title">{% trans "Qalereya" %}</h2>
         <div class="sdp-gallery__controls sdp-gallery__controls--desktop">
-            <span class="sdp-gallery__count">{{ service.gallery_images|length }} şəkil</span>
-            <button class="sdp-gallery-btn sdp-gallery-btn--prev" aria-label="Əvvəlki şəkil" type="button">
+            <span class="sdp-gallery__count">{% blocktrans count count=service.gallery_images|length %}{{ count }} şəkil{% plural %}{{ count }} şəkil{% endblocktrans %}</span>
+            <button class="sdp-gallery-btn sdp-gallery-btn--prev" aria-label="{% trans 'Əvvəlki şəkil' %}" type="button">
                 <i class="fas fa-chevron-left" aria-hidden="true"></i>
             </button>
-            <button class="sdp-gallery-btn sdp-gallery-btn--next" aria-label="Növbəti şəkil" type="button">
+            <button class="sdp-gallery-btn sdp-gallery-btn--next" aria-label="{% trans 'Növbəti şəkil' %}" type="button">
                 <i class="fas fa-chevron-right" aria-hidden="true"></i>
             </button>
         </div>
     </div>
 
-    {# Carousel — mobil tam en (sdp-gallery__stage) #}
     <div class="sdp-gallery__stage">
     <div class="sdp-gallery__toolbar sdp-gallery__toolbar--mobile">
-        <button class="sdp-gallery-btn sdp-gallery-btn--prev" aria-label="Əvvəlki şəkil" type="button">
+        <button class="sdp-gallery-btn sdp-gallery-btn--prev" aria-label="{% trans 'Əvvəlki şəkil' %}" type="button">
             <i class="fas fa-chevron-left" aria-hidden="true"></i>
         </button>
-        <button class="sdp-gallery-btn sdp-gallery-btn--next" aria-label="Növbəti şəkil" type="button">
+        <button class="sdp-gallery-btn sdp-gallery-btn--next" aria-label="{% trans 'Növbəti şəkil' %}" type="button">
             <i class="fas fa-chevron-right" aria-hidden="true"></i>
         </button>
     </div>
@@ -39,12 +37,12 @@
             data-gallery-index="{{ forloop.counter0 }}"
             role="button"
             tabindex="0"
-            aria-label="{{ service.name }} — şəkil {{ forloop.counter }}"
+            aria-label="{% blocktrans with name=service.name num=forloop.counter %}{{ name }} — şəkil {{ num }}{% endblocktrans %}"
         >
             <div class="sdp-gallery-card__frame">
                 <img
                     src="{{ image }}"
-                    alt="{{ service.name }} — {{ forloop.counter }}"
+                    alt="{% blocktrans with name=service.name num=forloop.counter %}{{ name }} — şəkil {{ num }}{% endblocktrans %}"
                     loading="lazy"
                     class="sdp-gallery-card__img"
                 >
@@ -53,38 +51,37 @@
                         <i class="fas fa-expand-alt"></i>
                     </span>
                 </div>
-                <span class="sdp-gallery-card__num" aria-hidden="true">{{ forloop.counter|stringformat:"02d" }}</span>
             </div>
         </div>
         {% endfor %}
     </div>
-    <span class="sdp-gallery__count sdp-gallery__count--mobile">{{ service.gallery_images|length }} şəkil</span>
+    <span class="sdp-gallery__count sdp-gallery__count--mobile">{% blocktrans count count=service.gallery_images|length %}{{ count }} şəkil{% plural %}{{ count }} şəkil{% endblocktrans %}</span>
     </div>
 
 </section>
 
 <div class="aglb" hidden aria-hidden="true" data-sdp-lightbox>
     <div class="aglb__overlay" data-aglb-close></div>
-    <div class="aglb__dialog" role="dialog" aria-modal="true" aria-label="{{ service.name }} — Qalereya" tabindex="-1">
-        <button type="button" class="aglb__back" data-aglb-close aria-label="Geri">
+    <div class="aglb__dialog" role="dialog" aria-modal="true" aria-label="{% blocktrans with name=service.name %}{{ name }} — Qalereya{% endblocktrans %}" tabindex="-1">
+        <button type="button" class="aglb__back" data-aglb-close aria-label="{% trans 'Geri' %}">
             <i class="fas fa-arrow-left" aria-hidden="true"></i>
-            <span class="aglb__back-text">Geri</span>
+            <span class="aglb__back-text">{% trans "Geri" %}</span>
         </button>
-        <button type="button" class="aglb__close" data-aglb-close aria-label="Bağla">
+        <button type="button" class="aglb__close" data-aglb-close aria-label="{% trans 'Bağla' %}">
             <span aria-hidden="true">×</span>
         </button>
 
         <div class="aglb__content">
             <div class="aglb__media" aria-live="polite">
-                <button type="button" class="aglb__nav aglb__nav--prev" data-aglb-prev aria-label="Əvvəlki şəkil"></button>
+                <button type="button" class="aglb__nav aglb__nav--prev" data-aglb-prev aria-label="{% trans 'Əvvəlki şəkil' %}"></button>
                 <figure class="aglb__figure">
                     <img class="aglb__img" alt="" />
                 </figure>
-                <button type="button" class="aglb__nav aglb__nav--next" data-aglb-next aria-label="Növbəti şəkil"></button>
+                <button type="button" class="aglb__nav aglb__nav--next" data-aglb-next aria-label="{% trans 'Növbəti şəkil' %}"></button>
                 <div class="aglb__counter" aria-hidden="true"></div>
             </div>
 
-            <div class="aglb__thumbs" role="tablist" aria-label="Thumbnail navigation"></div>
+            <div class="aglb__thumbs" role="tablist" aria-label="{% trans 'Thumbnail navigation' %}"></div>
         </div>
     </div>
 </div>

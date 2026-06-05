@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static i18n %}
 
-{% block title %}Paketlər — Averta{% endblock %}
+{% block title %}{% trans "Paketlər" %} — Averta{% endblock %}
 
 {% block content %}
 {% include 'partials/page_header.html' %}
@@ -9,8 +9,7 @@
 <div class="container-fluid packages py-5">
     <div class="container py-5">
         <div class="mx-auto text-center mb-5" style="max-width: 900px;">
-            <h5 class="section-title px-3">Paketlər</h5>
-            <h1 class="mb-0">{{ page_heading }}</h1>
+            <h5 class="section-title px-3">{% trans "Paketlər" %}</h5>
         </div>
         {% if packages %}
         <div class="row g-4">

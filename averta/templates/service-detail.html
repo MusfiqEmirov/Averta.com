@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% block title %}{{ service.name }} — Averta{% endblock %}
 
@@ -11,7 +12,7 @@
     <div class="container sdp-body">
         <header class="sdp-header">
             <a href="{% url 'services:service-page' %}" class="sdp-back">
-                <i class="fas fa-arrow-left me-2" aria-hidden="true"></i>Xidmətlərə qayıt
+                <i class="fas fa-arrow-left me-2" aria-hidden="true"></i>{% trans "Xidmətlərə qayıt" %}
             </a>
             <div class="sdp-header__row">
                 <h1 class="sdp-title">{{ service.name }}</h1>
@@ -28,26 +29,36 @@
                     class="sdp-cover__img"
                     loading="eager"
                 >
-                <div class="sdp-cover__order">
-                    <button type="button"
-                            class="btn btn-primary rounded-pill sdp-order-btn btn-averta-order"
-                            data-booking-open
-                            data-bs-toggle="modal"
-                            data-bs-target="#bookingModal"
-                            data-booking-service="{{ service.id }}">
-                        Sifariş et
-                    </button>
-                </div>
             </figure>
             <aside class="sdp-layout__aside">
                 <div class="sdp-sidebar">
                     {% include 'partials/service_detail_related_carousel.html' %}
+                    <div class="sdp-sidebar__order">
+                        <button type="button"
+                                class="btn btn-primary rounded-pill sdp-order-btn btn-averta-order"
+                                data-booking-open
+                                data-bs-toggle="modal"
+                                data-bs-target="#bookingModal"
+                                data-booking-service="{{ service.id }}">
+                            {% trans "Sifariş et" %}
+                        </button>
+                    </div>
                 </div>
             </aside>
             {% elif other_services %}
             <aside class="sdp-layout__aside sdp-layout__aside--solo">
                 <div class="sdp-sidebar">
                     {% include 'partials/service_detail_related_carousel.html' %}
+                    <div class="sdp-sidebar__order">
+                        <button type="button"
+                                class="btn btn-primary rounded-pill sdp-order-btn btn-averta-order"
+                                data-booking-open
+                                data-bs-toggle="modal"
+                                data-bs-target="#bookingModal"
+                                data-booking-service="{{ service.id }}">
+                            {% trans "Sifariş et" %}
+                        </button>
+                    </div>
                 </div>
             </aside>
             {% endif %}
@@ -68,7 +79,7 @@
                             data-bs-toggle="modal"
                             data-bs-target="#bookingModal"
                             data-booking-service="{{ service.id }}">
-                            Sifariş et
+                            {% trans "Sifariş et" %}
                         </button>
                     </div>
                 </figure>
@@ -77,8 +88,8 @@
                 {% if service.description_html %}
                 <section class="sdp-panel sdp-panel--content" aria-labelledby="sdp-about">
                     <div class="sdp-panel__head">
-                        <h2 id="sdp-about" class="sdp-panel__title">Haqqında</h2>
-                        <span class="sdp-panel__badge">Ətraflı məlumat</span>
+                        <h2 id="sdp-about" class="sdp-panel__title">{% trans "Haqqında" %}</h2>
+                        <span class="sdp-panel__badge">{% trans "Ətraflı məlumat" %}</span>
                     </div>
                     <div class="sdp-prose blog-rich-text">
                         {{ service.description_html|safe }}
@@ -93,7 +104,7 @@
                 {% if service.videos %}
                 <section class="sdp-panel" aria-labelledby="sdp-videos">
                     <div class="sdp-panel__head">
-                        <h2 id="sdp-videos" class="sdp-panel__title">Video</h2>
+                        <h2 id="sdp-videos" class="sdp-panel__title">{% trans "Video" %}</h2>
                     </div>
                     <div class="sdp-videos">
                         {% for video in service.videos %}
@@ -116,7 +127,7 @@
                     data-bs-toggle="modal"
                     data-bs-target="#bookingModal"
                     data-booking-service="{{ service.id }}">
-                Sifariş et
+                {% trans "Sifariş et" %}
             </button>
         </div>
         {% endif %}

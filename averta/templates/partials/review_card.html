@@ -1,11 +1,11 @@
-{% load package_icon_tags %}
+{% load package_icon_tags i18n %}
 <div class="review-card testimonial-item h-100"
      style="--review-card-bg: {{ review.card_bg }}; --review-star-color: {{ review.star_color }};">
     <span class="review-card__avatar-icon" role="img" aria-label="{{ review.name }}">
         <i class="bi bi-person-fill" aria-hidden="true"></i>
     </span>
     <h6 class="review-card__name" title="{{ review.name }}">{{ review.name }}</h6>
-    <div class="review-card__stars" aria-label="{{ review.rating }} ulduz">
+    <div class="review-card__stars" aria-label="{% blocktrans with rating=review.rating %}{{ rating }} ulduz{% endblocktrans %}">
         {% for i in review.rating_range %}
         <i class="fa fa-star review-card__star review-card__star--filled"></i>
         {% endfor %}

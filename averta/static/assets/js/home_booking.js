@@ -553,6 +553,44 @@
         return d;
     }
 
+    function supportsHoverOpen() {
+        return window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    }
+
+    function disableInputClickOpen(input) {
+        if (!input || input._hbHoverInputBound) return;
+        input._hbHoverInputBound = true;
+        input.setAttribute('readonly', 'readonly');
+        input.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+        });
+        input.addEventListener('focus', function () {
+            input.blur();
+        });
+    }
+
+    function getDpCalendarEl(dp) {
+        if (dp && dp.$datepicker) return dp.$datepicker;
+        var nodes = document.querySelectorAll('.air-datepicker');
+        for (var i = nodes.length - 1; i >= 0; i--) {
+            var el = nodes[i];
+            var style = window.getComputedStyle(el);
+            if (style.display !== 'none' && style.visibility !== 'hidden' && parseFloat(style.opacity) > 0.01) {
+                return el;
+            }
+        }
+        return null;
+    }
+
+    function bindCalendarHoverBridge(dp, clearHideTimer, scheduleHide) {
+        var cal = getDpCalendarEl(dp);
+        if (!cal) return;
+        if (cal._hbHoverBridgeDp === dp) return;
+        cal._hbHoverBridgeDp = dp;
+        cal.addEventListener('mouseenter', clearHideTimer);
+        cal.addEventListener('mouseleave', scheduleHide);
+    }
+
     function initDateFields(root) {
         if (typeof AirDatepicker === 'undefined') return;
         if (!root) return;
@@ -640,7 +678,12 @@
                     }
                 }
             },
-            onShow: function() { fromCell.classList.add('is-open'); },
+            onShow: function() {
+                fromCell.classList.add('is-open');
+                if (typeof dpFrom._hbOnShowBridge === 'function') {
+                    setTimeout(function () { dpFrom._hbOnShowBridge(); }, 0);
+                }
+            },
             onHide: function() { fromCell.classList.remove('is-open'); },
         }));
 
@@ -654,7 +697,12 @@
                 toInput.value = fmtDate(opts.date);
                 syncDateFieldState(toInput, toCell);
             },
-            onShow: function() { toCell.classList.add('is-open'); },
+            onShow: function() {
+                toCell.classList.add('is-open');
+                if (typeof dpTo._hbOnShowBridge === 'function') {
+                    setTimeout(function () { dpTo._hbOnShowBridge(); }, 0);
+                }
+            },
             onHide: function() { toCell.classList.remove('is-open'); },
         }));
 
@@ -675,6 +723,37 @@
         }
 
         function bindCell(cell, dp, otherDp) {
+            var hideTimer = null;
+
+            function clearHideTimer() {
+                if (hideTimer) {
+                    clearTimeout(hideTimer);
+                    hideTimer = null;
+                }
+            }
+
+            function scheduleHide() {
+                clearHideTimer();
+                hideTimer = setTimeout(function () {
+                    if (dp.visible) dp.hide();
+                }, 220);
+            }
+
+            function openOnHover() {
+                clearHideTimer();
+                openDp(dp, otherDp);
+            }
+
+            if (supportsHoverOpen()) {
+                dp._hbOnShowBridge = function () {
+                    bindCalendarHoverBridge(dp, clearHideTimer, scheduleHide);
+                };
+
+                cell.addEventListener('mouseenter', openOnHover);
+                cell.addEventListener('mouseleave', scheduleHide);
+                return;
+            }
+
             function handleToggle(e) {
                 if (e.target.closest('.air-datepicker')) return;
                 toggleDp(dp, otherDp);
@@ -686,6 +765,11 @@
                 if (e.cancelable) e.preventDefault();
                 handleToggle(e);
             }, { passive: false });
+        }
+
+        if (supportsHoverOpen()) {
+            disableInputClickOpen(fromInput);
+            disableInputClickOpen(toInput);
         }
 
         bindCell(fromCell, dpFrom, dpTo);
