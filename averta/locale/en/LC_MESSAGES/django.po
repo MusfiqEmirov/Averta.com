@@ -89,6 +89,15 @@ msgstr "No active services."
 msgid "Qonaqlar"
 msgstr "Guests"
 
+msgid "Qonaq sayını seçin"
+msgstr "Select number of guests"
+
+msgid "Paketinizi seçin"
+msgstr "Select your package"
+
+msgid "Xidmətinizi seçin"
+msgstr "Select your service"
+
 msgid "Böyük"
 msgstr "Adults"
 
@@ -143,8 +152,11 @@ msgstr "Our services"
 msgid "Bütün xidmətlər"
 msgstr "All services"
 
-msgid "Bloq"
-msgstr "Blog"
+msgid "Bloqlar"
+msgstr "Blogs"
+
+msgid "Ətraflı oxu"
+msgstr "Read more"
 
 msgid "Bütün yazılar"
 msgstr "All posts"
@@ -170,8 +182,8 @@ msgstr "Previous reviews"
 msgid "Növbəti rəylər"
 msgstr "Next reviews"
 
-msgid "Rəyiniz uğurla göndərildi."
-msgstr "Your review has been sent successfully."
+msgid "Rəyiniz qəbul edildi. Təsdiqdən sonra saytda görünəcək."
+msgstr "Your review has been received. It will appear on the site after approval."
 
 msgid "Rəyiniz göndərilmədi. Zəhmət olmasa yenidən cəhd edin."
 msgstr "Your review could not be sent. Please try again."
@@ -191,14 +203,11 @@ msgstr "(max 50 characters)"
 msgid "(saytda göstərilmir)"
 msgstr "(not shown on the site)"
 
-msgid "Xidmət və ya paket"
-msgstr "Service or package"
+msgid "Aldığınız xidmət və ya paketi seçin"
+msgstr "Select the service or package you purchased"
 
-msgid "Yalnız birini seçin."
-msgstr "Select only one."
-
-msgid "Reytinq"
-msgstr "Rating"
+msgid "Bizi qiymətləndirin"
+msgstr "Rate us"
 
 msgid "Rəy"
 msgstr "Review"
@@ -223,3 +232,210 @@ msgstr "details"
 
 msgid "Sürətli keçidlər"
 msgstr "Quick links"
+
+msgid "About us"
+msgstr "About us"
+
+msgid "Ad Soyad"
+msgstr "Full name"
+
+msgid "Ad soyad"
+msgstr "Full name"
+
+msgid "Ad soyad *"
+msgstr "Full name *"
+
+msgid "Adınız"
+msgstr "Your name"
+
+msgid "Aldığınız xidmət və ya paketi seçin."
+msgstr "Select the service or package you purchased."
+
+msgid "Ana səhifə"
+msgstr "Home"
+
+msgid "Blog"
+msgstr "Blogs"
+
+msgid "Blog post not found"
+msgstr "Blog post not found"
+
+msgid "Böyük sayı"
+msgstr "Number of adults"
+
+msgid "Başqa yazı yoxdur."
+msgstr "No other posts."
+
+msgid "Bütün hüquqlar qorunur."
+msgstr "All rights reserved."
+
+msgid "Captcha verification failed. Please try again."
+msgstr "Captcha verification failed. Please try again."
+
+msgid "Contact"
+msgstr "Contact"
+
+msgid "Digər xidmətlər"
+msgstr "Other services"
+
+msgid "Digər yazılar"
+msgstr "Other posts"
+
+msgid "E-poçt (istəyə görə)"
+msgstr "Email (optional)"
+
+msgid "E-poçt və ya mobil nömrədən ən azı biri mütləqdir."
+msgstr "At least email or mobile number is required."
+
+msgid "Email address"
+msgstr "Email address"
+
+msgid "FAQ"
+msgstr "FAQ"
+
+msgid "Full name"
+msgstr "Full name"
+
+msgid "Gediş tarixi"
+msgstr "Departure date"
+
+msgid "Gediş tarixi keçmiş ola bilməz."
+msgstr "Departure date cannot be in the past."
+
+msgid "Geri"
+msgstr "Back"
+
+msgid "Hamısı"
+msgstr "View all"
+
+msgid "Hazırlayan"
+msgstr "Developed by"
+
+msgid "Haqqında"
+msgstr "About"
+
+msgid "Hələ sual əlavə edilməyib."
+msgstr "No questions have been added yet."
+
+msgid "Mobil nömrə"
+msgstr "Mobile number"
+
+msgid "Mobil nömrə (məs: 050 123 45 67)"
+msgstr "Mobile number (e.g. +994 50 123 45 67)"
+
+msgid "Mobil nömrə *"
+msgstr "Mobile number *"
+
+msgid "Mobil nömrə mütləqdir."
+msgstr "Mobile number is required."
+
+msgid "Mobile number"
+msgstr "Mobile number"
+
+msgid "Növbəti şəkil"
+msgstr "Next image"
+
+msgid "Paket yoxdur."
+msgstr "No packages available."
+
+msgid "Please verify that you are human."
+msgstr "Please verify that you are human."
+
+msgid "Qalereya"
+msgstr "Gallery"
+
+msgid "Qaleriya şəkli"
+msgstr "Gallery image"
+
+msgid "Qayıdış tarixi"
+msgstr "Return date"
+
+msgid "Rəylər"
+msgstr "Reviews"
+
+msgid "Reytinq 1 ilə 5 arasında olmalıdır."
+msgstr "Rating must be between 1 and 5."
+
+msgid "Rəyiniz"
+msgstr "Your review"
+
+msgid "Service not found"
+msgstr "Service not found"
+
+msgid "Services"
+msgstr "Services"
+
+msgid "Seçimi sil"
+msgstr "Clear selection"
+
+msgid "Sosial şəbəkələr"
+msgstr "Social networks"
+
+msgid "Something went wrong. Please try again."
+msgstr "Something went wrong. Please try again."
+
+msgid "Sualınıza cavab tapmadınızsa, bizimlə əlaqə saxlayın — komandamız sizə kömək etməyə hazırdır."
+msgstr "If you didn't find an answer to your question, contact us — our team is ready to help."
+
+msgid "Subject"
+msgstr "Subject"
+
+msgid "Səhifələmə"
+msgstr "Pagination"
+
+msgid "Səyahət və turizm xidmətləri — etibarlı tərəfdaşınız."
+msgstr "Travel and tourism services — your trusted partner."
+
+msgid "Thumbnail navigation"
+msgstr "Thumbnail navigation"
+
+msgid "Uşaq sayı"
+msgstr "Number of children"
+
+msgid "Video"
+msgstr "Video"
+
+msgid "Xidmət yoxdur."
+msgstr "No services available."
+
+msgid "Xidmətlərə qayıt"
+msgstr "Back to services"
+
+msgid "Xidmətə daxildir"
+msgstr "Included in the service"
+
+msgid "Your full name"
+msgstr "Your full name"
+
+msgid "Your message"
+msgstr "Your message"
+
+msgid "Yuxarı qalx"
+msgstr "Back to top"
+
+msgid "Zəhmət olmasa formadakı xətaları düzəldin."
+msgstr "Please fix the errors in the form."
+
+msgid "Zəhmət olmasa ulduz reytinqi seçin."
+msgstr "Please select a star rating."
+
+msgid "Əlaqə saxla"
+msgstr "Contact us"
+
+msgid "Əlavə qeydiniz varsa, yazın"
+msgstr "If you have additional notes, write them here"
+
+msgid "Ən azı bir paket seçin."
+msgstr "Select at least one package."
+
+msgid "Ən azı bir xidmət seçin."
+msgstr "Select at least one service."
+
+msgid "Ətraflı məlumat"
+msgstr "Detailed information"
+
+msgid "Əvvəlki şəkil"
+msgstr "Previous image"
+
+msgid "Paket bir neçə səyahət xidmətini (viza, uçuş, otel və s.) bir yerdə təklif edir. Uyğun paketi seçin — formu doldurub göndərdikdə sorğunuz komandamıza çatır və tezliklə sizinlə əlaqə saxlanılır."
+msgstr "A package combines several travel services (visa, flights, hotel, etc.) in one offer. Choose a suitable package — when you complete and submit the form, your request reaches our team and we will contact you shortly."

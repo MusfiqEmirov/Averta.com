@@ -78,37 +78,20 @@
             clearInputError('reviewName');
         }
 
-        /* E-poçt və ya mobil */
-        var email = (document.getElementById('reviewEmail') || {}).value || '';
+        /* Mobil nömrə */
         var phone = (document.getElementById('reviewPhone') || {}).value || '';
-        var emailTrim = email.trim();
         var phoneTrim = phone.trim();
         var phoneDigits = phoneTrim.replace(/\D/g, '');
 
-        if (!emailTrim && !phoneTrim) {
-            setFieldError('reviewEmail', 'contactError', 'E-poçt və ya mobil nömrədən ən azı biri mütləqdir.');
+        if (!phoneTrim) {
+            setFieldError('reviewPhone', 'phoneError', 'Mobil nömrə mütləq doldurulmalıdır.');
+            ok = false;
+        } else if (phoneDigits.length < 9) {
+            setFieldError('reviewPhone', 'phoneError', 'Düzgün mobil nömrə daxil edin.');
             ok = false;
         } else {
-            clearFieldError('contactError');
-            if (emailTrim && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrim)) {
-                setFieldError('reviewEmail', 'emailError', 'Düzgün e-poçt ünvanı daxil edin.');
-                ok = false;
-            } else {
-                clearFieldError('emailError');
-                clearInputError('reviewEmail');
-            }
-            if (phoneTrim) {
-                if (phoneDigits.length < 9) {
-                    setFieldError('reviewPhone', 'phoneError', 'Düzgün mobil nömrə daxil edin.');
-                    ok = false;
-                } else {
-                    clearFieldError('phoneError');
-                    clearInputError('reviewPhone');
-                }
-            } else {
-                clearFieldError('phoneError');
-                clearInputError('reviewPhone');
-            }
+            clearFieldError('phoneError');
+            clearInputError('reviewPhone');
         }
 
         /* Reytinq */
@@ -129,18 +112,13 @@
         }
 
         /* Xidmət / paket */
-        var serviceVal = (document.getElementById('reviewService') || {}).value || '';
-        var packageVal = (document.getElementById('reviewPackage') || {}).value || '';
-        if (!serviceVal && !packageVal) {
-            setFieldError('reviewService', 'targetError', 'Xidmət və ya paket seçin.');
-            ok = false;
-        } else if (serviceVal && packageVal) {
-            setFieldError('reviewService', 'targetError', 'Yalnız xidmət və ya paket seçin.');
+        var targetVal = (document.getElementById('reviewTarget') || {}).value || '';
+        if (!targetVal) {
+            setFieldError('reviewTarget', 'targetError', 'Aldığınız xidmət və ya paketi seçin.');
             ok = false;
         } else {
             clearFieldError('targetError');
-            clearInputError('reviewService');
-            clearInputError('reviewPackage');
+            clearInputError('reviewTarget');
         }
 
         /* Mətn */
@@ -280,29 +258,15 @@
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Xidmət / paket — yalnız biri seçilir                               */
+    /*  Xidmət / paket — birləşmiş seçim                                   */
     /* ------------------------------------------------------------------ */
     function initReviewTargetSelects() {
-        var serviceSel = document.getElementById('reviewService');
-        var packageSel = document.getElementById('reviewPackage');
-        if (!serviceSel || !packageSel) { return; }
+        var targetSel = document.getElementById('reviewTarget');
+        if (!targetSel) { return; }
 
-        serviceSel.addEventListener('change', function () {
-            if (serviceSel.value) {
-                packageSel.value = '';
-            }
+        targetSel.addEventListener('change', function () {
             clearFieldError('targetError');
-            serviceSel.classList.remove('is-invalid');
-            packageSel.classList.remove('is-invalid');
-        });
-
-        packageSel.addEventListener('change', function () {
-            if (packageSel.value) {
-                serviceSel.value = '';
-            }
-            clearFieldError('targetError');
-            serviceSel.classList.remove('is-invalid');
-            packageSel.classList.remove('is-invalid');
+            targetSel.classList.remove('is-invalid');
         });
     }
 
@@ -345,7 +309,7 @@
         }
 
         /* Input dəyişəndə xətanı sil */
-        ['reviewName', 'reviewEmail', 'reviewPhone', 'reviewMessage'].forEach(function (id) {
+        ['reviewName', 'reviewPhone', 'reviewTarget', 'reviewMessage'].forEach(function (id) {
             var el = document.getElementById(id);
             if (el) {
                 el.addEventListener('input', function () {

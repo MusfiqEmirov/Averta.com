@@ -4,7 +4,9 @@
     <div class="container py-5">
         <div class="row g-4 g-lg-5 align-items-start{% if about_page_layout %} about-intro-row{% endif %}">
             <div class="{% if about_page_layout %}col-md-6 col-lg-6{% else %}col-lg-6{% endif %} about-intro-media-col">
-                {% if about.first_image %}
+                {% if show_video and about.video %}
+                {% include 'partials/about_video.html' %}
+                {% elif about.first_image %}
                 <img src="{{ about.first_image }}" class="about-intro-image img-fluid w-100" alt="{{ about.main_title }}">
                 {% else %}
                 <img src="{% static 'assets/img/about-img.jpg' %}" class="about-intro-image img-fluid w-100" alt="">
@@ -26,9 +28,6 @@
                 </div>
                 {% if show_read_more %}
                 <a class="btn btn-primary rounded-pill py-3 px-5 mt-2" href="{% url 'services:about-page' %}">{% trans "Ətraflı" %}</a>
-                {% endif %}
-                {% if show_video %}
-                {% include 'partials/about_video.html' %}
                 {% endif %}
             </div>
         </div>

@@ -127,7 +127,7 @@
         {{ booking_form.children_count }}
 
         <div class="hb-guests-cell">
-          <span class="hb-cnt-label d-block mb-1"><i class="fas fa-users"></i> {% trans "Qonaqlar" %}</span>
+          <span class="hb-cnt-label d-block mb-1">{% trans "Qonaq sayını seçin" %}</span>
           <button type="button" class="hb-guests-btn" data-guests-open aria-expanded="false">
             <span data-guests-summary>
               {% blocktrans with a=booking_form.adults_count.value|default:1 c=booking_form.children_count.value|default:0 %}Böyük: {{ a }} • Uşaq: {{ c }}{% endblocktrans %}
@@ -198,10 +198,11 @@
 
       <div class="col-12">
         <div class="hb-embed-note-field" data-hb-note-field>
-          <label class="hb-embed-note-label" for="bk_note">{% trans "Qısa qeyd (istəyə görə)" %}</label>
+          <label class="hb-embed-note-label" for="bk_note">{% trans "Qeyd" %}</label>
           <textarea class="form-control bg-white border-0 hb-embed-note-input"
                     id="bk_note" name="note"
-                    rows="4">{{ booking_form.note.value|default:'' }}</textarea>
+                    rows="4"
+                    placeholder="{% trans 'Əlavə qeydiniz varsa, yazın' %}">{{ booking_form.note.value|default:'' }}</textarea>
         </div>
         {% if booking_form.note.errors %}
         <div class="text-warning small mt-1">{{ booking_form.note.errors.0 }}</div>

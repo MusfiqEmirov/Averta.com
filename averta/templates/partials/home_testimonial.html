@@ -40,7 +40,7 @@
         {% if review_feedback == 'success' %}
         <div class="alert alert-success text-center rounded-3 mb-4 mx-auto review-feedback-alert form-feedback-alert" style="max-width:520px;" role="alert" data-form-feedback>
             <i class="fa fa-check-circle me-2"></i>
-            {% trans "Rəyiniz uğurla göndərildi." %}
+            {% trans "Rəyiniz qəbul edildi. Təsdiqdən sonra saytda görünəcək." %}
         </div>
         {% elif review_feedback == 'error' %}
         <div class="alert alert-danger text-center rounded-3 mb-4 mx-auto review-feedback-alert form-feedback-alert" style="max-width:520px;" role="alert" data-form-feedback>
@@ -127,20 +127,14 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label small fw-semibold mb-1">
-                            {% trans "Xidmət və ya paket" %} <span class="text-danger">*</span>
+                        <label class="form-label small fw-semibold mb-1" for="reviewTarget">
+                            {% trans "Aldığınız xidmət və ya paketi seçin" %} <span class="text-danger">*</span>
                         </label>
-                        <p class="form-text small text-muted mb-2">{% trans "Yalnız birini seçin." %}</p>
-                        <div class="mb-2{% if review_form.service.errors or review_form.non_field_errors %} is-invalid{% endif %}">
-                            {{ review_form.service }}
+                        <div class="{% if review_form.target.errors or review_form.non_field_errors %} is-invalid{% endif %}">
+                            {{ review_form.target }}
                         </div>
-                        <div class="{% if review_form.package.errors or review_form.non_field_errors %} is-invalid{% endif %}">
-                            {{ review_form.package }}
-                        </div>
-                        {% if review_form.service.errors %}
-                        <div class="invalid-feedback d-block">{{ review_form.service.errors.0 }}</div>
-                        {% elif review_form.package.errors %}
-                        <div class="invalid-feedback d-block">{{ review_form.package.errors.0 }}</div>
+                        {% if review_form.target.errors %}
+                        <div class="invalid-feedback d-block">{{ review_form.target.errors.0 }}</div>
                         {% elif review_form.non_field_errors %}
                         <div class="invalid-feedback d-block">{{ review_form.non_field_errors.0 }}</div>
                         {% endif %}
@@ -148,7 +142,7 @@
 
                     <div class="mb-3">
                         <label class="form-label small fw-semibold mb-1">
-                            {% trans "Reytinq" %} <span class="text-danger">*</span>
+                            {% trans "Bizi qiymətləndirin" %} <span class="text-danger">*</span>
                         </label>
                         <div class="d-flex gap-2 mb-1" id="starPicker">
                             {% for n in "12345" %}

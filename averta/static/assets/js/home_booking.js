@@ -5,8 +5,8 @@
         if (!root) return;
 
         var i18n = {
-            package: root.getAttribute('data-i18n-package') || 'Paket',
-            service: root.getAttribute('data-i18n-service') || 'Xidmət',
+            package: root.getAttribute('data-i18n-package') || 'Paketinizi seçin',
+            service: root.getAttribute('data-i18n-service') || 'Xidmətinizi seçin',
             adults: root.getAttribute('data-i18n-adults') || 'Böyük',
             children: root.getAttribute('data-i18n-children') || 'Uşaq',
         };
@@ -14,7 +14,7 @@
         var form = root.querySelector('.hb-form');
         if (!form) return;
 
-        var typeInput = form.querySelector('[name="booking_type"]');
+        var typeInput = form.querySelector('[name="booking_type"], [name="modal-booking_type"]');
         var tabs = root.querySelectorAll('[data-booking-tab]');
         var panels = root.querySelectorAll('[data-booking-panel]');
         var limits = { adults: { min: 1, max: 100 }, children: { min: 0, max: 100 } };
@@ -156,11 +156,19 @@
             closeAllPickers();
         });
 
+        var guestsModal = root.querySelector('[data-guests-modal]');
+        var guestsOpenBtn = root.querySelector('[data-guests-open]');
+
         function getHidden(name) {
-            return form.querySelector('input[name="' + name + '_count"]');
+            return form.querySelector('input[name="' + name + '_count"]')
+                || form.querySelector('input[name$="-' + name + '_count"]');
         }
 
         function getDisplay(name) {
+            if (guestsModal) {
+                var inPanel = guestsModal.querySelector('[data-counter-display="' + name + '"]');
+                if (inPanel) return inPanel;
+            }
             return root.querySelector('[data-counter-display="' + name + '"]');
         }
 
@@ -174,12 +182,15 @@
         }
 
         root.querySelectorAll('[data-counter-action]').forEach(function (btn) {
-            btn.addEventListener('click', function () {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
                 var name = btn.getAttribute('data-counter');
                 var inp = getHidden(name);
                 var current = parseInt(inp && inp.value, 10);
                 if (isNaN(current)) current = name === 'adults' ? 1 : 0;
                 setCount(name, current + (btn.getAttribute('data-counter-action') === 'plus' ? 1 : -1));
+                updateGuestsSummary();
             });
         });
 
@@ -189,13 +200,77 @@
             if (inp && disp) disp.textContent = inp.value || (name === 'adults' ? '1' : '0');
         });
 
-        var guestsModal = root.querySelector('[data-guests-modal]');
-        var guestsOpenBtn = root.querySelector('[data-guests-open]');
         var guestsAnimMs = 180;
         var guestsSkipOutsideClose = false;
+        var useFloatingGuestsPanel = root.id === 'booking-modal-root';
+        var guestsPanelAnchor = { parent: null, next: null };
 
         function isGuestsOpen() {
             return guestsModal && !guestsModal.hidden && guestsModal.classList.contains('is-open');
+        }
+
+        function positionFloatingGuestsPanel() {
+            if (!useFloatingGuestsPanel || !guestsModal || !guestsOpenBtn || !isGuestsOpen()) return;
+
+            var rect = guestsOpenBtn.getBoundingClientRect();
+            var width = Math.min(480, Math.max(280, window.innerWidth - 32));
+            var left = rect.left + (rect.width / 2) - (width / 2);
+            left = Math.max(16, Math.min(left, window.innerWidth - width - 16));
+
+            var top = rect.bottom + 8;
+            var panelHeight = guestsModal.offsetHeight || 220;
+            if (top + panelHeight > window.innerHeight - 16) {
+                top = Math.max(16, rect.top - panelHeight - 8);
+            }
+
+            guestsModal.style.position = 'fixed';
+            guestsModal.style.top = top + 'px';
+            guestsModal.style.left = left + 'px';
+            guestsModal.style.width = width + 'px';
+            guestsModal.style.maxWidth = 'none';
+            guestsModal.style.transform = 'none';
+            guestsModal.style.zIndex = '1065';
+        }
+
+        function mountFloatingGuestsPanel() {
+            if (!useFloatingGuestsPanel || !guestsModal || guestsPanelAnchor.parent) return;
+            guestsPanelAnchor.parent = guestsModal.parentNode;
+            guestsPanelAnchor.next = guestsModal.nextSibling;
+            document.body.appendChild(guestsModal);
+        }
+
+        function resetFloatingGuestsPanel() {
+            if (!useFloatingGuestsPanel || !guestsModal) return;
+
+            guestsModal.style.position = '';
+            guestsModal.style.top = '';
+            guestsModal.style.left = '';
+            guestsModal.style.width = '';
+            guestsModal.style.maxWidth = '';
+            guestsModal.style.transform = '';
+            guestsModal.style.zIndex = '';
+
+            if (guestsPanelAnchor.parent) {
+                if (guestsPanelAnchor.next) {
+                    guestsPanelAnchor.parent.insertBefore(guestsModal, guestsPanelAnchor.next);
+                } else {
+                    guestsPanelAnchor.parent.appendChild(guestsModal);
+                }
+                guestsPanelAnchor.parent = null;
+                guestsPanelAnchor.next = null;
+            }
+        }
+
+        function bindFloatingGuestsPanel() {
+            if (!useFloatingGuestsPanel) return;
+            window.addEventListener('resize', positionFloatingGuestsPanel);
+            window.addEventListener('scroll', positionFloatingGuestsPanel, true);
+        }
+
+        function unbindFloatingGuestsPanel() {
+            if (!useFloatingGuestsPanel) return;
+            window.removeEventListener('resize', positionFloatingGuestsPanel);
+            window.removeEventListener('scroll', positionFloatingGuestsPanel, true);
         }
 
         function updateGuestsSummary() {
@@ -211,6 +286,9 @@
 
         function openGuestsModal() {
             if (!guestsModal) return;
+            if (useFloatingGuestsPanel) {
+                mountFloatingGuestsPanel();
+            }
             guestsModal.hidden = false;
             guestsModal.removeAttribute('hidden');
             guestsModal.setAttribute('aria-hidden', 'false');
@@ -220,6 +298,10 @@
                 guestsOpenBtn.setAttribute('aria-expanded', 'true');
             }
             updateGuestsSummary();
+            if (useFloatingGuestsPanel) {
+                positionFloatingGuestsPanel();
+                bindFloatingGuestsPanel();
+            }
         }
 
         function closeGuestsModal() {
@@ -229,10 +311,12 @@
                 guestsOpenBtn.classList.remove('is-open');
                 guestsOpenBtn.setAttribute('aria-expanded', 'false');
             }
+            unbindFloatingGuestsPanel();
             window.setTimeout(function () {
                 if (!guestsModal.classList.contains('is-open')) {
                     guestsModal.hidden = true;
                     guestsModal.setAttribute('aria-hidden', 'true');
+                    resetFloatingGuestsPanel();
                 }
             }, guestsAnimMs);
             updateGuestsSummary();
@@ -265,11 +349,12 @@
                 return;
             }
             if (!isGuestsOpen()) return;
+            if (e.target.closest('[data-guests-modal]')) return;
+            if (e.target.closest('[data-guests-open]')) return;
             if (!root.contains(e.target)) {
                 closeGuestsModal();
                 return;
             }
-            if (e.target.closest('[data-guests-open]') || e.target.closest('[data-guests-modal]')) return;
             closeGuestsModal();
         });
 
@@ -284,36 +369,123 @@
         });
 
         updateGuestsSummary();
+    }
 
-        if (root.id === 'contact-booking-form-root') {
-            try {
-                var sp = new URLSearchParams(window.location.search || '');
-                var serviceId = (sp.get('service') || '').trim();
-                var packageId = (sp.get('package') || '').trim();
+    function preselectBookingItems(root, serviceId, packageId) {
+        if (!root) return;
 
-                if (serviceId) {
-                    setType('service');
-                    var sPanel = root.querySelector('[data-booking-panel="service"]');
-                    var serviceCb = sPanel && sPanel.querySelector('input[type="checkbox"][value="' + serviceId + '"]');
-                    if (serviceCb) {
-                        serviceCb.checked = true;
-                        serviceCb.dispatchEvent(new Event('change', { bubbles: true }));
-                    }
-                    openPicker('service');
-                } else if (packageId) {
-                    setType('package');
-                    var pPanel = root.querySelector('[data-booking-panel="package"]');
-                    var packageCb = pPanel && pPanel.querySelector('input[type="checkbox"][value="' + packageId + '"]');
-                    if (packageCb) {
-                        packageCb.checked = true;
-                        packageCb.dispatchEvent(new Event('change', { bubbles: true }));
-                    }
-                    openPicker('package');
-                }
-            } catch (err) {
-                /* ignore */
+        serviceId = (serviceId || '').trim();
+        packageId = (packageId || '').trim();
+
+        if (serviceId) {
+            var serviceTab = root.querySelector('[data-booking-tab="service"]');
+            if (serviceTab) serviceTab.click();
+
+            var serviceCb = root.querySelector(
+                '[data-booking-panel="service"] input[type="checkbox"][value="' + serviceId + '"]'
+            );
+            if (serviceCb) {
+                serviceCb.checked = true;
+                serviceCb.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+
+            var servicePicker = root.querySelector('[data-hb-picker="service"]');
+            if (servicePicker && servicePicker.getAttribute('aria-expanded') !== 'true') {
+                servicePicker.click();
+            }
+            return;
+        }
+
+        if (packageId) {
+            var packageTab = root.querySelector('[data-booking-tab="package"]');
+            if (packageTab) packageTab.click();
+
+            var packageCb = root.querySelector(
+                '[data-booking-panel="package"] input[type="checkbox"][value="' + packageId + '"]'
+            );
+            if (packageCb) {
+                packageCb.checked = true;
+                packageCb.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+
+            var packagePicker = root.querySelector('[data-hb-picker="package"]');
+            if (packagePicker && packagePicker.getAttribute('aria-expanded') !== 'true') {
+                packagePicker.click();
             }
         }
+    }
+
+    function openBookingModal(serviceId, packageId) {
+        var modalEl = document.getElementById('bookingModal');
+        var root = document.getElementById('booking-modal-root');
+        if (!modalEl || !root) return;
+
+        preselectBookingItems(root, serviceId, packageId);
+
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            bootstrap.Modal.getOrCreateInstance(modalEl).show();
+            return;
+        }
+
+        modalEl.classList.add('show');
+        modalEl.style.display = 'block';
+        modalEl.removeAttribute('aria-hidden');
+        document.body.classList.add('modal-open');
+    }
+
+    function initBookingModalEvents() {
+        var modalEl = document.getElementById('bookingModal');
+        if (!modalEl) return;
+
+        modalEl.addEventListener('show.bs.modal', function (event) {
+            var trigger = event.relatedTarget;
+            var root = document.getElementById('booking-modal-root');
+            if (!root || !trigger) return;
+            preselectBookingItems(
+                root,
+                trigger.getAttribute('data-booking-service') || '',
+                trigger.getAttribute('data-booking-package') || ''
+            );
+        });
+
+        modalEl.addEventListener('hidden.bs.modal', function () {
+            var root = document.getElementById('booking-modal-root');
+            if (!root) return;
+
+            var guestsCell = root.querySelector('.hb-guests-cell');
+            var guestsBtn = root.querySelector('[data-guests-open]');
+            var panel = document.querySelector('.hb-guests-panel.is-open');
+
+            if (panel && guestsCell && panel.closest('#bookingModal, .hb-guests-cell, body')) {
+                panel.classList.remove('is-open');
+                panel.hidden = true;
+                panel.setAttribute('aria-hidden', 'true');
+                panel.style.position = '';
+                panel.style.top = '';
+                panel.style.left = '';
+                panel.style.width = '';
+                panel.style.maxWidth = '';
+                panel.style.transform = '';
+                panel.style.zIndex = '';
+                guestsCell.appendChild(panel);
+            }
+
+            if (guestsBtn) {
+                guestsBtn.classList.remove('is-open');
+                guestsBtn.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        document.addEventListener('click', function (e) {
+            var trigger = e.target.closest('[data-booking-open]');
+            if (!trigger) return;
+            if (trigger.hasAttribute('data-bs-toggle') && typeof bootstrap !== 'undefined') return;
+            e.preventDefault();
+            openBookingModal(
+                trigger.getAttribute('data-booking-service') || '',
+                trigger.getAttribute('data-booking-package') || ''
+            );
+        });
     }
 
     /* ════════════════════════════════════
@@ -389,8 +561,12 @@
         var toCell = root.querySelector('[data-hb-date-cell][data-hb-date-to]');
         if (!fromCell || !toCell) return;
 
-        var fromInput = fromCell.querySelector('.hb-date-text') || fromCell.querySelector('input[name="date_from"]');
-        var toInput = toCell.querySelector('.hb-date-text') || toCell.querySelector('input[name="date_to"]');
+        var fromInput = fromCell.querySelector('.hb-date-text')
+            || fromCell.querySelector('input[name="date_from"]')
+            || fromCell.querySelector('input[name$="-date_from"]');
+        var toInput = toCell.querySelector('.hb-date-text')
+            || toCell.querySelector('input[name="date_to"]')
+            || toCell.querySelector('input[name$="-date_to"]');
         if (!fromInput || !toInput) return;
 
         if (fromInput._airDatepicker) { fromInput._airDatepicker.destroy(); }
@@ -399,7 +575,7 @@
         var lang = parseLang(root);
         var locale = getAirLocale(lang);
         var today = startOfToday();
-        var useHeroCalendar = root.id === 'hero-booking' || root.id === 'contact-booking-form-root';
+        var useHeroCalendar = root.id === 'hero-booking' || root.id === 'booking-modal-root';
         var dpFrom, dpTo;
 
         function fmtDate(d) {
@@ -420,11 +596,11 @@
             return new Date(d.getFullYear(), d.getMonth(), d.getDate());
         }
 
-        function hidePastCells(getMinDate) {
+        function renderPastDayCells(getMinDate) {
             return function (payload) {
                 if (payload.cellType !== 'day') return;
                 if (stripTime(payload.date) < stripTime(getMinDate())) {
-                    return { disabled: true, classes: 'hb-day-hidden' };
+                    return { disabled: true, classes: 'hb-day-past' };
                 }
             };
         }
@@ -441,7 +617,7 @@
             offset: 4,
             isMobile: false,
             onHide: function(isFinished) { return isFinished; },
-            onRenderCell: hidePastCells(function () { return today; }),
+            onRenderCell: renderPastDayCells(function () { return today; }),
         };
 
         dpFrom = new AirDatepicker(fromInput, Object.assign({}, baseOpts, {
@@ -470,7 +646,7 @@
 
         dpTo = new AirDatepicker(toInput, Object.assign({}, baseOpts, {
             minDate: today,
-            onRenderCell: hidePastCells(function () {
+            onRenderCell: renderPastDayCells(function () {
                 return dpTo && dpTo.opts && dpTo.opts.minDate ? dpTo.opts.minDate : today;
             }),
             onSelect: function(opts) {
@@ -519,25 +695,16 @@
         syncDateFieldState(toInput, toCell);
     }
 
-    function initNoteFields(root) {
-        if (!root) return;
-
-        root.querySelectorAll('.hb-field--note[data-hb-note-field]').forEach(function (wrap) {
-            var field = wrap.querySelector('input[name="note"]');
-            if (!field) return;
-            field.setAttribute('placeholder', ' ');
-        });
-    }
-
     function boot() {
+        initBookingModalEvents();
+
         var hero = document.getElementById('hero-booking');
-        var contact = document.getElementById('contact-booking-form-root');
-        initBookingRoot(hero);
-        initBookingRoot(contact);
-        initDateFields(hero);
-        initDateFields(contact);
-        initNoteFields(hero);
-        initNoteFields(contact);
+        var modalRoot = document.getElementById('booking-modal-root');
+
+        try { initBookingRoot(hero); } catch (err) { /* ignore */ }
+        try { initBookingRoot(modalRoot); } catch (err) { /* ignore */ }
+        try { initDateFields(hero); } catch (err) { /* ignore */ }
+        try { initDateFields(modalRoot); } catch (err) { /* ignore */ }
     }
 
     if (document.readyState === 'loading') {

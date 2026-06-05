@@ -41,21 +41,29 @@
                 {% if lang == 'en' %}Reviews{% elif lang == 'ru' %}Отзывы{% else %}Rəylər{% endif %}
             </a>
             <a href="{% url 'services:blog-page' %}" class="nav-item nav-link {% if active_nav == 'blog' %}active{% endif %}">
-                {% if lang == 'en' %}Blog{% elif lang == 'ru' %}Блог{% else %}Bloq{% endif %}
+                {% if lang == 'en' %}Blogs{% elif lang == 'ru' %}Блоги{% else %}Bloqlar{% endif %}
             </a>
             <a href="{% url 'services:contact-page' %}#contact-section" class="nav-item nav-link {% if active_nav == 'contact' %}active{% endif %}">
                 {% if lang == 'en' %}Contact{% elif lang == 'ru' %}Контакты{% else %}Əlaqə{% endif %}
             </a>
-            <a href="{% url 'services:contact-page' %}#contact-booking" class="nav-item navbar-mobile-order d-lg-none">
+            <button type="button"
+                    class="nav-item navbar-mobile-order d-lg-none"
+                    data-booking-open
+                    data-bs-toggle="modal"
+                    data-bs-target="#bookingModal">
                 <span class="navbar-mobile-order__inner">
                     <i class="fas fa-paper-plane" aria-hidden="true"></i>
                     {% if lang == 'en' %}Order{% elif lang == 'ru' %}Заказать{% else %}Sifariş et{% endif %}
                 </span>
-            </a>
+            </button>
         </div>
-        <a href="{% url 'services:contact-page' %}#contact-booking" class="btn btn-primary rounded-pill py-2 px-4 ms-lg-4 navbar-contact-btn d-none d-lg-inline-block">
+        <button type="button"
+                class="btn btn-primary rounded-pill py-2 px-4 ms-lg-4 navbar-contact-btn d-none d-lg-inline-block"
+                data-booking-open
+                data-bs-toggle="modal"
+                data-bs-target="#bookingModal">
             {% if lang == 'en' %}Order{% elif lang == 'ru' %}Заказать{% else %}Sifariş et{% endif %}
-        </a>
+        </button>
     </div>
     {% endwith %}
 </nav>

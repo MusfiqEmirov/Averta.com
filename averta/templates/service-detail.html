@@ -15,9 +15,6 @@
             </a>
             <div class="sdp-header__row">
                 <h1 class="sdp-title">{{ service.name }}</h1>
-                <a href="{% url 'services:contact-page' %}?service={{ service.id }}#contact-booking" class="btn btn-primary rounded-pill sdp-order-btn btn-averta-order">
-                    Sifariş et
-                </a>
             </div>
         </header>
 
@@ -31,6 +28,16 @@
                     class="sdp-cover__img"
                     loading="eager"
                 >
+                <div class="sdp-cover__order">
+                    <button type="button"
+                            class="btn btn-primary rounded-pill sdp-order-btn btn-averta-order"
+                            data-booking-open
+                            data-bs-toggle="modal"
+                            data-bs-target="#bookingModal"
+                            data-booking-service="{{ service.id }}">
+                        Sifariş et
+                    </button>
+                </div>
             </figure>
             <aside class="sdp-layout__aside">
                 <div class="sdp-sidebar">
@@ -54,6 +61,16 @@
                         class="sdp-cover__img"
                         loading="eager"
                     >
+                    <div class="sdp-cover__order">
+                        <button type="button"
+                            class="btn btn-primary rounded-pill sdp-order-btn btn-averta-order"
+                            data-booking-open
+                            data-bs-toggle="modal"
+                            data-bs-target="#bookingModal"
+                            data-booking-service="{{ service.id }}">
+                            Sifariş et
+                        </button>
+                    </div>
                 </figure>
                 {% endif %}
 
@@ -90,6 +107,19 @@
             </div>
 
         </div>
+
+        {% if not service.cover_image %}
+        <div class="sdp-order-bar">
+            <button type="button"
+                    class="btn btn-primary rounded-pill sdp-order-btn btn-averta-order"
+                    data-booking-open
+                    data-bs-toggle="modal"
+                    data-bs-target="#bookingModal"
+                    data-booking-service="{{ service.id }}">
+                Sifariş et
+            </button>
+        </div>
+        {% endif %}
     </div>
 </article>
 {% endblock %}

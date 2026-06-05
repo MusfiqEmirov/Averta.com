@@ -1,6 +1,8 @@
-from services.models import Service
-from services.utils.queries import get_contact, get_language_from_request, serialize_contact, get_background_image
 from django.conf import settings
+
+from services.forms.forms_v1 import BookingForm
+from services.models import Service
+from services.utils.queries import get_background_image, get_contact, get_language_from_request, serialize_contact
 
 
 def navbar_services(request):
@@ -67,3 +69,22 @@ def turnstile(request):
         'turnstile_enabled': enabled,
         'turnstile_site_key': site_key,
     }
+
+
+def modal_booking_form(request):
+    """Global sifariş modalı üçün form."""
+    lang = (
+        request.session.get('django_language')
+        or request.session.get('language')
+        or getattr(request, 'LANGUAGE_CODE', 'az')
+    )
+    if lang not in ('az', 'en', 'ru'):
+        lang = 'az'
+    try:
+        form = BookingForm(lang=lang, prefix='modal', initial={'booking_type': 'package'})
+    except Exception:
+        try:
+            form = BookingForm(lang='az', prefix='modal', initial={'booking_type': 'package'})
+        except Exception:
+            form = None
+    return {'modal_booking_form': form}

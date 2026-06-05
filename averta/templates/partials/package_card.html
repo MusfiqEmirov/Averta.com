@@ -43,12 +43,15 @@
         {% else %}
         <span></span>
         {% endif %}
-        <a href="{% url 'services:contact-page' %}?package={{ package.id }}#contact-booking"
-           class="hb-submit pkg-card__cta"
-           role="button">
+        <button type="button"
+                class="hb-submit pkg-card__cta"
+                data-booking-open
+                data-bs-toggle="modal"
+                data-bs-target="#bookingModal"
+                data-booking-package="{{ package.id }}">
             <i class="fas fa-paper-plane" aria-hidden="true"></i>
             <span>{% trans "Sifariş et" %}</span>
-        </a>
+        </button>
     </div>
 
 </article>

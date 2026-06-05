@@ -89,6 +89,15 @@ msgstr "Нет активных услуг."
 msgid "Qonaqlar"
 msgstr "Гости"
 
+msgid "Qonaq sayını seçin"
+msgstr "Выберите количество гостей"
+
+msgid "Paketinizi seçin"
+msgstr "Выберите свой пакет"
+
+msgid "Xidmətinizi seçin"
+msgstr "Выберите свою услугу"
+
 msgid "Böyük"
 msgstr "Взрослые"
 
@@ -143,8 +152,11 @@ msgstr "Наши услуги"
 msgid "Bütün xidmətlər"
 msgstr "Все услуги"
 
-msgid "Bloq"
-msgstr "Блог"
+msgid "Bloqlar"
+msgstr "Блоги"
+
+msgid "Ətraflı oxu"
+msgstr "Читать подробнее"
 
 msgid "Bütün yazılar"
 msgstr "Все записи"
@@ -170,8 +182,8 @@ msgstr "Предыдущие отзывы"
 msgid "Növbəti rəylər"
 msgstr "Следующие отзывы"
 
-msgid "Rəyiniz uğurla göndərildi."
-msgstr "Ваш отзыв успешно отправлен."
+msgid "Rəyiniz qəbul edildi. Təsdiqdən sonra saytda görünəcək."
+msgstr "Ваш отзыв принят. После одобрения он появится на сайте."
 
 msgid "Rəyiniz göndərilmədi. Zəhmət olmasa yenidən cəhd edin."
 msgstr "Не удалось отправить отзыв. Пожалуйста, попробуйте снова."
@@ -191,14 +203,11 @@ msgstr "(не более 50 символов)"
 msgid "(saytda göstərilmir)"
 msgstr "(не отображается на сайте)"
 
-msgid "Xidmət və ya paket"
-msgstr "Услуга или пакет"
+msgid "Aldığınız xidmət və ya paketi seçin"
+msgstr "Выберите приобретённую услугу или пакет"
 
-msgid "Yalnız birini seçin."
-msgstr "Выберите только один вариант."
-
-msgid "Reytinq"
-msgstr "Рейтинг"
+msgid "Bizi qiymətləndirin"
+msgstr "Оцените нас"
 
 msgid "Rəy"
 msgstr "Отзыв"
@@ -223,3 +232,210 @@ msgstr "подробнее"
 
 msgid "Sürətli keçidlər"
 msgstr "Быстрые ссылки"
+
+msgid "About us"
+msgstr "О нас"
+
+msgid "Ad Soyad"
+msgstr "ФИО"
+
+msgid "Ad soyad"
+msgstr "ФИО"
+
+msgid "Ad soyad *"
+msgstr "ФИО *"
+
+msgid "Adınız"
+msgstr "Ваше имя"
+
+msgid "Aldığınız xidmət və ya paketi seçin."
+msgstr "Выберите приобретённую услугу или пакет."
+
+msgid "Ana səhifə"
+msgstr "Главная"
+
+msgid "Blog"
+msgstr "Блоги"
+
+msgid "Blog post not found"
+msgstr "Запись блога не найдена"
+
+msgid "Böyük sayı"
+msgstr "Количество взрослых"
+
+msgid "Başqa yazı yoxdur."
+msgstr "Других записей нет."
+
+msgid "Bütün hüquqlar qorunur."
+msgstr "Все права защищены."
+
+msgid "Captcha verification failed. Please try again."
+msgstr "Проверка captcha не удалась. Попробуйте ещё раз."
+
+msgid "Contact"
+msgstr "Контакты"
+
+msgid "Digər xidmətlər"
+msgstr "Другие услуги"
+
+msgid "Digər yazılar"
+msgstr "Другие записи"
+
+msgid "E-poçt (istəyə görə)"
+msgstr "Эл. почта (необязательно)"
+
+msgid "E-poçt və ya mobil nömrədən ən azı biri mütləqdir."
+msgstr "Необходимо указать эл. почту или мобильный номер."
+
+msgid "Email address"
+msgstr "Адрес эл. почты"
+
+msgid "FAQ"
+msgstr "FAQ"
+
+msgid "Full name"
+msgstr "Полное имя"
+
+msgid "Gediş tarixi"
+msgstr "Дата выезда"
+
+msgid "Gediş tarixi keçmiş ola bilməz."
+msgstr "Дата выезда не может быть в прошлом."
+
+msgid "Geri"
+msgstr "Назад"
+
+msgid "Hamısı"
+msgstr "Все"
+
+msgid "Hazırlayan"
+msgstr "Разработано"
+
+msgid "Haqqında"
+msgstr "Описание"
+
+msgid "Hələ sual əlavə edilməyib."
+msgstr "Вопросы ещё не добавлены."
+
+msgid "Mobil nömrə"
+msgstr "Мобильный номер"
+
+msgid "Mobil nömrə (məs: 050 123 45 67)"
+msgstr "Мобильный номер (пример: +994 50 123 45 67)"
+
+msgid "Mobil nömrə *"
+msgstr "Мобильный номер *"
+
+msgid "Mobil nömrə mütləqdir."
+msgstr "Мобильный номер обязателен."
+
+msgid "Mobile number"
+msgstr "Мобильный номер"
+
+msgid "Növbəti şəkil"
+msgstr "Следующее изображение"
+
+msgid "Paket yoxdur."
+msgstr "Пакетов нет."
+
+msgid "Please verify that you are human."
+msgstr "Подтвердите, что вы не робот."
+
+msgid "Qalereya"
+msgstr "Галерея"
+
+msgid "Qaleriya şəkli"
+msgstr "Изображение галереи"
+
+msgid "Qayıdış tarixi"
+msgstr "Дата возвращения"
+
+msgid "Rəylər"
+msgstr "Отзывы"
+
+msgid "Reytinq 1 ilə 5 arasında olmalıdır."
+msgstr "Рейтинг должен быть от 1 до 5."
+
+msgid "Rəyiniz"
+msgstr "Ваш отзыв"
+
+msgid "Service not found"
+msgstr "Услуга не найдена"
+
+msgid "Services"
+msgstr "Услуги"
+
+msgid "Seçimi sil"
+msgstr "Сбросить выбор"
+
+msgid "Sosial şəbəkələr"
+msgstr "Социальные сети"
+
+msgid "Something went wrong. Please try again."
+msgstr "Что-то пошло не так. Попробуйте ещё раз."
+
+msgid "Sualınıza cavab tapmadınızsa, bizimlə əlaqə saxlayın — komandamız sizə kömək etməyə hazırdır."
+msgstr "Если вы не нашли ответ на свой вопрос, свяжитесь с нами — наша команда готова помочь."
+
+msgid "Subject"
+msgstr "Тема"
+
+msgid "Səhifələmə"
+msgstr "Пагинация"
+
+msgid "Səyahət və turizm xidmətləri — etibarlı tərəfdaşınız."
+msgstr "Туристические услуги — ваш надёжный партнёр."
+
+msgid "Thumbnail navigation"
+msgstr "Навигация по миниатюрам"
+
+msgid "Uşaq sayı"
+msgstr "Количество детей"
+
+msgid "Video"
+msgstr "Видео"
+
+msgid "Xidmət yoxdur."
+msgstr "Услуг нет."
+
+msgid "Xidmətlərə qayıt"
+msgstr "Вернуться к услугам"
+
+msgid "Xidmətə daxildir"
+msgstr "Включено в услугу"
+
+msgid "Your full name"
+msgstr "Ваше полное имя"
+
+msgid "Your message"
+msgstr "Ваше сообщение"
+
+msgid "Yuxarı qalx"
+msgstr "Наверх"
+
+msgid "Zəhmət olmasa formadakı xətaları düzəldin."
+msgstr "Пожалуйста, исправьте ошибки в форме."
+
+msgid "Zəhmət olmasa ulduz reytinqi seçin."
+msgstr "Пожалуйста, выберите оценку звёздами."
+
+msgid "Əlaqə saxla"
+msgstr "Связаться с нами"
+
+msgid "Əlavə qeydiniz varsa, yazın"
+msgstr "Если есть дополнительные примечания, напишите"
+
+msgid "Ən azı bir paket seçin."
+msgstr "Выберите хотя бы один пакет."
+
+msgid "Ən azı bir xidmət seçin."
+msgstr "Выберите хотя бы одну услугу."
+
+msgid "Ətraflı məlumat"
+msgstr "Подробная информация"
+
+msgid "Əvvəlki şəkil"
+msgstr "Предыдущее изображение"
+
+msgid "Paket bir neçə səyahət xidmətini (viza, uçuş, otel və s.) bir yerdə təklif edir. Uyğun paketi seçin — formu doldurub göndərdikdə sorğunuz komandamıza çatır və tezliklə sizinlə əlaqə saxlanılır."
+msgstr "Пакет объединяет несколько туристических услуг (виза, перелёт, отель и др.) в одном предложении. Выберите подходящий пакет — после заполнения и отправки формы ваш запрос поступит нашей команде, и мы скоро свяжемся с вами."

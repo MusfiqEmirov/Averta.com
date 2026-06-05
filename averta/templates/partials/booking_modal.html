@@ -1,0 +1,218 @@
+{% load static i18n %}
+{% if modal_booking_form %}
+<div class="modal fade" id="bookingModal" tabindex="-1"
+     aria-labelledby="bookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content rounded-4 border-0 shadow">
+
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-semibold" id="bookingModalLabel">{% trans "Sifariş et" %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="{% trans 'Bağla' %}"></button>
+            </div>
+
+            <div class="modal-body pt-2 pb-4">
+                <div class="hb-wrap hb-wrap--modal" id="booking-modal-root"
+                     data-lang="{{ language|default:request.LANGUAGE_CODE|default:'az' }}"
+                     data-i18n-package="{% trans 'Paketinizi seçin' %}"
+                     data-i18n-service="{% trans 'Xidmətinizi seçin' %}"
+                     data-i18n-adults="{% trans 'Böyük' %}"
+                     data-i18n-children="{% trans 'Uşaq' %}"
+                     data-i18n-clear="{% trans 'Seçimi sil' %}">
+                    <div class="hb-card hb-card--modal">
+
+                        <form method="post" action="{% url 'services:home-page' %}"
+                              class="hb-form" novalidate data-ajax="1">
+                            {% csrf_token %}
+                            <input type="hidden" name="form_type" value="booking">
+                            {{ modal_booking_form.website }}
+                            {{ modal_booking_form.booking_type }}
+
+                            {% if modal_booking_form.non_field_errors %}
+                            <div class="hb-alert hb-alert--err">{{ modal_booking_form.non_field_errors }}</div>
+                            {% endif %}
+
+                            <div class="hb-tabs" role="tablist">
+                                <button type="button"
+                                        class="hb-tab{% if modal_booking_form.booking_type.value == 'package' or not modal_booking_form.booking_type.value %} hb-tab--active{% endif %}"
+                                        data-booking-tab="package" role="tab"
+                                        aria-selected="{% if modal_booking_form.booking_type.value == 'package' or not modal_booking_form.booking_type.value %}true{% else %}false{% endif %}">
+                                    {% trans "Paket" %}
+                                </button>
+                                <button type="button"
+                                        class="hb-tab{% if modal_booking_form.booking_type.value == 'service' %} hb-tab--active{% endif %}"
+                                        data-booking-tab="service" role="tab"
+                                        aria-selected="{% if modal_booking_form.booking_type.value == 'service' %}true{% else %}false{% endif %}">
+                                    {% trans "Xidmət" %}
+                                </button>
+                            </div>
+
+                            <div class="hb-picker{% if modal_booking_form.booking_type.value == 'service' %} d-none{% endif %}"
+                                 data-booking-panel="package">
+                                <p class="hb-picker-hint">
+                                    {% trans "Paket bir neçə səyahət xidmətini (viza, uçuş, otel və s.) bir yerdə təklif edir. Uyğun paketi seçin — formu doldurub göndərdikdə sorğunuz komandamıza çatır və tezliklə sizinlə əlaqə saxlanılır." %}
+                                </p>
+                                <button type="button" class="hb-picker-btn" data-hb-picker="package" aria-expanded="false">
+                                    <span class="hb-picker-btn__value" data-hb-picker-value="package">{% trans "Paketinizi seçin" %}</span>
+                                    <i class="fas fa-chevron-down" aria-hidden="true"></i>
+                                </button>
+                                {% if modal_booking_form.packages.errors %}
+                                <p class="hb-field-err">{{ modal_booking_form.packages.errors.0 }}</p>
+                                {% endif %}
+                                <div class="hb-picker-menu" data-hb-picker-menu="package" hidden>
+                                    <div class="hb-pills">
+                                        {% for choice in modal_booking_form.packages %}
+                                        <label class="hb-pill">{{ choice.tag }}<span>{{ choice.choice_label }}</span></label>
+                                        {% empty %}
+                                        <p class="hb-empty">{% trans "Aktiv paket yoxdur." %}</p>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="hb-picker{% if modal_booking_form.booking_type.value != 'service' %} d-none{% endif %}"
+                                 data-booking-panel="service">
+                                <button type="button" class="hb-picker-btn" data-hb-picker="service" aria-expanded="false">
+                                    <span class="hb-picker-btn__value" data-hb-picker-value="service">{% trans "Xidmətinizi seçin" %}</span>
+                                    <i class="fas fa-chevron-down" aria-hidden="true"></i>
+                                </button>
+                                {% if modal_booking_form.services.errors %}
+                                <p class="hb-field-err">{{ modal_booking_form.services.errors.0 }}</p>
+                                {% endif %}
+                                <div class="hb-picker-menu" data-hb-picker-menu="service" hidden>
+                                    <div class="hb-pills">
+                                        {% for choice in modal_booking_form.services %}
+                                        <label class="hb-pill">{{ choice.tag }}<span>{{ choice.choice_label }}</span></label>
+                                        {% empty %}
+                                        <p class="hb-empty">{% trans "Aktiv xidmət yoxdur." %}</p>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="hb-row3">
+                                <div class="hb-field">
+                                    <span class="hb-field-icon"><i class="fas fa-user-circle"></i></span>
+                                    {{ modal_booking_form.full_name }}
+                                    {% if modal_booking_form.full_name.errors %}<p class="hb-field-err">{{ modal_booking_form.full_name.errors.0 }}</p>{% endif %}
+                                </div>
+                                <div class="hb-field">
+                                    <span class="hb-field-icon"><i class="fas fa-phone-alt"></i></span>
+                                    {{ modal_booking_form.phone }}
+                                    {% if modal_booking_form.phone.errors %}<p class="hb-field-err">{{ modal_booking_form.phone.errors.0 }}</p>{% endif %}
+                                </div>
+                                <div class="hb-field">
+                                    <span class="hb-field-icon"><i class="fas fa-envelope"></i></span>
+                                    {{ modal_booking_form.email }}
+                                    {% if modal_booking_form.email.errors %}<p class="hb-field-err">{{ modal_booking_form.email.errors.0 }}</p>{% endif %}
+                                </div>
+                            </div>
+
+                            <div class="hb-row3 hb-date-row">
+                                <div class="hb-date-cell" data-hb-date-cell>
+                                    <label class="hb-date-label" for="{{ modal_booking_form.date_from.id_for_label }}">
+                                        <i class="fas fa-plane-departure hb-date-icon"></i>
+                                        {% trans "Gediş tarixi" %} *
+                                    </label>
+                                    <div class="hb-date-wrap">
+                                        {{ modal_booking_form.date_from }}
+                                        <i class="fas fa-chevron-down hb-date-chevron" aria-hidden="true"></i>
+                                    </div>
+                                    {% if modal_booking_form.date_from.errors %}<p class="hb-field-err">{{ modal_booking_form.date_from.errors.0 }}</p>{% endif %}
+                                </div>
+                                <div class="hb-date-cell" data-hb-date-cell data-hb-date-to="1">
+                                    <label class="hb-date-label" for="{{ modal_booking_form.date_to.id_for_label }}">
+                                        <i class="fas fa-plane-arrival hb-date-icon"></i>
+                                        {% trans "Qayıdış tarixi" %} *
+                                    </label>
+                                    <div class="hb-date-wrap">
+                                        {{ modal_booking_form.date_to }}
+                                        <i class="fas fa-chevron-down hb-date-chevron" aria-hidden="true"></i>
+                                    </div>
+                                    {% if modal_booking_form.date_to.errors %}<p class="hb-field-err">{{ modal_booking_form.date_to.errors.0 }}</p>{% endif %}
+                                </div>
+                            </div>
+
+                            <div class="hb-row4">
+                                {{ modal_booking_form.adults_count }}
+                                {{ modal_booking_form.children_count }}
+
+                                <div class="hb-cnt-cell hb-guests-cell">
+                                    <span class="hb-cnt-label">{% trans "Qonaq sayını seçin" %}</span>
+                                    <button type="button" class="hb-guests-btn" data-guests-open aria-expanded="false">
+                                        <span data-guests-summary>
+                                            {% blocktrans with a=modal_booking_form.adults_count.value|default:1 c=modal_booking_form.children_count.value|default:0 %}Böyük: {{ a }} • Uşaq: {{ c }}{% endblocktrans %}
+                                        </span>
+                                        <i class="fas fa-chevron-down" aria-hidden="true"></i>
+                                    </button>
+                                    <div class="hb-guests-panel" hidden aria-hidden="true" data-guests-modal>
+                                        <div class="hb-guests-panel-inner">
+                                            <div class="hb-guests-panel-head">
+                                                <span class="hb-guests-panel-title">{% trans "Qonaq sayı" %}</span>
+                                                <button type="button" class="hb-guests-panel-close" data-guests-close aria-label="{% trans 'Bağla' %}">
+                                                    <i class="fas fa-times" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                            <div class="hb-guests-panel-grid">
+                                                <div class="hb-guests-panel-row">
+                                                    <div class="hb-guests-panel-label">
+                                                        <span class="hb-guests-panel-name"><i class="fas fa-user" aria-hidden="true"></i> {% trans "Böyük" %}</span>
+                                                        <span class="hb-guests-panel-hint">{% trans "18+ yaş" %}</span>
+                                                    </div>
+                                                    <div class="hb-counter hb-guests-panel-counter">
+                                                        <button type="button" class="hb-counter-btn" data-counter-action="minus" data-counter="adults" aria-label="{% trans 'Azalt' %}">−</button>
+                                                        <span class="hb-counter-val" data-counter-display="adults">{{ modal_booking_form.adults_count.value|default:1 }}</span>
+                                                        <button type="button" class="hb-counter-btn" data-counter-action="plus" data-counter="adults" aria-label="{% trans 'Artır' %}">+</button>
+                                                    </div>
+                                                </div>
+                                                <div class="hb-guests-panel-row">
+                                                    <div class="hb-guests-panel-label">
+                                                        <span class="hb-guests-panel-name"><i class="fas fa-child" aria-hidden="true"></i> {% trans "Uşaq" %}</span>
+                                                        <span class="hb-guests-panel-hint">{% trans "0–17 yaş" %}</span>
+                                                    </div>
+                                                    <div class="hb-counter hb-guests-panel-counter">
+                                                        <button type="button" class="hb-counter-btn" data-counter-action="minus" data-counter="children" aria-label="{% trans 'Azalt' %}">−</button>
+                                                        <span class="hb-counter-val" data-counter-display="children">{{ modal_booking_form.children_count.value|default:0 }}</span>
+                                                        <button type="button" class="hb-counter-btn" data-counter-action="plus" data-counter="children" aria-label="{% trans 'Artır' %}">+</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="hb-guests-panel-actions">
+                                                <button type="button" class="hb-guests-panel-done" data-guests-close>{% trans "Hazır" %}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="hb-cnt-cell hb-row4-note">
+                                    <span class="hb-cnt-label">{% trans "Qeyd" %}</span>
+                                    <div class="hb-field hb-field--note" style="flex:1" data-hb-note-field>
+                                        <input type="text"
+                                               name="{{ modal_booking_form.note.html_name }}"
+                                               id="{{ modal_booking_form.note.id_for_label }}"
+                                               class="hero-booking__input"
+                                               maxlength="200"
+                                               autocomplete="off"
+                                               placeholder="{% trans 'Əlavə qeydiniz varsa, yazın' %}"
+                                               value="{{ modal_booking_form.note.value|default_if_none:'' }}">
+                                        {% if modal_booking_form.note.errors %}<p class="hb-field-err">{{ modal_booking_form.note.errors.0 }}</p>{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="hb-row5">
+                                <button type="submit" class="hb-submit">
+                                    <i class="fas fa-paper-plane"></i>
+                                    <span>{% trans "Sifariş et" %}</span>
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endif %}
