@@ -103,7 +103,7 @@
                     {% if messages %}
                         {% include 'partials/messages.html' %}
                     {% endif %}
-                    <form method="post" action="{% url 'services:contact-page' %}" class="contact-form" data-ajax="1">
+                    <form method="post" action="{% url 'services:contact-page' %}" class="contact-form" data-ajax="1" data-feedback-auto-dismiss="2000">
                         {% csrf_token %}
                         {{ form.website }}
                         <input type="hidden" name="subject" value="{% trans 'Əlaqə' %}">

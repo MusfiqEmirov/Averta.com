@@ -22,7 +22,7 @@
                     <div class="hb-card hb-card--modal">
 
                         <form method="post" action="{% url 'services:home-page' %}"
-                              class="hb-form" novalidate data-ajax="1">
+                              class="hb-form" novalidate data-ajax="1" data-feedback-auto-dismiss="2000">
                             {% csrf_token %}
                             <input type="hidden" name="form_type" value="booking">
                             {{ modal_booking_form.website }}

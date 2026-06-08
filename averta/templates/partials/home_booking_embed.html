@@ -9,16 +9,16 @@
      data-i18n-clear="{% trans 'Seçimi sil' %}">
 
   {% if booking_feedback == 'success' %}
-  <div class="alert alert-success rounded-pill py-2 px-4 mb-3 form-feedback-alert" role="alert" data-form-feedback>
+  <div class="alert alert-success rounded-pill py-2 px-4 mb-3 form-feedback-alert" role="alert" data-form-feedback data-feedback-auto-dismiss="2000">
     <i class="fas fa-check-circle me-2"></i>{% trans "Sifarişiniz qəbul olundu. Tezliklə sizinlə əlaqə saxlayacağıq." %}
   </div>
   {% elif booking_feedback == 'error' %}
-  <div class="alert alert-danger rounded-pill py-2 px-4 mb-3 form-feedback-alert" role="alert" data-form-feedback>
+  <div class="alert alert-danger rounded-pill py-2 px-4 mb-3 form-feedback-alert" role="alert" data-form-feedback data-feedback-auto-dismiss="2000">
     <i class="fas fa-exclamation-circle me-2"></i>{% trans "Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin." %}
   </div>
   {% endif %}
 
-  <form method="post" action="{% url 'services:contact-page' %}" class="hb-form" novalidate data-ajax="1">
+  <form method="post" action="{% url 'services:contact-page' %}" class="hb-form" novalidate data-ajax="1" data-feedback-auto-dismiss="2000">
     {% csrf_token %}
     <input type="hidden" name="form_type" value="booking">
     {{ booking_form.website }}

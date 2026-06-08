@@ -1,7 +1,7 @@
 {% load i18n %}
 <div class="container mt-3">
     {% for message in messages %}
-    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show form-feedback-alert" role="alert" data-form-feedback data-feedback-auto-dismiss="2000">
         {{ message }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% trans 'Bağla' %}"></button>
     </div>
