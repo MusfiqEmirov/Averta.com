@@ -184,6 +184,69 @@ def format_booking_message_html(instance):
     )
 
 
+def _csv_escape(value, sep=';'):
+    if value is None:
+        return ''
+    s = str(value).replace('\r\n', '\n').replace('\r', '\n')
+    if re.search(f'["{re.escape(sep)}\n]', s):
+        s = '"' + s.replace('"', '""') + '"'
+    return s
+
+
+def build_booking_csv(instance):
+    """Admin paneldəki tək sifariş CSV exportu ilə eyni format."""
+    sep = ';'
+    created_at = instance.created_at
+    if timezone.is_aware(created_at):
+        created_at = timezone.localtime(created_at)
+    created_label = date_format(created_at, 'd.m.Y H:i')
+
+    date_from = date_format(instance.date_from, 'd-m-Y') if instance.date_from else ''
+    date_to = date_format(instance.date_to, 'd-m-Y') if instance.date_to else ''
+
+    services = ' | '.join(str(s) for s in instance.services.all())
+    packages = ' | '.join(str(p) for p in instance.packages.all())
+
+    headers = [
+        'ID',
+        'Tarix',
+        'Ad soyad',
+        'Mobil nömrə',
+        'E-poçt',
+        'Gediş tarixi',
+        'Qayıdış tarixi',
+        'Qeyd',
+        'Böyük sayı',
+        'Uşaq sayı',
+        'Xidmətlər',
+        'Paketlər',
+    ]
+    row = [
+        instance.pk,
+        created_label,
+        instance.full_name or '',
+        instance.phone or '',
+        instance.email or '',
+        date_from,
+        date_to,
+        instance.note or '',
+        instance.adults_count,
+        instance.children_count,
+        services,
+        packages,
+    ]
+
+    lines = [
+        sep.join(_csv_escape(h, sep) for h in headers),
+        sep.join(_csv_escape(v, sep) for v in row),
+    ]
+    content = '\ufeff' + f'sep={sep}\r\n' + '\r\n'.join(lines) + '\r\n'
+
+    now = timezone.localtime(timezone.now())
+    filename = f'booking_{instance.pk}_{now:%Y-%m-%d_%H-%M}.csv'
+    return filename, content.encode('utf-8')
+
+
 def send_booking_notification(instance):
     try:
         subject = 'Saytdan gələn sifariş'
@@ -193,6 +256,7 @@ def send_booking_notification(instance):
         if not recipient:
             logger.warning('Booking email skipped: CONTACT_RECEIVER_EMAIL is not set.')
             return
+        csv_filename, csv_content = build_booking_csv(instance)
         send_mail_func(
             recipient=recipient,
             subject=subject,
@@ -200,12 +264,21 @@ def send_booking_notification(instance):
             sender_name=instance.full_name,
             sender_email=(instance.email or '').strip(),
             html_message=html_message,
+            attachments=[(csv_filename, csv_content, 'text/csv')],
         )
     except Exception:
         logger.exception('Booking notification email failed.')
 
 
-def send_mail_func(recipient, subject, message, sender_name='', sender_email='', html_message=None):
+def send_mail_func(
+    recipient,
+    subject,
+    message,
+    sender_name='',
+    sender_email='',
+    html_message=None,
+    attachments=None,
+):
     smtp_user = getattr(settings, 'EMAIL_HOST_USER', None) or settings.DEFAULT_FROM_EMAIL
     sender_name = (sender_name or '').strip()
     sender_email = (sender_email or '').strip()
@@ -236,4 +309,7 @@ def send_mail_func(recipient, subject, message, sender_name='', sender_email='',
             to=[recipient],
             reply_to=reply_to,
         )
+    for attachment in attachments or []:
+        filename, content, mimetype = attachment
+        email.attach(filename, content, mimetype)
     email.send(fail_silently=False)
