@@ -150,7 +150,7 @@ CACHE_TIMEOUT_MEDIUM = 7200  # 2 hours for normal pages (services, blog lists)
 CACHE_TIMEOUT_LONG = 86400  # 24 hours for stable data (about, contact, background images)
 
 # Bump when serialized cache payload shape changes (e.g. new Package.currency field).
-CACHE_SCHEMA_VERSION = 3
+CACHE_SCHEMA_VERSION = 4
 
 
 # Password validation

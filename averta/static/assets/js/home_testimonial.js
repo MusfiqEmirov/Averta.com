@@ -78,22 +78,6 @@
             clearInputError('reviewName');
         }
 
-        /* Mobil nömrə */
-        var phone = (document.getElementById('reviewPhone') || {}).value || '';
-        var phoneTrim = phone.trim();
-        var phoneDigits = phoneTrim.replace(/\D/g, '');
-
-        if (!phoneTrim) {
-            setFieldError('reviewPhone', 'phoneError', 'Mobil nömrə mütləq doldurulmalıdır.');
-            ok = false;
-        } else if (phoneDigits.length < 9) {
-            setFieldError('reviewPhone', 'phoneError', 'Düzgün mobil nömrə daxil edin.');
-            ok = false;
-        } else {
-            clearFieldError('phoneError');
-            clearInputError('reviewPhone');
-        }
-
         /* Reytinq */
         var rating = parseInt((document.getElementById('ratingInput') || {}).value, 10);
         var ratingErr = document.getElementById('ratingError');
@@ -289,6 +273,58 @@
     }
 
     /* ------------------------------------------------------------------ */
+    /*  Uğurlu / uğursuz rəy mesajı — 2 saniyə sonra gizlət              */
+    /* ------------------------------------------------------------------ */
+    function dismissReviewFeedbackEl(el) {
+        if (!el || !el.parentNode) { return; }
+        el.style.transition = 'opacity 0.25s ease';
+        el.style.opacity = '0';
+        window.setTimeout(function () {
+            if (el.hasAttribute('data-ajax-feedback')) {
+                el.classList.add('d-none');
+                el.classList.remove('alert-success', 'alert-danger', 'alert-warning');
+                el.innerHTML = '';
+                el.style.opacity = '';
+                el.style.transition = '';
+            } else {
+                el.remove();
+            }
+        }, 250);
+    }
+
+    function scheduleReviewFeedbackDismiss(el) {
+        if (!el || el.dataset.feedbackAutoDismissScheduled === '1') { return; }
+        var ms = parseInt(el.getAttribute('data-feedback-auto-dismiss'), 10) || 2000;
+        el.dataset.feedbackAutoDismissScheduled = '1';
+        window.setTimeout(function () {
+            delete el.dataset.feedbackAutoDismissScheduled;
+            dismissReviewFeedbackEl(el);
+        }, ms);
+    }
+
+    function autoDismissReviewFeedback() {
+        document.querySelectorAll('.review-feedback-alert[data-feedback-auto-dismiss]').forEach(
+            scheduleReviewFeedbackDismiss
+        );
+
+        var form = document.getElementById('reviewForm');
+        if (!form) { return; }
+
+        form.querySelectorAll('[data-ajax-feedback]:not(.d-none)').forEach(scheduleReviewFeedbackDismiss);
+
+        if (form._reviewFeedbackObserver) { return; }
+        form._reviewFeedbackObserver = new MutationObserver(function () {
+            form.querySelectorAll('[data-ajax-feedback]:not(.d-none)').forEach(scheduleReviewFeedbackDismiss);
+        });
+        form._reviewFeedbackObserver.observe(form, {
+            subtree: true,
+            childList: true,
+            attributes: true,
+            attributeFilter: ['class']
+        });
+    }
+
+    /* ------------------------------------------------------------------ */
     /*  DOMContentLoaded                                                    */
     /* ------------------------------------------------------------------ */
     $(function () {
@@ -297,6 +333,7 @@
         initTestimonialCarousel();
         initReviewMessageCounter();
         openReviewModalIfErrors();
+        autoDismissReviewFeedback();
 
         /* Form submit — əvvəlcə client-side yoxla */
         var form = document.getElementById('reviewForm');
@@ -309,7 +346,7 @@
         }
 
         /* Input dəyişəndə xətanı sil */
-        ['reviewName', 'reviewPhone', 'reviewTarget', 'reviewMessage'].forEach(function (id) {
+        ['reviewName', 'reviewTarget', 'reviewMessage'].forEach(function (id) {
             var el = document.getElementById(id);
             if (el) {
                 el.addEventListener('input', function () {

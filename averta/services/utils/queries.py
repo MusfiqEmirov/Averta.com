@@ -390,7 +390,7 @@ def get_faqs(lang='az', on_main_page=None):
     queryset = FAQ.objects.filter(is_active=True)
     if on_main_page is not None:
         queryset = queryset.filter(on_main_page=on_main_page)
-    return queryset.order_by('sort_order', 'id')
+    return list(queryset.order_by('sort_order', 'id'))
 
 
 def serialize_faq(faq, lang='az'):
@@ -778,7 +778,9 @@ def get_home_page_data(request, lang):
     )
     home_blogs = [serialize_blog(b, lang) for b in blog_list]
 
-    faq_list = list(get_faqs(lang, on_main_page=True)[:6])
+    faq_list = get_faqs(lang, on_main_page=True)[:6]
+    if not faq_list:
+        faq_list = get_faqs(lang)[:6]
     home_faqs = [serialize_faq(f, lang) for f in faq_list]
 
     reviews = [serialize_review(r, lang) for r in get_active_reviews(limit=20)]

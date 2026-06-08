@@ -57,7 +57,19 @@
     return box;
   }
 
-  function setFeedback(box, type, text) {
+  function scheduleFeedbackAutoDismiss(box, form) {
+    if (!box || !form) return;
+    var ms = parseInt(form.getAttribute('data-feedback-auto-dismiss'), 10);
+    if (!ms || ms < 1) return;
+    if (box._autoDismissTimer) {
+      clearTimeout(box._autoDismissTimer);
+    }
+    box._autoDismissTimer = setTimeout(function () {
+      dismissFormFeedback(box);
+    }, ms);
+  }
+
+  function setFeedback(box, type, text, form) {
     if (!box) return;
     box.classList.remove('d-none', 'alert-success', 'alert-danger', 'alert-warning');
     if (type === 'success') box.classList.add('alert-success');
@@ -70,6 +82,7 @@
     span.textContent = text || '';
     box.appendChild(span);
     attachDismissButton(box);
+    scheduleFeedbackAutoDismiss(box, form);
   }
 
   function clearFeedback(box) {
@@ -246,7 +259,7 @@
         var data = r.data || {};
         if (data.ok) {
           clearInlineErrors(form);
-          setFeedback(box, 'success', data.message || 'OK');
+          setFeedback(box, 'success', data.message || 'OK', form);
           form.reset();
         } else {
           var hasInline = showInlineErrors(form, data.errors);
@@ -264,14 +277,14 @@
             ? errorMessageFromList(data.errors.__all__)
             : '';
           if (nonFieldMsg || !hasInline) {
-            setFeedback(box, 'danger', nonFieldMsg || data.message || getFirstErrorText(data.errors) || 'Xəta baş verdi.');
+            setFeedback(box, 'danger', nonFieldMsg || data.message || getFirstErrorText(data.errors) || 'Xəta baş verdi.', form);
           } else {
             clearFeedback(box);
           }
         }
       })
       .catch(function () {
-        setFeedback(box, 'danger', 'Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.');
+        setFeedback(box, 'danger', 'Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.', form);
       })
       .finally(function () {
         setSubmitLoading(submitBtn, false);
