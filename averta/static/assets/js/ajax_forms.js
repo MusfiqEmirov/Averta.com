@@ -44,6 +44,20 @@
     scope.querySelectorAll('[data-form-feedback]').forEach(attachDismissButton);
   }
 
+  function initFormFeedbackAutoDismiss(root) {
+    var scope = root || document;
+    scope.querySelectorAll('[data-form-feedback][data-feedback-auto-dismiss]').forEach(function (el) {
+      if (el.dataset.feedbackAutoDismissScheduled === '1') return;
+      var ms = parseInt(el.getAttribute('data-feedback-auto-dismiss'), 10);
+      if (!ms || ms < 1) return;
+      el.dataset.feedbackAutoDismissScheduled = '1';
+      setTimeout(function () {
+        delete el.dataset.feedbackAutoDismissScheduled;
+        dismissFormFeedback(el);
+      }, ms);
+    });
+  }
+
   function ensureFeedbackBox(form) {
     var box = form.querySelector('[data-ajax-feedback]');
     if (box) return box;
@@ -294,11 +308,17 @@
 
   document.addEventListener('submit', onSubmit, true);
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { initFormFeedbackDismiss(); });
-  } else {
+  function initAllFormFeedback() {
     initFormFeedbackDismiss();
+    initFormFeedbackAutoDismiss();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAllFormFeedback);
+  } else {
+    initAllFormFeedback();
   }
 
   window.initFormFeedbackDismiss = initFormFeedbackDismiss;
+  window.initFormFeedbackAutoDismiss = initFormFeedbackAutoDismiss;
 })();

@@ -1,8 +1,10 @@
+import html as html_lib
 import logging
+import re
 from email.utils import formataddr
 
 from django.conf import settings
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.utils import timezone
 from django.utils.formats import date_format
 
@@ -20,8 +22,6 @@ def format_appeal_contact_message(instance):
     email_line = f'Email:        {email}\n' if email else ''
 
     return (
-        'Yeni əlaqə formu müraciəti\n'
-        '────────────────────────────\n\n'
         f'Ad soyad:     {instance.full_name}\n'
         f'{email_line}'
         f'Mobil nömrə:  {phone}\n\n'
@@ -32,10 +32,47 @@ def format_appeal_contact_message(instance):
     )
 
 
+def format_appeal_contact_message_html(instance):
+    created_at = instance.created_at
+    if timezone.is_aware(created_at):
+        created_at = timezone.localtime(created_at)
+    created_label = date_format(created_at, 'd.m.Y H:i')
+
+    phone_raw = instance.phone.strip() if instance.phone else ''
+    wa_url = _whatsapp_url(phone_raw)
+    if wa_url:
+        phone_html = (
+            f'<a href="{html_lib.escape(wa_url)}">'
+            f'{html_lib.escape(phone_raw)}</a>'
+        )
+    else:
+        phone_html = html_lib.escape(phone_raw or '—')
+
+    email = (instance.email or '').strip()
+    email_line = (
+        f'Email:        <a href="mailto:{html_lib.escape(email)}">'
+        f'{html_lib.escape(email)}</a><br>\n'
+        if email else ''
+    )
+
+    return (
+        f'Ad soyad:     {html_lib.escape(instance.full_name)}<br>\n'
+        f'{email_line}'
+        f'Mobil nömrə:  {phone_html}<br>\n'
+        '<br>\n'
+        'Mesaj:<br>\n'
+        f'{html_lib.escape(instance.info)}<br>\n'
+        '<br>\n'
+        '────────────────────────────<br>\n'
+        f'Göndərilmə tarixi: {html_lib.escape(created_label)}'
+    )
+
+
 def send_appeal_contact_notification(instance):
     try:
         subject = 'Saytdan gələn müraciət'
         message = format_appeal_contact_message(instance)
+        html_message = format_appeal_contact_message_html(instance)
         recipient = settings.CONTACT_RECEIVER_EMAIL
         if not recipient:
             logger.warning('Contact form email skipped: CONTACT_RECEIVER_EMAIL is not set.')
@@ -46,9 +83,25 @@ def send_appeal_contact_notification(instance):
             message=message,
             sender_name=instance.full_name,
             sender_email=(instance.email or '').strip(),
+            html_message=html_message,
         )
     except Exception:
         logger.exception('Contact form notification email failed.')
+
+
+def _whatsapp_url(phone):
+    if not phone:
+        return None
+    digits = re.sub(r'\D', '', str(phone).strip())
+    if not digits:
+        return None
+    if digits.startswith('994'):
+        pass
+    elif digits.startswith('0'):
+        digits = '994' + digits[1:]
+    elif len(digits) == 9:
+        digits = '994' + digits
+    return f'https://wa.me/{digits}'
 
 
 def format_booking_message(instance):
@@ -69,8 +122,6 @@ def format_booking_message(instance):
     date_to   = date_format(instance.date_to,   'd-m-Y') if instance.date_to   else '—'
 
     return (
-        'Yeni sifariş müraciəti\n'
-        '────────────────────────────\n\n'
         f'Ad soyad:         {instance.full_name}\n'
         f'{email_line}'
         f'Mobil nömrə:      {phone}\n'
@@ -86,10 +137,58 @@ def format_booking_message(instance):
     )
 
 
+def format_booking_message_html(instance):
+    created_at = instance.created_at
+    if timezone.is_aware(created_at):
+        created_at = timezone.localtime(created_at)
+    created_label = date_format(created_at, 'd.m.Y H:i')
+
+    phone_raw = instance.phone.strip() if instance.phone else ''
+    wa_url = _whatsapp_url(phone_raw)
+    if wa_url:
+        phone_html = (
+            f'<a href="{html_lib.escape(wa_url)}">'
+            f'{html_lib.escape(phone_raw)}</a>'
+        )
+    else:
+        phone_html = html_lib.escape(phone_raw or '—')
+
+    email = (instance.email or '').strip()
+    email_line = (
+        f'Email:            <a href="mailto:{html_lib.escape(email)}">'
+        f'{html_lib.escape(email)}</a><br>\n'
+        if email else ''
+    )
+    note = html_lib.escape(instance.note.strip() if instance.note else '—')
+
+    services = html_lib.escape(', '.join(str(s) for s in instance.services.all()) or '—')
+    packages = html_lib.escape(', '.join(str(p) for p in instance.packages.all()) or '—')
+
+    date_from = date_format(instance.date_from, 'd-m-Y') if instance.date_from else '—'
+    date_to = date_format(instance.date_to, 'd-m-Y') if instance.date_to else '—'
+
+    return (
+        f'Ad soyad:         {html_lib.escape(instance.full_name)}<br>\n'
+        f'{email_line}'
+        f'Mobil nömrə:      {phone_html}<br>\n'
+        f'Gediş tarixi:     {html_lib.escape(date_from)}<br>\n'
+        f'Qayıdış tarixi:   {html_lib.escape(date_to)}<br>\n'
+        f'Böyüklər:         {instance.adults_count}<br>\n'
+        f'Uşaqlar:          {instance.children_count}<br>\n'
+        f'Xidmətlər:        {services}<br>\n'
+        f'Paketlər:         {packages}<br>\n'
+        f'Qeyd:             {note}<br>\n'
+        '<br>\n'
+        '────────────────────────────<br>\n'
+        f'Göndərilmə tarixi: {html_lib.escape(created_label)}'
+    )
+
+
 def send_booking_notification(instance):
     try:
         subject = 'Saytdan gələn sifariş'
         message = format_booking_message(instance)
+        html_message = format_booking_message_html(instance)
         recipient = settings.CONTACT_RECEIVER_EMAIL
         if not recipient:
             logger.warning('Booking email skipped: CONTACT_RECEIVER_EMAIL is not set.')
@@ -100,12 +199,13 @@ def send_booking_notification(instance):
             message=message,
             sender_name=instance.full_name,
             sender_email=(instance.email or '').strip(),
+            html_message=html_message,
         )
     except Exception:
         logger.exception('Booking notification email failed.')
 
 
-def send_mail_func(recipient, subject, message, sender_name='', sender_email=''):
+def send_mail_func(recipient, subject, message, sender_name='', sender_email='', html_message=None):
     smtp_user = getattr(settings, 'EMAIL_HOST_USER', None) or settings.DEFAULT_FROM_EMAIL
     sender_name = (sender_name or '').strip()
     sender_email = (sender_email or '').strip()
@@ -119,11 +219,21 @@ def send_mail_func(recipient, subject, message, sender_name='', sender_email='')
         from_email = formataddr((display, smtp_user))
         reply_to = []
 
-    email = EmailMessage(
-        subject=subject,
-        body=message,
-        from_email=from_email,
-        to=[recipient],
-        reply_to=reply_to,
-    )
+    if html_message:
+        email = EmailMultiAlternatives(
+            subject=subject,
+            body=message,
+            from_email=from_email,
+            to=[recipient],
+            reply_to=reply_to,
+        )
+        email.attach_alternative(html_message, 'text/html')
+    else:
+        email = EmailMessage(
+            subject=subject,
+            body=message,
+            from_email=from_email,
+            to=[recipient],
+            reply_to=reply_to,
+        )
     email.send(fail_silently=False)

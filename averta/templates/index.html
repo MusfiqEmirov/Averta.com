@@ -100,16 +100,16 @@
             <p class="text-white mb-4">{% trans "Mesajınızı göndərin, tezliklə sizinlə əlaqə saxlayacağıq." %}</p>
 
             {% if appeal_feedback == 'success' %}
-            <div class="alert alert-success rounded-3 py-2 px-3 mx-auto mb-3 form-feedback-alert" style="max-width:720px;" role="alert" data-form-feedback>
+            <div class="alert alert-success rounded-3 py-2 px-3 mx-auto mb-3 form-feedback-alert" style="max-width:720px;" role="alert" data-form-feedback data-feedback-auto-dismiss="2000">
                 <i class="fa fa-check-circle me-2"></i>{% trans "Mesajınız qəbul olundu." %}
             </div>
             {% elif appeal_feedback == 'error' %}
-            <div class="alert alert-danger rounded-3 py-2 px-3 mx-auto mb-3 form-feedback-alert" style="max-width:720px;" role="alert" data-form-feedback>
+            <div class="alert alert-danger rounded-3 py-2 px-3 mx-auto mb-3 form-feedback-alert" style="max-width:720px;" role="alert" data-form-feedback data-feedback-auto-dismiss="2000">
                 <i class="fa fa-exclamation-circle me-2"></i>{% trans "Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin." %}
             </div>
             {% endif %}
 
-            <form method="post" action="{% url 'services:home-page' %}" class="mx-auto home-contact-compact" style="max-width:720px;" novalidate data-ajax="1">
+            <form method="post" action="{% url 'services:home-page' %}" class="mx-auto home-contact-compact" style="max-width:720px;" novalidate data-ajax="1" data-feedback-auto-dismiss="2000">
                 {% csrf_token %}
                 <input type="hidden" name="form_type" value="appeal">
                 {{ appeal_form.website }}

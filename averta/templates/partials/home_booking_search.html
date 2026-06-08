@@ -10,17 +10,17 @@
     <div class="hb-card">
 
       {% if booking_feedback == 'success' %}
-      <div class="hb-alert hb-alert--ok form-feedback-alert" role="alert" data-form-feedback>
+      <div class="hb-alert hb-alert--ok form-feedback-alert" role="alert" data-form-feedback data-feedback-auto-dismiss="2000">
         <i class="fas fa-check-circle"></i> {% trans "Sifarişiniz qəbul olundu. Tezliklə sizinlə əlaqə saxlayacağıq." %}
       </div>
       {% elif booking_feedback == 'error' %}
-      <div class="hb-alert hb-alert--err form-feedback-alert" role="alert" data-form-feedback>
+      <div class="hb-alert hb-alert--err form-feedback-alert" role="alert" data-form-feedback data-feedback-auto-dismiss="2000">
         <i class="fas fa-exclamation-circle"></i> {% trans "Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin." %}
       </div>
       {% endif %}
 
       <form method="post" action="{% url 'services:home-page' %}"
-            class="hb-form" novalidate data-ajax="1">
+            class="hb-form" novalidate data-ajax="1" data-feedback-auto-dismiss="2000">
         {% csrf_token %}
         <input type="hidden" name="form_type" value="booking">
         {{ booking_form.website }}
