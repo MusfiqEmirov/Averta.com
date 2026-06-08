@@ -1,4 +1,4 @@
-// Booking changelist: export list to CSV/XLS from server JSON (reliable dates)
+// Booking changelist: export list to Excel from server JSON (reliable dates)
 (function () {
   var BE = window.BookingExport;
   if (!BE) return;
@@ -31,25 +31,14 @@
   }
 
   onReady(function () {
-    var csvBtn = document.getElementById('bookingExportListCsvBtn');
     var xlsBtn = document.getElementById('bookingExportListXlsBtn');
-    if (!csvBtn && !xlsBtn) return;
+    if (!xlsBtn) return;
 
-    if (csvBtn) csvBtn.addEventListener('click', function (e) {
+    xlsBtn.addEventListener('click', function (e) {
       e.preventDefault();
       var rows = readRows();
       if (!rows || !rows.length) return;
-      var spec = BE.buildList(false);
-      var dataRows = rows.map(spec.buildRow);
-      var csv = BE.buildCsv(spec.headers, dataRows);
-      downloadBlob('bookings_' + timestamp() + '.csv', new Blob([csv], { type: 'text/csv;charset=utf-8' }));
-    });
-
-    if (xlsBtn) xlsBtn.addEventListener('click', function (e) {
-      e.preventDefault();
-      var rows = readRows();
-      if (!rows || !rows.length) return;
-      var spec = BE.buildList(true);
+      var spec = BE.buildList();
       var dataRows = rows.map(spec.buildRow);
       var html = BE.buildXls(spec.headers, dataRows, [26, 38, 16, 10, 10, 22, 18, 10, 10, 10, 22]);
       downloadBlob('bookings_' + timestamp() + '.xls', new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8' }));
