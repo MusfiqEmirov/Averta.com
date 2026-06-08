@@ -1,4 +1,4 @@
-// Admin booking CSV / Excel export (list + single order)
+// Admin booking Excel export (list + single order)
 (function () {
   function formatTravelDates(from, to) {
     from = (from || '').trim();
@@ -6,15 +6,6 @@
     if (!from && !to) return '—';
     if (from && to) return from + '\n' + to;
     return from || to;
-  }
-
-  function csvEscape(value, sep) {
-    if (value == null) return '';
-    var s = String(value);
-    s = s.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-    var re = new RegExp('["' + sep + '\\n]');
-    if (re.test(s)) s = '"' + s.replace(/"/g, '""') + '"';
-    return s;
   }
 
   function htmlEscape(s) {
@@ -65,16 +56,6 @@
     return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + '_' + pad(d.getHours()) + '-' + pad(d.getMinutes());
   }
 
-  function buildCsv(headers, rows) {
-    var sep = ';';
-    var lines = [];
-    lines.push(headers.map(function (h) { return csvEscape(h, sep); }).join(sep));
-    rows.forEach(function (row) {
-      lines.push(row.map(function (v) { return csvEscape(v, sep); }).join(sep));
-    });
-    return '\uFEFF' + 'sep=' + sep + '\r\n' + lines.join('\r\n') + '\r\n';
-  }
-
   function buildXls(headers, rows, colWidths) {
     colWidths = colWidths || [];
     var cols = headers.map(function (_, i) {
@@ -104,31 +85,19 @@
       + '</body></html>';
   }
 
-  function buildDetail(data, forExcel) {
+  function buildDetail(data) {
     var services = (data.services || []).join(' | ');
     var packages = (data.packages || []).join(' | ');
-    if (forExcel) {
-      return {
-        headers: ['ID', 'Tarix', 'Ad soyad', 'Mobil nömrə', 'E-poçt', 'Gediş / Qayıdış tarixi', 'Qeyd', 'Böyük sayı', 'Uşaq sayı', 'Xidmətlər', 'Paketlər'],
-        row: [data.id, data.created_at, data.full_name, data.phone, data.email, formatTravelDates(data.date_from, data.date_to), data.note, data.adults_count, data.children_count, services, packages]
-      };
-    }
     return {
-      headers: ['ID', 'Tarix', 'Ad soyad', 'Mobil nömrə', 'E-poçt', 'Gediş tarixi', 'Qayıdış tarixi', 'Qeyd', 'Böyük sayı', 'Uşaq sayı', 'Xidmətlər', 'Paketlər'],
-      row: [data.id, data.created_at, data.full_name, data.phone, data.email, data.date_from || '', data.date_to || '', data.note, data.adults_count, data.children_count, services, packages]
+      headers: ['ID', 'Tarix', 'Ad soyad', 'Mobil nömrə', 'E-poçt', 'Gediş / Qayıdış tarixi', 'Qeyd', 'Böyük sayı', 'Uşaq sayı', 'Xidmətlər', 'Paketlər'],
+      row: [data.id, data.created_at, data.full_name, data.phone, data.email, formatTravelDates(data.date_from, data.date_to), data.note, data.adults_count, data.children_count, services, packages]
     };
   }
 
-  function buildListRow(data, forExcel) {
-    if (forExcel) {
-      return {
-        headers: ['Ad soyad', 'Seçim', 'Gediş / Qayıdış tarixi', 'Böyük sayı', 'Uşaq sayı', 'E-poçt', 'Mobil nömrə', 'Oxunub', 'Müştəri', 'Silinib', 'Tarix'],
-        row: [data.full_name, data.booking_target, formatTravelDates(data.date_from, data.date_to), data.adults_count, data.children_count, data.email, data.phone, boolLabel(data.is_read), boolLabel(data.is_customer), boolLabel(data.is_deleted), data.created_at]
-      };
-    }
+  function buildListRow(data) {
     return {
-      headers: ['Ad soyad', 'Seçim', 'Gediş tarixi', 'Qayıdış tarixi', 'Böyük sayı', 'Uşaq sayı', 'E-poçt', 'Mobil nömrə', 'Oxunub', 'Müştəri', 'Silinib', 'Tarix'],
-      row: [data.full_name, data.booking_target, data.date_from || '', data.date_to || '', data.adults_count, data.children_count, data.email, data.phone, boolLabel(data.is_read), boolLabel(data.is_customer), boolLabel(data.is_deleted), data.created_at]
+      headers: ['Ad soyad', 'Seçim', 'Gediş / Qayıdış tarixi', 'Böyük sayı', 'Uşaq sayı', 'E-poçt', 'Mobil nömrə', 'Oxunub', 'Müştəri', 'Silinib', 'Tarix'],
+      row: [data.full_name, data.booking_target, formatTravelDates(data.date_from, data.date_to), data.adults_count, data.children_count, data.email, data.phone, boolLabel(data.is_read), boolLabel(data.is_customer), boolLabel(data.is_deleted), data.created_at]
     };
   }
 
@@ -163,40 +132,14 @@
   }
 
   function init() {
-    bindExport(document.getElementById('bookingExportOneCsvBtn'), function () {
-      var data = readJsonScript('bookingExportOneData');
-      if (!data) {
-        window.alert('Export məlumatı tapılmadı. Səhifəni yeniləyin.');
-        return;
-      }
-      var spec = buildDetail(data, false);
-      downloadBlob('booking_' + data.id + '_' + fileTs() + '.csv', new Blob([buildCsv(spec.headers, [spec.row])], { type: 'text/csv;charset=utf-8' }));
-    });
-
     bindExport(document.getElementById('bookingExportOneXlsBtn'), function () {
       var data = readJsonScript('bookingExportOneData');
       if (!data) {
         window.alert('Export məlumatı tapılmadı. Səhifəni yeniləyin.');
         return;
       }
-      var spec = buildDetail(data, true);
+      var spec = buildDetail(data);
       downloadBlob('booking_' + data.id + '_' + fileTs() + '.xls', new Blob([buildXls(spec.headers, [spec.row], [8, 22, 26, 18, 22, 16, 42, 10, 10, 38, 38])], { type: 'application/vnd.ms-excel;charset=utf-8' }));
-    });
-
-    bindExport(document.getElementById('bookingExportListCsvBtn'), function () {
-      var rows = readJsonScript('bookingExportListData');
-      if (!Array.isArray(rows) || !rows.length) {
-        var fallback = extractTableFallback();
-        if (!fallback) {
-          window.alert('Export üçün məlumat tapılmadı.');
-          return;
-        }
-        downloadBlob('bookings_' + fileTs() + '.csv', new Blob([buildCsv(fallback.headers, fallback.data)], { type: 'text/csv;charset=utf-8' }));
-        return;
-      }
-      var spec = buildListRow(rows[0], false);
-      var dataRows = rows.map(function (r) { return buildListRow(r, false).row; });
-      downloadBlob('bookings_' + fileTs() + '.csv', new Blob([buildCsv(spec.headers, dataRows)], { type: 'text/csv;charset=utf-8' }));
     });
 
     bindExport(document.getElementById('bookingExportListXlsBtn'), function () {
@@ -210,8 +153,8 @@
         downloadBlob('bookings_' + fileTs() + '.xls', new Blob([buildXls(fallback.headers, fallback.data)], { type: 'application/vnd.ms-excel;charset=utf-8' }));
         return;
       }
-      var spec = buildListRow(rows[0], true);
-      var dataRows = rows.map(function (r) { return buildListRow(r, true).row; });
+      var spec = buildListRow(rows[0]);
+      var dataRows = rows.map(function (r) { return buildListRow(r).row; });
       downloadBlob('bookings_' + fileTs() + '.xls', new Blob([buildXls(spec.headers, dataRows, [26, 38, 16, 10, 10, 22, 18, 10, 10, 10, 22])], { type: 'application/vnd.ms-excel;charset=utf-8' }));
     });
   }

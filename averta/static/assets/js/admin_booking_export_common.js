@@ -1,4 +1,4 @@
-// Shared booking export helpers (admin CSV / Excel)
+// Shared booking export helpers (admin Excel)
 window.BookingExport = (function () {
   function formatTravelDates(from, to) {
     from = (from || '').trim();
@@ -6,15 +6,6 @@ window.BookingExport = (function () {
     if (!from && !to) return '—';
     if (from && to) return from + '\n' + to;
     return from || to;
-  }
-
-  function csvEscape(value, sep) {
-    if (value == null) return '';
-    var s = String(value);
-    s = s.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-    var re = new RegExp('["' + sep + '\\n]');
-    if (re.test(s)) s = '"' + s.replace(/"/g, '""') + '"';
-    return s;
   }
 
   function htmlEscape(s) {
@@ -35,67 +26,33 @@ window.BookingExport = (function () {
     return v ? 'Bəli' : 'Xeyr';
   }
 
-  function buildDetail(forExcel) {
-    var headers;
-    if (forExcel) {
-      headers = [
-        'ID',
-        'Tarix',
-        'Ad soyad',
-        'Mobil nömrə',
-        'E-poçt',
-        'Gediş / Qayıdış tarixi',
-        'Qeyd',
-        'Böyük sayı',
-        'Uşaq sayı',
-        'Xidmətlər',
-        'Paketlər'
-      ];
-    } else {
-      headers = [
-        'ID',
-        'Tarix',
-        'Ad soyad',
-        'Mobil nömrə',
-        'E-poçt',
-        'Gediş tarixi',
-        'Qayıdış tarixi',
-        'Qeyd',
-        'Böyük sayı',
-        'Uşaq sayı',
-        'Xidmətlər',
-        'Paketlər'
-      ];
-    }
-    return { headers: headers, buildRow: function (data) { return rowFromDetail(data, forExcel); } };
+  function buildDetail() {
+    var headers = [
+      'ID',
+      'Tarix',
+      'Ad soyad',
+      'Mobil nömrə',
+      'E-poçt',
+      'Gediş / Qayıdış tarixi',
+      'Qeyd',
+      'Böyük sayı',
+      'Uşaq sayı',
+      'Xidmətlər',
+      'Paketlər'
+    ];
+    return { headers: headers, buildRow: rowFromDetail };
   }
 
-  function rowFromDetail(data, forExcel) {
+  function rowFromDetail(data) {
     var services = (data.services || []).join(' | ');
     var packages = (data.packages || []).join(' | ');
-    if (forExcel) {
-      return [
-        data.id,
-        data.created_at,
-        data.full_name,
-        data.phone,
-        data.email,
-        formatTravelDates(data.date_from, data.date_to),
-        data.note,
-        data.adults_count,
-        data.children_count,
-        services,
-        packages
-      ];
-    }
     return [
       data.id,
       data.created_at,
       data.full_name,
       data.phone,
       data.email,
-      data.date_from || '',
-      data.date_to || '',
+      formatTravelDates(data.date_from, data.date_to),
       data.note,
       data.adults_count,
       data.children_count,
@@ -104,62 +61,28 @@ window.BookingExport = (function () {
     ];
   }
 
-  function buildList(forExcel) {
-    var headers;
-    if (forExcel) {
-      headers = [
-        'Ad soyad',
-        'Seçim',
-        'Gediş / Qayıdış tarixi',
-        'Böyük sayı',
-        'Uşaq sayı',
-        'E-poçt',
-        'Mobil nömrə',
-        'Oxunub',
-        'Müştəri',
-        'Silinib',
-        'Tarix'
-      ];
-    } else {
-      headers = [
-        'Ad soyad',
-        'Seçim',
-        'Gediş tarixi',
-        'Qayıdış tarixi',
-        'Böyük sayı',
-        'Uşaq sayı',
-        'E-poçt',
-        'Mobil nömrə',
-        'Oxunub',
-        'Müştəri',
-        'Silinib',
-        'Tarix'
-      ];
-    }
-    return { headers: headers, buildRow: function (data) { return rowFromList(data, forExcel); } };
+  function buildList() {
+    var headers = [
+      'Ad soyad',
+      'Seçim',
+      'Gediş / Qayıdış tarixi',
+      'Böyük sayı',
+      'Uşaq sayı',
+      'E-poçt',
+      'Mobil nömrə',
+      'Oxunub',
+      'Müştəri',
+      'Silinib',
+      'Tarix'
+    ];
+    return { headers: headers, buildRow: rowFromList };
   }
 
-  function rowFromList(data, forExcel) {
-    if (forExcel) {
-      return [
-        data.full_name,
-        data.booking_target,
-        formatTravelDates(data.date_from, data.date_to),
-        data.adults_count,
-        data.children_count,
-        data.email,
-        data.phone,
-        boolLabel(data.is_read),
-        boolLabel(data.is_customer),
-        boolLabel(data.is_deleted),
-        data.created_at
-      ];
-    }
+  function rowFromList(data) {
     return [
       data.full_name,
       data.booking_target,
-      data.date_from || '',
-      data.date_to || '',
+      formatTravelDates(data.date_from, data.date_to),
       data.adults_count,
       data.children_count,
       data.email,
@@ -169,16 +92,6 @@ window.BookingExport = (function () {
       boolLabel(data.is_deleted),
       data.created_at
     ];
-  }
-
-  function buildCsv(headers, rows, sep) {
-    sep = sep || ';';
-    var lines = [];
-    lines.push(headers.map(function (h) { return csvEscape(h, sep); }).join(sep));
-    rows.forEach(function (row) {
-      lines.push(row.map(function (v) { return csvEscape(v, sep); }).join(sep));
-    });
-    return '\uFEFF' + 'sep=' + sep + '\r\n' + lines.join('\r\n') + '\r\n';
   }
 
   function buildXls(headers, rows, colWidths) {
@@ -223,12 +136,10 @@ window.BookingExport = (function () {
 
   return {
     formatTravelDates: formatTravelDates,
-    csvEscape: csvEscape,
     htmlEscape: htmlEscape,
     excelCell: excelCell,
     buildDetail: buildDetail,
     buildList: buildList,
-    buildCsv: buildCsv,
     buildXls: buildXls,
     readJsonScript: readJsonScript
   };

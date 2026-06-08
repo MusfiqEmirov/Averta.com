@@ -184,18 +184,24 @@ def format_booking_message_html(instance):
     )
 
 
-def _csv_escape(value, sep=';'):
-    if value is None:
-        return ''
-    s = str(value).replace('\r\n', '\n').replace('\r', '\n')
-    if re.search(f'["{re.escape(sep)}\n]', s):
-        s = '"' + s.replace('"', '""') + '"'
-    return s
+def _format_travel_dates(date_from, date_to):
+    date_from = (date_from or '').strip()
+    date_to = (date_to or '').strip()
+    if not date_from and not date_to:
+        return '—'
+    if date_from and date_to:
+        return f'{date_from}\n{date_to}'
+    return date_from or date_to
 
 
-def build_booking_csv(instance):
-    """Admin paneldəki tək sifariş CSV exportu ilə eyni format."""
-    sep = ';'
+def _excel_cell(value):
+    text = '' if value is None else str(value)
+    text = html_lib.escape(text).replace('\n', '<br/>')
+    return text
+
+
+def build_booking_xls(instance):
+    """Admin paneldəki tək sifariş Excel exportu ilə eyni format."""
     created_at = instance.created_at
     if timezone.is_aware(created_at):
         created_at = timezone.localtime(created_at)
@@ -213,8 +219,7 @@ def build_booking_csv(instance):
         'Ad soyad',
         'Mobil nömrə',
         'E-poçt',
-        'Gediş tarixi',
-        'Qayıdış tarixi',
+        'Gediş / Qayıdış tarixi',
         'Qeyd',
         'Böyük sayı',
         'Uşaq sayı',
@@ -227,23 +232,44 @@ def build_booking_csv(instance):
         instance.full_name or '',
         instance.phone or '',
         instance.email or '',
-        date_from,
-        date_to,
+        _format_travel_dates(date_from, date_to),
         instance.note or '',
         instance.adults_count,
         instance.children_count,
         services,
         packages,
     ]
+    col_widths = [8, 22, 26, 18, 22, 16, 42, 10, 10, 38, 38]
 
-    lines = [
-        sep.join(_csv_escape(h, sep) for h in headers),
-        sep.join(_csv_escape(v, sep) for v in row),
-    ]
-    content = '\ufeff' + f'sep={sep}\r\n' + '\r\n'.join(lines) + '\r\n'
+    cols = ''.join(
+        f'<col style="width:{w * 8}px" />'
+        for w in col_widths
+    )
+    ths = ''.join(
+        '<th style="border:1px solid #d1d5db; padding:7px; background:#13357b; '
+        f'color:#fff; font-weight:700; text-align:left;">{html_lib.escape(h)}</th>'
+        for h in headers
+    )
+    tds = ''.join(
+        '<td style="border:1px solid #d1d5db; padding:6px; vertical-align:top; '
+        f'white-space:pre-wrap;">{_excel_cell(v)}</td>'
+        for v in row
+    )
+
+    content = (
+        '<html xmlns:o="urn:schemas-microsoft-com:office:office" '
+        'xmlns:x="urn:schemas-microsoft-com:office:excel">'
+        '<head><meta charset="utf-8" /></head><body>'
+        '<table style="border-collapse:collapse; font-family:Arial, sans-serif; font-size:12px;">'
+        f'<colgroup>{cols}</colgroup>'
+        f'<thead><tr>{ths}</tr></thead>'
+        f'<tbody><tr>{tds}</tr></tbody>'
+        '</table>'
+        '</body></html>'
+    )
 
     now = timezone.localtime(timezone.now())
-    filename = f'booking_{instance.pk}_{now:%Y-%m-%d_%H-%M}.csv'
+    filename = f'booking_{instance.pk}_{now:%Y-%m-%d_%H-%M}.xls'
     return filename, content.encode('utf-8')
 
 
@@ -256,7 +282,7 @@ def send_booking_notification(instance):
         if not recipient:
             logger.warning('Booking email skipped: CONTACT_RECEIVER_EMAIL is not set.')
             return
-        csv_filename, csv_content = build_booking_csv(instance)
+        xls_filename, xls_content = build_booking_xls(instance)
         send_mail_func(
             recipient=recipient,
             subject=subject,
@@ -264,7 +290,7 @@ def send_booking_notification(instance):
             sender_name=instance.full_name,
             sender_email=(instance.email or '').strip(),
             html_message=html_message,
-            attachments=[(csv_filename, csv_content, 'text/csv')],
+            attachments=[(xls_filename, xls_content, 'application/vnd.ms-excel')],
         )
     except Exception:
         logger.exception('Booking notification email failed.')
