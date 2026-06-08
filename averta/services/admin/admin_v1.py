@@ -935,7 +935,6 @@ class ReviewAdmin(AdminPageHelpMixin, admin.ModelAdmin):
     change_form_template = 'admin/averta/review_change_form.html'
     list_display = (
         'name',
-        'contact_display',
         'rating_stars',
         'review_target_display',
         'short_message_display',
@@ -947,7 +946,7 @@ class ReviewAdmin(AdminPageHelpMixin, admin.ModelAdmin):
     list_display_links = ('name',)
     list_filter = ('is_read', 'is_active', 'rating', 'service', 'package')
     search_fields = (
-        'name', 'phone', 'message',
+        'name', 'message',
         'service__name_az', 'package__name_az',
     )
     list_editable = ('is_read', 'is_active')
@@ -964,11 +963,8 @@ class ReviewAdmin(AdminPageHelpMixin, admin.ModelAdmin):
         }
 
     fieldsets = (
-        (_('Müştəri və əlaqə'), {
-            'fields': ('name', 'phone'),
-            'description': _(
-                'Mobil nömrə yalnız admin paneldə görünür — saytda göstərilmir.'
-            ),
+        (_('Müştəri'), {
+            'fields': ('name',),
         }),
         (_('Rəy məzmunu'), {
             'fields': ('message', 'rating', 'service', 'package'),
@@ -983,21 +979,6 @@ class ReviewAdmin(AdminPageHelpMixin, admin.ModelAdmin):
             ),
         }),
     )
-
-    @admin.display(description=_('Əlaqə'))
-    def contact_display(self, obj):
-        parts = []
-        if obj.phone:
-            parts.append(format_html(
-                '<span class="review-admin-phone">{}</span>',
-                obj.phone,
-            ))
-        if not parts:
-            return '—'
-        return format_html(
-            '<div class="review-admin-contact">{}</div>',
-            mark_safe('<br>'.join(str(p) for p in parts)),
-        )
 
     @admin.display(description=_('Reytinq'))
     def rating_stars(self, obj):

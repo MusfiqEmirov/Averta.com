@@ -479,18 +479,6 @@ class ReviewForm(forms.ModelForm):
         max_length=REVIEW_NAME_MAX_LENGTH,
         strip=True,
     )
-    phone = forms.CharField(
-        max_length=40,
-        required=True,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': _('Mobil nömrə (məs: 050 123 45 67)'),
-            'inputmode': 'tel',
-            'autocomplete': 'tel',
-            'id': 'reviewPhone',
-        }),
-        label=_('Mobil nömrə'),
-    )
     message = forms.CharField(
         widget=forms.Textarea(attrs={
             'class': 'form-control',
@@ -529,7 +517,7 @@ class ReviewForm(forms.ModelForm):
 
     class Meta:
         model = Review
-        fields = ['name', 'phone', 'message', 'rating', 'service', 'package']
+        fields = ['name', 'message', 'rating', 'service', 'package']
 
     def __init__(self, *args, lang='az', **kwargs):
         super().__init__(*args, **kwargs)
@@ -538,8 +526,6 @@ class ReviewForm(forms.ModelForm):
             'az': {
                 'name_label': 'Ad',
                 'name_ph': 'Adınız',
-                'phone_label': 'Mobil nömrə',
-                'phone_ph': 'Mobil nömrə (məs: 050 123 45 67)',
                 'msg_label': 'Rəy',
                 'msg_ph': 'Rəyiniz',
                 'target_label': 'Aldığınız xidmət və ya paketi seçin',
@@ -548,8 +534,6 @@ class ReviewForm(forms.ModelForm):
             'en': {
                 'name_label': 'Name',
                 'name_ph': 'Your name',
-                'phone_label': 'Mobile number',
-                'phone_ph': 'Mobile number (e.g. +994 50 123 45 67)',
                 'msg_label': 'Review',
                 'msg_ph': 'Your review',
                 'target_label': 'Select the service or package you purchased',
@@ -558,8 +542,6 @@ class ReviewForm(forms.ModelForm):
             'ru': {
                 'name_label': 'Имя',
                 'name_ph': 'Ваше имя',
-                'phone_label': 'Мобильный номер',
-                'phone_ph': 'Мобильный номер (пример: +994 50 123 45 67)',
                 'msg_label': 'Отзыв',
                 'msg_ph': 'Ваш отзыв',
                 'target_label': 'Выберите приобретённую услугу или пакет',
@@ -570,8 +552,6 @@ class ReviewForm(forms.ModelForm):
         if ui:
             self.fields['name'].label = ui['name_label']
             self.fields['name'].widget.attrs['placeholder'] = ui['name_ph']
-            self.fields['phone'].label = ui['phone_label']
-            self.fields['phone'].widget.attrs['placeholder'] = ui['phone_ph']
             self.fields['message'].label = ui['msg_label']
             self.fields['message'].widget.attrs['placeholder'] = ui['msg_ph']
             self.fields['target'].label = ui['target_label']
@@ -629,13 +609,6 @@ class ReviewForm(forms.ModelForm):
             raise ValidationError(_('Something went wrong. Please try again.'))
         return value
 
-    def clean_phone(self):
-        raw = (self.cleaned_data.get('phone') or '').strip()
-        if not raw:
-            raise ValidationError(_('Mobil nömrə mütləqdir.'))
-        normalized = normalize_az_phone(raw)
-        return normalized or raw
-
     def clean_rating(self):
         rating = self.cleaned_data.get('rating')
         if not rating or rating < 1:
@@ -647,6 +620,7 @@ class ReviewForm(forms.ModelForm):
     def save(self, commit=True):
         instance = super().save(commit=False)
         instance.is_active = False
+        instance.phone = ''
         if commit:
             instance.save()
         return instance

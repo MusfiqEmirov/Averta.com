@@ -80,8 +80,6 @@ class Review(models.Model):
             self.email = self.email.strip().lower()
         if self.phone:
             self.phone = self.phone.strip()
-        if not self.email and not self.phone:
-            raise ValidationError('E-poçt və ya mobil nömrə daxil edilməlidir.')
         if self.message:
             self.message = self.message.strip()
         if self.service_id and self.package_id:

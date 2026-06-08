@@ -38,12 +38,12 @@
 
     <div class="testimonial-inner py-3">
         {% if review_feedback == 'success' %}
-        <div class="alert alert-success text-center rounded-3 mb-4 mx-auto review-feedback-alert form-feedback-alert" style="max-width:520px;" role="alert" data-form-feedback>
+        <div class="alert alert-success text-center rounded-3 mb-4 mx-auto review-feedback-alert form-feedback-alert" style="max-width:520px;" role="alert" data-form-feedback data-feedback-auto-dismiss="2000">
             <i class="fa fa-check-circle me-2"></i>
             {% trans "Rəyiniz qəbul edildi. Təsdiqdən sonra saytda görünəcək." %}
         </div>
         {% elif review_feedback == 'error' %}
-        <div class="alert alert-danger text-center rounded-3 mb-4 mx-auto review-feedback-alert form-feedback-alert" style="max-width:520px;" role="alert" data-form-feedback>
+        <div class="alert alert-danger text-center rounded-3 mb-4 mx-auto review-feedback-alert form-feedback-alert" style="max-width:520px;" role="alert" data-form-feedback data-feedback-auto-dismiss="2000">
             <i class="fa fa-exclamation-circle me-2"></i>
             {% trans "Rəyiniz göndərilmədi. Zəhmət olmasa yenidən cəhd edin." %}
         </div>
@@ -76,7 +76,7 @@
             <div class="modal-body pt-2">
                 <form id="reviewForm" method="post"
                       action="{% url 'services:home-page' %}"
-                      novalidate data-ajax="1">
+                      novalidate data-ajax="1" data-feedback-auto-dismiss="2000">
                     {% csrf_token %}
                     <input type="hidden" name="form_type" value="review">
                     {{ review_form.website }}
@@ -102,27 +102,6 @@
                                autocomplete="name">
                         {% if review_form.name.errors %}
                         <div class="invalid-feedback d-block">{{ review_form.name.errors.0 }}</div>
-                        {% endif %}
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label small fw-semibold mb-1" for="reviewPhone">
-                            {% trans "Mobil nömrə" %} <span class="text-danger">*</span>
-                            <span class="text-muted fw-normal">{% trans "(saytda göstərilmir)" %}</span>
-                        </label>
-                        <input type="tel"
-                               name="phone"
-                               id="reviewPhone"
-                               class="form-control{% if review_form.phone.errors or review_form.non_field_errors %} is-invalid{% endif %}"
-                               placeholder="{{ review_form.fields.phone.widget.attrs.placeholder }}"
-                               maxlength="40"
-                               value="{{ review_form.phone.value|default:'' }}"
-                               inputmode="tel"
-                               autocomplete="tel">
-                        {% if review_form.phone.errors %}
-                        <div class="invalid-feedback d-block">{{ review_form.phone.errors.0 }}</div>
-                        {% elif review_form.non_field_errors %}
-                        <div class="invalid-feedback d-block">{{ review_form.non_field_errors.0 }}</div>
                         {% endif %}
                     </div>
 
