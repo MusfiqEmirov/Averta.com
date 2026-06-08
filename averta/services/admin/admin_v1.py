@@ -854,6 +854,10 @@ class FAQAdmin(AdminPageHelpMixin, admin.ModelAdmin):
         }),
     )
 
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        invalidate_model_cache('FAQ')
+
 
 # ---------------------------------------------------------------------------
 # Blog
