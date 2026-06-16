@@ -2,7 +2,10 @@ from django.db import models
 from django.core.validators import MaxLengthValidator
 
 
-class Booking(models.Model):
+from services.utils import UpdatedAtMixin
+
+
+class Booking(UpdatedAtMixin, models.Model):
     services = models.ManyToManyField(
         'Service',
         blank=True,

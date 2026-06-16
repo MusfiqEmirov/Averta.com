@@ -177,3 +177,27 @@ class CreatedAtMonthFilter(admin.SimpleListFilter):
         else:
             end_exclusive = timezone.make_aware(datetime(year, month + 1, 1))
         return queryset.filter(created_at__gte=start, created_at__lt=end_exclusive)
+
+
+class ReviewTargetFilter(admin.SimpleListFilter):
+    """Rəyin xidmət, paket və ya ümumi olmasına görə filtr."""
+
+    title = _('Rəy növü')
+    parameter_name = 'review_target'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('service', _('Xidmət')),
+            ('package', _('Paket')),
+            ('general', _('Ümumi (xidmət/paket yox)')),
+        )
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value == 'service':
+            return queryset.filter(service__isnull=False)
+        if value == 'package':
+            return queryset.filter(package__isnull=False)
+        if value == 'general':
+            return queryset.filter(service__isnull=True, package__isnull=True)
+        return queryset

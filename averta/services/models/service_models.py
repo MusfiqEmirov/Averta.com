@@ -1,10 +1,10 @@
 from django.db import models
 from django.core.validators import MaxLengthValidator
 
-from services.utils import SluggedModel
+from services.utils import SluggedModel, UpdatedAtMixin
 
 
-class Service(SluggedModel):
+class Service(SluggedModel, UpdatedAtMixin):
     name_az = models.CharField(
         max_length=250,
         verbose_name='Xidmət adı (AZ)',
@@ -82,7 +82,7 @@ class Service(SluggedModel):
     class Meta:
         verbose_name = 'Xidmət'
         verbose_name_plural = 'Xidmətlər'
-        ordering = ['-created_at']
+        ordering = ('-created_at', '-id')
 
     def __str__(self):
         return self.name_az

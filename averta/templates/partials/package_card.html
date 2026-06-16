@@ -1,8 +1,11 @@
-{% load package_icon_tags i18n %}
-<article class="pkg-card pkg-card--{{ package.icon_type }}">
+{% load i18n %}
+<article class="pkg-card">
 
-    <div class="pkg-card__header">
-        {% package_icon_svg package.icon_type package.icon_variant %}
+    <div class="pkg-card__header{% if package.image %} pkg-card__header--has-image{% endif %}">
+        {% if package.image %}
+        <img src="{{ package.image }}" alt="" class="pkg-card__cover" loading="lazy" decoding="async">
+        <div class="pkg-card__header-overlay" aria-hidden="true"></div>
+        {% endif %}
         {% if package.price_display %}
         <div class="pkg-card__price-badge">{{ package.price_display }}</div>
         {% endif %}

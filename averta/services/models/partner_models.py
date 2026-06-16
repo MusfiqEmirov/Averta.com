@@ -2,7 +2,10 @@ from django.db import models
 from django.core.validators import MaxLengthValidator
 
 
-class Partner(models.Model):
+from services.utils import UpdatedAtMixin
+
+
+class Partner(UpdatedAtMixin, models.Model):
     name_az = models.CharField(
         max_length=120,
         null=True,
