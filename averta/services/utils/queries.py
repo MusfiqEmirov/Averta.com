@@ -117,7 +117,7 @@ def get_services(lang='az', is_active=True, on_main_page=None):
     if on_main_page is not None:
         queryset = queryset.filter(on_main_page=on_main_page)
 
-    return queryset.order_by('-created_at')
+    return queryset.order_by('-created_at', '-id')
 
 
 @cached_query(timeout='CACHE_TIMEOUT_MEDIUM')
@@ -134,7 +134,7 @@ def get_other_services(exclude_slug, lang='az', limit=6):
     qs = (
         get_services(lang=lang, is_active=True)
         .exclude(slug=exclude_slug)
-        .order_by('-created_at')[:limit]
+        .order_by('-created_at', '-id')[:limit]
     )
     return [serialize_service(s, lang) for s in qs]
 
@@ -143,7 +143,17 @@ def get_other_services(exclude_slug, lang='az', limit=6):
 # Package
 # ---------------------------------------------------------------------------
 
-def format_package_price(price, currency):
+def _az_from_suffix_for_amount(amount):
+    """Return «dan» or «dən» based on the last digit of the amount."""
+    for ch in reversed(str(amount)):
+        if ch.isdigit():
+            if ch in '069':
+                return 'dan'
+            return 'dən'
+    return 'dan'
+
+
+def format_package_price(price, currency, price_from=False, lang='az'):
     if price is None:
         return None
 
@@ -157,9 +167,24 @@ def format_package_price(price, currency):
         amount = int(price)
     else:
         amount = price.normalize() if hasattr(price, 'normalize') else price
+
+    if price_from and lang == 'az':
+        suffix = _az_from_suffix_for_amount(amount)
+        return f'{symbol}{amount}-{suffix}'
+
     if currency == Package.CURRENCY_AZN:
-        return f'{amount} {symbol}'
-    return f'{symbol}{amount}'
+        base = f'{amount} {symbol}'
+    else:
+        base = f'{symbol}{amount}'
+
+    if not price_from:
+        return base
+
+    if lang == 'ru':
+        return f'от {base}'
+    if lang == 'en':
+        return f'from {base}'
+    return base
 
 
 def get_packages(lang='az', is_active=True):
@@ -501,13 +526,18 @@ def serialize_package(package, lang='az'):
         'description_html': mark_safe(description_html),
         'price': package.price,
         'currency': package.currency,
+        'price_from': package.price_from,
         'price_display': (
-            format_package_price(package.price, package.currency)
+            format_package_price(
+                package.price,
+                package.currency,
+                price_from=package.price_from,
+                lang=lang,
+            )
             if package.price is not None
             else None
         ),
-        'icon_type': package.icon_type,
-        'icon_variant': package.icon_variant,
+        'image': package.image.url if package.image else None,
         'end_date': package.end_date,
         'is_active': package.is_active,
         'created_at': package.created_at,
@@ -688,17 +718,11 @@ def _serialize_review_target(review, lang='az'):
         }
     if review.package_id and review.package:
         name_field = get_localized_field_name('name', lang)
-        icon_type = review.package.icon_type or 'plane'
         return {
             'type': 'package',
             'id': review.package.id,
             'name': getattr(review.package, name_field, review.package.name_az),
-            'icon_type': icon_type,
-            'icon_variant': review.package.icon_variant,
-            'icon_gradient': TYPE_HEADER_GRADIENTS.get(
-                icon_type,
-                TYPE_HEADER_GRADIENTS['plane'],
-            ),
+            'icon_gradient': TYPE_HEADER_GRADIENTS['plane'],
         }
     return None
 

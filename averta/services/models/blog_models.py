@@ -2,10 +2,10 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxLengthValidator
 
-from services.utils import SluggedModel
+from services.utils import SluggedModel, UpdatedAtMixin
 
 
-class Blog(SluggedModel):
+class Blog(SluggedModel, UpdatedAtMixin):
     name_az = models.CharField(
         max_length=255,
         verbose_name='Başlıq (AZ)'

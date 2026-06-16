@@ -36,4 +36,14 @@ class SluggedModel(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             unique_slugify(self, self.get_slug_source(), slug_field="slug")
-        super().save(*args, **kwargs)  
+        super().save(*args, **kwargs)
+
+
+class UpdatedAtMixin(models.Model):
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name='Yenilənmə tarixi',
+    )
+
+    class Meta:
+        abstract = True

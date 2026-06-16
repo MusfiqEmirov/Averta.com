@@ -1,10 +1,10 @@
 from django.db import models
 from django.core.validators import MaxLengthValidator
 
-from services.utils import SluggedModel
+from services.utils import SluggedModel, UpdatedAtMixin
 
 
-class Package(SluggedModel):
+class Package(SluggedModel, UpdatedAtMixin):
     CURRENCY_AZN = 'AZN'
     CURRENCY_USD = 'USD'
     CURRENCY_EUR = 'EUR'
@@ -14,28 +14,7 @@ class Package(SluggedModel):
         (CURRENCY_EUR, 'EUR (€)'),
     ]
 
-    ICON_PLANE    = 'plane'
-    ICON_HIKE     = 'hike'
-    ICON_MOUNTAIN = 'mountain'
-    ICON_COMPASS  = 'compass'
-    ICON_BEACH    = 'beach'
-    ICON_BOAT     = 'boat'
-    ICON_CAMERA   = 'camera'
-    ICON_CITY     = 'city'
-    ICON_CAR      = 'car'
-    ICON_TENT     = 'tent'
-    ICON_CHOICES = [
-        (ICON_PLANE,    '✈ Təyyarə'),
-        (ICON_HIKE,     '🥾 Yürüyüş'),
-        (ICON_MOUNTAIN, '⛰ Dağ'),
-        (ICON_COMPASS,  '🧭 Kompas'),
-        (ICON_BEACH,    '🏖 Çimərlik'),
-        (ICON_BOAT,     '⛵ Gəmi'),
-        (ICON_CAMERA,   '📷 Fototur'),
-        (ICON_CITY,     '🏙 Şəhər turu'),
-        (ICON_CAR,      '🚗 Avtomobil turu'),
-        (ICON_TENT,     '⛺ Düşərgə'),
-    ]
+   
 
     service = models.ManyToManyField(
         'Service',
@@ -81,10 +60,22 @@ class Package(SluggedModel):
         verbose_name='Məzmun (RU)',
         help_text='Maksimum 600 simvol.',
     )
+    image = models.ImageField(
+        upload_to='images/packages/',
+        null=True,
+        blank=True,
+        verbose_name='Şəkil',
+        help_text='Paket kartının yuxarı hissəsində göstərilir.',
+    )
     price = models.DecimalField(
         max_digits=100,
         decimal_places=2,
         verbose_name='Qiymət',
+    )
+    price_from = models.BooleanField(
+        default=False,
+        verbose_name='Qiymətə «dan/dən» əlavə et',
+        help_text='İşarələnərsə saytda qiymət «$909-dan», «€907-dən» kimi göstərilir.',
     )
     currency = models.CharField(
         max_length=3,
@@ -92,19 +83,8 @@ class Package(SluggedModel):
         default=CURRENCY_AZN,
         verbose_name='Valyuta',
     )
-    icon_type = models.CharField(
-        max_length=20,
-        choices=ICON_CHOICES,
-        default=ICON_PLANE,
-        verbose_name='İkon növü',
-        help_text='Kart üzərindəki ikon kateqoriyası.',
-    )
-    icon_variant = models.CharField(
-        max_length=1,
-        choices=[('1', 'Stil 1'), ('2', 'Stil 2'), ('3', 'Stil 3')],
-        default='1',
-        verbose_name='İkon stili',
-    )
+    
+ 
     is_active = models.BooleanField(
         default=True,
         null=True,

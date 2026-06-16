@@ -6092,6 +6092,11 @@ body.page-service-detail .lightbox .lb-data .lb-number {
     box-shadow: 0 0 0 0.2rem rgba(81, 32, 113, 0.12);
 }
 
+.contact-form .form-control-lg::placeholder {
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
 .contact-form .contact-message-field {
     min-height: 220px;
     resize: vertical;
@@ -7536,9 +7541,37 @@ body.page-home .partners-strip__head {
     inset: 0;
     background: radial-gradient(ellipse at 60% 40%, rgba(255,255,255,0.18) 0%, transparent 70%);
     pointer-events: none;
+    z-index: 1;
+}
+
+.pkg-card__header--has-image::before {
+    display: none;
+}
+
+.pkg-card__cover {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+.pkg-card__header-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        180deg,
+        rgba(81, 32, 113, 0.15) 0%,
+        rgba(26, 74, 158, 0.35) 100%
+    );
+    pointer-events: none;
+    z-index: 1;
 }
 
 .pkg-card__icon {
+    position: relative;
+    z-index: 2;
     width: 100px;
     height: 100px;
     filter: drop-shadow(0 3px 8px rgba(0,0,0,0.18));
@@ -7549,6 +7582,7 @@ body.page-home .partners-strip__head {
     position: absolute;
     top: 12px;
     right: 14px;
+    z-index: 2;
     background: #ffc107;
     color: #1b1b1b;
     font-size: 1rem;

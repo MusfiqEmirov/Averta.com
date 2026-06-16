@@ -2,7 +2,10 @@ from django.db import models
 from django.core.validators import MaxLengthValidator
 
 
-class AppealContact(models.Model):
+from services.utils import UpdatedAtMixin
+
+
+class AppealContact(UpdatedAtMixin, models.Model):
     full_name = models.CharField(
         max_length=255,
         verbose_name='Ad soyad'

@@ -24,7 +24,10 @@ def media_not_marked_as_background_q():
     )
 
 
-class Media(models.Model):
+from services.utils import UpdatedAtMixin
+
+
+class Media(UpdatedAtMixin, models.Model):
     about = models.ForeignKey(
         About,
         related_name='medias',

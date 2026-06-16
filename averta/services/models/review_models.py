@@ -6,7 +6,10 @@ REVIEW_NAME_MAX_LENGTH = 50
 REVIEW_MESSAGE_MAX_LENGTH = 190
 
 
-class Review(models.Model):
+from services.utils import UpdatedAtMixin
+
+
+class Review(UpdatedAtMixin, models.Model):
     name = models.CharField(
         max_length=REVIEW_NAME_MAX_LENGTH,
         verbose_name='Name',

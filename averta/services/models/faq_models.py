@@ -2,7 +2,10 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 
-class FAQ(models.Model):
+from services.utils import UpdatedAtMixin
+
+
+class FAQ(UpdatedAtMixin, models.Model):
     question_az = models.CharField(
         max_length=500,
         verbose_name='Sual (AZ)',
