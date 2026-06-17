@@ -460,6 +460,8 @@ h1, h2, h3, h4, h5, h6,
     width: 72px;
     object-fit: contain;
     border-radius: 6px;
+    transform: scale(1.3);
+    transform-origin: left center;
 }
 
 .navbar .dropdown-toggle::after {
@@ -6558,8 +6560,8 @@ body.page-home .partners-strip__head {
 }
 
 .site-footer__brand-logo {
-    height: 80px;
-    width: 80px;
+    height: 104px;
+    width: 104px;
     object-fit: contain;
     border-radius: 6px;
 }
