@@ -25,6 +25,7 @@ from services.admin.admin_help import (
     STATISTIC_HELP,
     patch_admin_site_order,
 )
+from services.admin.order_fields import apply_order_choice_field
 
 from services.admin.admin_filters import (
     CreatedAtMonthFilter,
@@ -191,19 +192,43 @@ class ServiceAdminForm(forms.ModelForm):
             'description_ru': CKEditorWidget(),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        apply_order_choice_field(
+            self,
+            model=Service,
+            instance=self.instance,
+            field_name='sort_order',
+        )
+
 
 @admin.register(Service)
 class ServiceAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin):
     form = ServiceAdminForm
     admin_page_help = SERVICE_HELP
-    list_display = ('name_az', 'is_active', 'on_main_page', 'created_at', 'updated_at')
+    save_on_top = True
+    list_display = (
+        'name_az',
+        'is_active',
+        'on_main_page',
+        'created_at',
+        'updated_at',
+        'sort_order',
+    )
     list_filter = ('is_active', 'on_main_page')
     search_fields = ('name_az', 'name_en', 'name_ru', 'slug')
-    list_editable = ('is_active', 'on_main_page')
-    ordering = ('-created_at', '-id')
+    list_editable = ('sort_order', 'is_active', 'on_main_page')
+    ordering = ('sort_order', 'id')
     readonly_fields = ('slug',) + TIMESTAMP_READONLY
     inlines = [ServiceMediaInline]
     fieldsets = (
+        (_('Sıra'), {
+            'fields': ('sort_order',),
+            'description': _(
+                '0 = ilk (sayt, admin siyahısı, menyu dropdown). '
+                '1 = sonrakı və s. Eyni sıra təkrarlanarsa saxlayanda avtomatik düzəlir.'
+            ),
+        }),
         (_('Azərbaycan'), {
             'fields': ('name_az', 'description_az', 'bullet_list_az'),
             'classes': ('wide',),

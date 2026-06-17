@@ -7548,12 +7548,21 @@ body.page-home .partners-strip__head {
     display: none;
 }
 
+.pkg-card__header--has-image {
+    background: none;
+}
+
+.pkg-card__header--has-image .pkg-card__header-overlay {
+    display: none;
+}
+
 .pkg-card__cover {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center;
     z-index: 0;
 }
 

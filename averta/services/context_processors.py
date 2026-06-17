@@ -22,7 +22,7 @@ def navbar_services(request):
             Service.objects
             .filter(is_active=True)
             .only('slug', 'name_az', 'name_en', 'name_ru')
-            .order_by('-created_at', '-id')
+            .order_by('sort_order', 'id')
         )
         result = [
             {
