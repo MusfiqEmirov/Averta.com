@@ -117,7 +117,7 @@ def get_services(lang='az', is_active=True, on_main_page=None):
     if on_main_page is not None:
         queryset = queryset.filter(on_main_page=on_main_page)
 
-    return queryset.order_by('-created_at', '-id')
+    return queryset.order_by('sort_order', 'id')
 
 
 @cached_query(timeout='CACHE_TIMEOUT_MEDIUM')
@@ -134,7 +134,7 @@ def get_other_services(exclude_slug, lang='az', limit=6):
     qs = (
         get_services(lang=lang, is_active=True)
         .exclude(slug=exclude_slug)
-        .order_by('-created_at', '-id')[:limit]
+        .order_by('sort_order', 'id')[:limit]
     )
     return [serialize_service(s, lang) for s in qs]
 

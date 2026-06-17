@@ -113,7 +113,8 @@ BOOKING_HELP = (
 
 SERVICE_HELP = (
     '<strong>Bu nədir?</strong> Saytda təqdim olunan xidmətlər (tur, transfer, bələdçilik və s.).<br>'
-    '<strong>Harada dəyişir?</strong> Menyu → Xidmətlər; ana səhifə xidmət blokları.<br>'
+    '<strong>Harada dəyişir?</strong> Menyu → Xidmətlər dropdown; xidmətlər siyahısı; ana səhifə xidmət blokları.<br>'
+    '<strong>Sıra:</strong> <em>0 — İlk</em>, <em>1 — Sonrakı</em> və s. — sayt, admin və menyu eyni anda yenilənir.<br>'
     '<strong>Şəkillər:</strong> Aşağıdakı «Xidmət şəkilləri» bölməsindən yükləyin — '
     '<strong>birinci yüklənən şəkil cover</strong> olur, qalanları qalereyada göstərilir. '
     '«Ana səhifədə göstərilsin?» — ən çox 6 xidmət.<br>'

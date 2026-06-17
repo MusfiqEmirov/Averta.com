@@ -1,4 +1,5 @@
-from django.db.models.signals import m2m_changed, post_delete, post_save
+from django.db.models import F
+from django.db.models.signals import m2m_changed, post_delete, post_save, pre_save
 from django.dispatch import receiver
 
 from services.models import (
@@ -44,6 +45,20 @@ def _media_affects_site_cache(instance):
 # ---------------------------------------------------------------------------
 # Ana səhifə və digər səhifələr (xidmət, paket, partnyor, bloq, əlaqə)
 # ---------------------------------------------------------------------------
+
+def _shift_sort_order(model, instance, field='sort_order'):
+    new_order = getattr(instance, field)
+    exclude_pk = instance.pk or 0
+    if model.objects.exclude(pk=exclude_pk).filter(**{field: new_order}).exists():
+        model.objects.exclude(pk=exclude_pk).filter(
+            **{f'{field}__gte': new_order}
+        ).update(**{field: F(field) + 1})
+
+
+@receiver(pre_save, sender=Service)
+def auto_shift_service_sort_order(sender, instance, **kwargs):
+    _shift_sort_order(Service, instance)
+
 
 @receiver([post_save, post_delete], sender=Service)
 def invalidate_service_cache(sender, **kwargs):

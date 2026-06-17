@@ -72,6 +72,12 @@ class Service(SluggedModel, UpdatedAtMixin):
         verbose_name='Ana səhifədə göstərilsin?',
         help_text='Ana səhifədə ən çox 6 xidmət göstərilir.',
     )
+    sort_order = models.PositiveIntegerField(
+        default=0,
+        db_index=True,
+        verbose_name='Sıra',
+        help_text='0 = ilk (sayt, admin, menyu dropdown). 1 = sonrakı və s.',
+    )
     created_at = models.DateTimeField(
         auto_now_add=True,
     )
@@ -82,7 +88,7 @@ class Service(SluggedModel, UpdatedAtMixin):
     class Meta:
         verbose_name = 'Xidmət'
         verbose_name_plural = 'Xidmətlər'
-        ordering = ('-created_at', '-id')
+        ordering = ('sort_order', 'id')
 
     def __str__(self):
         return self.name_az
