@@ -4,11 +4,39 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from datetime import timedelta
+import json
 from services.models import AppealContact, Booking, Package, Review, Service
 from services.models.review_models import REVIEW_MESSAGE_MAX_LENGTH, REVIEW_NAME_MAX_LENGTH
 from services.utils import normalize_az_phone
 from services.utils.queries import get_localized_field_name, get_packages, get_services
 from services.utils.turnstile import verify_turnstile_response, is_turnstile_configured
+
+
+class PackageBookingCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
+    """Paket checkbox-larına sifariş formu tarix ayarlarını data-atribut kimi əlavə edir."""
+
+    def __init__(self, attrs=None, package_date_flags=None):
+        self.package_date_flags = package_date_flags or {}
+        super().__init__(attrs)
+
+    @staticmethod
+    def _choice_pk(value):
+        if value is None or value == '':
+            return None
+        if hasattr(value, 'value'):
+            value = value.value
+        return str(value)
+
+    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
+        option = super().create_option(
+            name, value, label, selected, index, subindex=subindex, attrs=attrs,
+        )
+        pk = self._choice_pk(value)
+        if pk is not None:
+            flags = self.package_date_flags.get(pk, {'from': True, 'to': True})
+            option['attrs']['data-show-date-from'] = '1' if flags.get('from', True) else '0'
+            option['attrs']['data-show-date-to'] = '1' if flags.get('to', True) else '0'
+        return option
 
 
 class TurnstileMixin:
@@ -240,7 +268,7 @@ class BookingForm(forms.ModelForm):
         label=_('Mobil nömrə'),
     )
     date_from = forms.DateField(
-        required=True,
+        required=False,
         input_formats=['%d-%m-%Y', '%d.%m.%Y', '%Y-%m-%d'],
         widget=forms.DateInput(
             format='%d-%m-%Y',
@@ -254,7 +282,7 @@ class BookingForm(forms.ModelForm):
         label=_('Gediş tarixi'),
     )
     date_to = forms.DateField(
-        required=True,
+        required=False,
         input_formats=['%d-%m-%Y', '%d.%m.%Y', '%Y-%m-%d'],
         widget=forms.DateInput(
             format='%d-%m-%Y',
@@ -301,7 +329,7 @@ class BookingForm(forms.ModelForm):
     packages = forms.ModelMultipleChoiceField(
         queryset=Package.objects.none(),
         required=False,
-        widget=forms.CheckboxSelectMultiple(attrs={'class': 'hb-check'}),
+        widget=PackageBookingCheckboxSelectMultiple(attrs={'class': 'hb-check'}),
         label=_('Paketlər'),
     )
 
@@ -393,6 +421,29 @@ class BookingForm(forms.ModelForm):
         self.fields['services'].label_from_instance = label_instance
         self.fields['packages'].label_from_instance = label_instance
 
+        self.package_date_flags = {}
+        try:
+            for row in package_qs.values('pk', 'show_date_from', 'show_date_to'):
+                self.package_date_flags[str(row['pk'])] = {
+                    'from': row['show_date_from'],
+                    'to': row['show_date_to'],
+                }
+        except Exception:
+            for package in package_qs.only('pk'):
+                self.package_date_flags[str(package.pk)] = {'from': True, 'to': True}
+
+        self.package_date_flags_json = json.dumps(self.package_date_flags, ensure_ascii=False)
+        self.fields['packages'].widget.package_date_flags = self.package_date_flags
+
+    def _booking_date_requirements(self, booking_type, packages):
+        if booking_type != self.BOOKING_TYPE_PACKAGE:
+            return True, True
+        if not packages:
+            return True, True
+        show_from = any(getattr(p, 'show_date_from', True) for p in packages)
+        show_to = any(getattr(p, 'show_date_to', True) for p in packages)
+        return show_from, show_to
+
     def clean_website(self):
         value = self.cleaned_data.get('website')
         if value:
@@ -414,14 +465,28 @@ class BookingForm(forms.ModelForm):
                 self.add_error('services', _('Ən azı bir xidmət seçin.'))
             cleaned_data['packages'] = []
 
+        show_from, show_to = self._booking_date_requirements(booking_type, packages)
         date_from = cleaned_data.get('date_from')
         date_to = cleaned_data.get('date_to')
         today = timezone.localdate()
 
-        if date_from and date_from < today:
-            self.add_error('date_from', _('Gediş tarixi keçmiş ola bilməz.'))
+        if show_from:
+            if not date_from:
+                self.add_error('date_from', _('Gediş tarixi mütləqdir.'))
+            elif date_from < today:
+                self.add_error('date_from', _('Gediş tarixi keçmiş ola bilməz.'))
+        else:
+            cleaned_data['date_from'] = None
 
-        if date_from and date_to and date_to < date_from:
+        if show_to:
+            if not date_to:
+                self.add_error('date_to', _('Qayıdış tarixi mütləqdir.'))
+        else:
+            cleaned_data['date_to'] = None
+
+        date_from = cleaned_data.get('date_from')
+        date_to = cleaned_data.get('date_to')
+        if show_from and show_to and date_from and date_to and date_to < date_from:
             cleaned_data['date_to'] = date_from + timedelta(days=1)
 
         return cleaned_data

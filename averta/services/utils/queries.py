@@ -193,14 +193,17 @@ def get_packages(lang='az', is_active=True):
     queryset = Package.objects.prefetch_related('service')
 
     if is_active is not None:
-        queryset = queryset.filter(is_active=is_active)
+        if is_active:
+            queryset = queryset.filter(Q(is_active=True) | Q(is_active__isnull=True))
+        else:
+            queryset = queryset.filter(is_active=False)
 
-    today = timezone.now().date()
+    today = timezone.localdate()
     queryset = queryset.filter(
         Q(end_date__isnull=True) | Q(end_date__gte=today)
     )
 
-    return queryset.order_by('-created_at')
+    return queryset.order_by('sort_order', 'id')
 
 
 # ---------------------------------------------------------------------------

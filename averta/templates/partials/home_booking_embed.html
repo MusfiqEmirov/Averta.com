@@ -6,7 +6,8 @@
      data-i18n-service="{% trans 'Xidmət' %}"
      data-i18n-adults="{% trans 'Böyük' %}"
      data-i18n-children="{% trans 'Uşaq' %}"
-     data-i18n-clear="{% trans 'Seçimi sil' %}">
+     data-i18n-clear="{% trans 'Seçimi sil' %}"
+     data-package-date-flags="{{ booking_form.package_date_flags_json|safe }}">
 
   {% if booking_feedback == 'success' %}
   <div class="alert alert-success rounded-pill py-2 px-4 mb-3 form-feedback-alert" role="alert" data-form-feedback data-feedback-auto-dismiss="2000">

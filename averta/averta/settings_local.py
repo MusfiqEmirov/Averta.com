@@ -150,7 +150,7 @@ CACHES = {
 CACHE_TIMEOUT_SHORT = 1800  # 30 minutes for occasionally changing data
 CACHE_TIMEOUT_MEDIUM = 7200  # 2 hours for normal pages (services, blog lists)
 CACHE_TIMEOUT_LONG = 86400  # 24 hours for stable data (about, contact, background images)
-CACHE_SCHEMA_VERSION = 4
+CACHE_SCHEMA_VERSION = 5
 
 # Default primary key field type
 
