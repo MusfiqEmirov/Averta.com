@@ -261,19 +261,35 @@ class PackageAdminForm(forms.ModelForm):
             'description_ru': CKEditorWidget(),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        apply_order_choice_field(
+            self,
+            model=Package,
+            instance=self.instance,
+            field_name='sort_order',
+        )
+
 
 @admin.register(Package)
 class PackageAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin):
     admin_page_help = PACKAGE_HELP
     form = PackageAdminForm
     filter_horizontal = ('service',)
-    list_display = ('name_az', 'price', 'currency', 'price_from', 'end_date', 'is_active', 'created_at', 'updated_at')
+    list_display = ('name_az', 'sort_order', 'price', 'currency', 'price_from', 'end_date', 'is_active', 'created_at', 'updated_at')
     list_filter = ('is_active',)
     search_fields = ('name_az', 'name_en', 'name_ru', 'slug')
-    list_editable = ('is_active',)
-    ordering = ('-created_at',)
+    list_editable = ('sort_order', 'is_active')
+    ordering = ('sort_order', 'id')
     readonly_fields = ('slug',) + TIMESTAMP_READONLY
     fieldsets = (
+        (_('Sıra'), {
+            'fields': ('sort_order',),
+            'description': _(
+                '0 = ilk (ana səhifə paket karuseli, sifariş forması). '
+                '1 = sonrakı və s. Eyni sıra təkrarlanarsa saxladıqda avtomatik düzəlir.'
+            ),
+        }),
         (_('Xidmətlər'), {
             'fields': ('service',),
             'description': _(
@@ -303,11 +319,27 @@ class PackageAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin
                 'Bitiş tarixi keçəndən sonra paket saytda avtomatik gizlənir.'
             ),
         }),
+        (_('Sifariş formu'), {
+            'fields': ('show_date_from', 'show_date_to'),
+            'description': _(
+                'Sifariş formunda hansı tarix sahələrinin göstəriləcəyini seçin. '
+                'Hər ikisini işarələsəniz, hər iki tarix sahəsi görünəcək.'
+            ),
+        }),
         (_('Parametrlər'), {
             'fields': ('is_active', 'slug') + TIMESTAMP_READONLY,
-            'description': _('«Saytda göstərilsin?» söndürülərsə paket saytda gizlənir.'),
+            'description': _(
+                'Paketin saytda görünməsi üçün «Saytda göstərilsin?» işarəli olmalıdır. '
+                'Söndürülərsə paket saytda və sifariş formasında gizlənir.'
+            ),
         }),
     )
+
+    def save_model(self, request, obj, form, change):
+        if obj.is_active is None:
+            obj.is_active = True
+        super().save_model(request, obj, form, change)
+        invalidate_model_cache('Package')
 
 
 # ---------------------------------------------------------------------------

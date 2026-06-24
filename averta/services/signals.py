@@ -60,6 +60,11 @@ def auto_shift_service_sort_order(sender, instance, **kwargs):
     _shift_sort_order(Service, instance)
 
 
+@receiver(pre_save, sender=Package)
+def auto_shift_package_sort_order(sender, instance, **kwargs):
+    _shift_sort_order(Package, instance)
+
+
 @receiver([post_save, post_delete], sender=Service)
 def invalidate_service_cache(sender, **kwargs):
     invalidate_model_cache('Service')

@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 
 from services.forms.forms_v1 import BookingForm
@@ -83,8 +85,10 @@ def modal_booking_form(request):
     try:
         form = BookingForm(lang=lang, prefix='modal', initial={'booking_type': 'package'})
     except Exception:
+        logging.getLogger(__name__).exception('modal_booking_form yaradıla bilmədi')
         try:
             form = BookingForm(lang='az', prefix='modal', initial={'booking_type': 'package'})
         except Exception:
+            logging.getLogger(__name__).exception('modal_booking_form fallback da uğursuz oldu')
             form = None
     return {'modal_booking_form': form}

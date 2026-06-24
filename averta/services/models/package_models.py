@@ -92,6 +92,12 @@ class Package(SluggedModel, UpdatedAtMixin):
         verbose_name='Saytda göstərilsin?',
         help_text='Söndürsəniz paket saytda görünməz.',
     )
+    sort_order = models.PositiveIntegerField(
+        default=0,
+        db_index=True,
+        verbose_name='Sıra',
+        help_text='0 = ilk (sayt, admin siyahısı). 1 = sonrakı və s.',
+    )
     end_date = models.DateField(
         null=True,
         blank=True,
@@ -100,6 +106,16 @@ class Package(SluggedModel, UpdatedAtMixin):
             'Bu tarix keçdikdən sonra paket avtomatik olaraq saytda görünməz olacaq. '
             'Boş buraxsanız, paket müddətsiz olacaq.'
         ),
+    )
+    show_date_from = models.BooleanField(
+        default=True,
+        verbose_name='Sifariş formunda gediş tarixi',
+        help_text='İşarələnərsə sifariş formunda gediş tarixi sahəsi göstərilir.',
+    )
+    show_date_to = models.BooleanField(
+        default=True,
+        verbose_name='Sifariş formunda qayıdış tarixi',
+        help_text='İşarələnərsə sifariş formunda qayıdış (gəliş) tarixi sahəsi göstərilir.',
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
@@ -111,7 +127,7 @@ class Package(SluggedModel, UpdatedAtMixin):
     class Meta:
         verbose_name = 'Paket'
         verbose_name_plural = 'Paketlər'
-        ordering = ('-created_at',)
+        ordering = ('sort_order', 'id')
 
     def __str__(self):
         return self.name_az or 'Paket'

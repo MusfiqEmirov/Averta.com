@@ -123,7 +123,101 @@
             closeAllPickers();
             updatePickerLabel('package');
             updatePickerLabel('service');
+            updateDateFieldsVisibility();
         }
+
+        function parsePackageDateFlags() {
+            var raw = root.getAttribute('data-package-date-flags') || '{}';
+            try { return JSON.parse(raw); } catch (e) { return {}; }
+        }
+
+        function checkboxShowsDate(cb, kind) {
+            var attr = kind === 'from' ? 'data-show-date-from' : 'data-show-date-to';
+            var val = cb.getAttribute(attr);
+            if (val === '0' || val === '1') {
+                return val === '1';
+            }
+            var pill = cb.closest('.hb-pill');
+            if (pill) {
+                val = pill.getAttribute(attr);
+                if (val === '0' || val === '1') {
+                    return val === '1';
+                }
+            }
+            var flags = parsePackageDateFlags();
+            var f = flags[cb.value] || { from: false, to: false };
+            return kind === 'from' ? !!f.from : !!f.to;
+        }
+
+        function setDateCellVisible(cell, visible) {
+            if (!cell) return;
+            cell.classList.toggle('d-none', !visible);
+            var col = cell.closest('.col-md-6');
+            if (col) col.classList.toggle('d-none', !visible);
+            var input = cell.querySelector('input');
+            if (input && !visible) {
+                input.value = '';
+                if (input._airDatepicker && typeof input._airDatepicker.clear === 'function') {
+                    input._airDatepicker.clear({ silent: true });
+                }
+            }
+        }
+
+        function updateDateFieldsVisibility() {
+            var fromCell = root.querySelector('[data-hb-date-cell]:not([data-hb-date-to])');
+            var toCell = root.querySelector('[data-hb-date-cell][data-hb-date-to]');
+            var showFrom = true;
+            var showTo = true;
+            var type = (typeInput && typeInput.value) || 'package';
+
+            if (type === 'service') {
+                showFrom = true;
+                showTo = true;
+            } else {
+                var panel = root.querySelector('[data-booking-panel="package"]');
+                var selected = panel ? panel.querySelectorAll('input[type="checkbox"]:checked') : [];
+                if (selected.length) {
+                    showFrom = false;
+                    showTo = false;
+                    selected.forEach(function (cb) {
+                        if (checkboxShowsDate(cb, 'from')) showFrom = true;
+                        if (checkboxShowsDate(cb, 'to')) showTo = true;
+                    });
+                }
+            }
+
+            setDateCellVisible(fromCell, showFrom);
+            setDateCellVisible(toCell, showTo);
+
+            var singleDate = (showFrom && !showTo) || (!showFrom && showTo);
+            var dateRow = root.querySelector('.hb-date-row');
+            if (dateRow) {
+                dateRow.classList.toggle('d-none', !showFrom && !showTo);
+                dateRow.classList.toggle('hb-date-row--single', singleDate);
+            }
+
+            [fromCell, toCell].forEach(function (cell, idx) {
+                if (!cell) return;
+                var col = cell.closest('.col-md-6');
+                if (!col) return;
+                var visible = idx === 0 ? showFrom : showTo;
+                if (singleDate && visible) {
+                    col.classList.remove('col-md-6');
+                    col.classList.add('col-md-12');
+                } else {
+                    col.classList.remove('col-md-12');
+                    col.classList.add('col-md-6');
+                }
+            });
+        }
+
+        root._hbUpdateDateFieldsVisibility = updateDateFieldsVisibility;
+        root._hbUpdatePickerLabel = updatePickerLabel;
+        root._hbRefreshBookingSelection = function () {
+            updatePickerLabel('package');
+            updatePickerLabel('service');
+            updateDateFieldsVisibility();
+        };
 
         tabs.forEach(function (tab) {
             tab.addEventListener('click', function () {
@@ -146,8 +240,20 @@
             cb.addEventListener('change', function () {
                 var panel = cb.closest('[data-booking-panel]');
                 if (panel) updatePickerLabel(panel.getAttribute('data-booking-panel'));
+                if (panel && panel.getAttribute('data-booking-panel') === 'package') {
+                    updateDateFieldsVisibility();
+                }
             });
         });
+
+        var packagePanel = root.querySelector('[data-booking-panel="package"]');
+        if (packagePanel) {
+            packagePanel.querySelectorAll('.hb-pill').forEach(function (pill) {
+                pill.addEventListener('click', function () {
+                    setTimeout(updateDateFieldsVisibility, 0);
+                });
+            });
+        }
 
         document.addEventListener('click', function (e) {
             if (root.contains(e.target)) {
@@ -371,28 +477,39 @@
         updateGuestsSummary();
     }
 
+    function resolveBookingTrigger(el) {
+        if (!el) return null;
+        return el.closest('[data-booking-open]') || el;
+    }
+
     function preselectBookingItems(root, serviceId, packageId) {
         if (!root) return;
 
         serviceId = (serviceId || '').trim();
         packageId = (packageId || '').trim();
 
+        function refreshSelection() {
+            if (typeof root._hbRefreshBookingSelection === 'function') {
+                root._hbRefreshBookingSelection();
+            }
+        }
+
         if (serviceId) {
             var serviceTab = root.querySelector('[data-booking-tab="service"]');
             if (serviceTab) serviceTab.click();
 
-            var serviceCb = root.querySelector(
-                '[data-booking-panel="service"] input[type="checkbox"][value="' + serviceId + '"]'
-            );
-            if (serviceCb) {
-                serviceCb.checked = true;
-                serviceCb.dispatchEvent(new Event('change', { bubbles: true }));
+            var servicePanel = root.querySelector('[data-booking-panel="service"]');
+            if (servicePanel) {
+                servicePanel.querySelectorAll('input[type="checkbox"]').forEach(function (cb) {
+                    var shouldCheck = String(cb.value) === String(serviceId);
+                    if (cb.checked !== shouldCheck) {
+                        cb.checked = shouldCheck;
+                        cb.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                });
             }
-
-            var servicePicker = root.querySelector('[data-hb-picker="service"]');
-            if (servicePicker && servicePicker.getAttribute('aria-expanded') !== 'true') {
-                servicePicker.click();
-            }
+            refreshSelection();
+            setTimeout(refreshSelection, 0);
             return;
         }
 
@@ -400,18 +517,18 @@
             var packageTab = root.querySelector('[data-booking-tab="package"]');
             if (packageTab) packageTab.click();
 
-            var packageCb = root.querySelector(
-                '[data-booking-panel="package"] input[type="checkbox"][value="' + packageId + '"]'
-            );
-            if (packageCb) {
-                packageCb.checked = true;
-                packageCb.dispatchEvent(new Event('change', { bubbles: true }));
+            var packagePanel = root.querySelector('[data-booking-panel="package"]');
+            if (packagePanel) {
+                packagePanel.querySelectorAll('input[type="checkbox"]').forEach(function (cb) {
+                    var shouldCheck = String(cb.value) === String(packageId);
+                    if (cb.checked !== shouldCheck) {
+                        cb.checked = shouldCheck;
+                        cb.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                });
             }
-
-            var packagePicker = root.querySelector('[data-hb-picker="package"]');
-            if (packagePicker && packagePicker.getAttribute('aria-expanded') !== 'true') {
-                packagePicker.click();
-            }
+            refreshSelection();
+            setTimeout(refreshSelection, 0);
         }
     }
 
@@ -437,18 +554,33 @@
         var modalEl = document.getElementById('bookingModal');
         if (!modalEl) return;
 
-        modalEl.addEventListener('show.bs.modal', function (event) {
-            var trigger = event.relatedTarget;
+        var pendingModalSelection = null;
+
+        function applyModalSelection(trigger) {
             var root = document.getElementById('booking-modal-root');
-            if (!root || !trigger) return;
+            if (!root) return;
+            trigger = resolveBookingTrigger(trigger);
             preselectBookingItems(
                 root,
-                trigger.getAttribute('data-booking-service') || '',
-                trigger.getAttribute('data-booking-package') || ''
+                trigger ? (trigger.getAttribute('data-booking-service') || '') : '',
+                trigger ? (trigger.getAttribute('data-booking-package') || '') : ''
             );
+        }
+
+        modalEl.addEventListener('show.bs.modal', function (event) {
+            pendingModalSelection = resolveBookingTrigger(event.relatedTarget);
+            applyModalSelection(pendingModalSelection);
+        });
+
+        modalEl.addEventListener('shown.bs.modal', function () {
+            if (pendingModalSelection) {
+                applyModalSelection(pendingModalSelection);
+                pendingModalSelection = null;
+            }
         });
 
         modalEl.addEventListener('hidden.bs.modal', function () {
+            pendingModalSelection = null;
             var root = document.getElementById('booking-modal-root');
             if (!root) return;
 
@@ -477,7 +609,7 @@
         });
 
         document.addEventListener('click', function (e) {
-            var trigger = e.target.closest('[data-booking-open]');
+            var trigger = resolveBookingTrigger(e.target.closest('[data-booking-open]'));
             if (!trigger) return;
             if (trigger.hasAttribute('data-bs-toggle') && typeof bootstrap !== 'undefined') return;
             e.preventDefault();
@@ -597,18 +729,18 @@
 
         var fromCell = root.querySelector('[data-hb-date-cell]:not([data-hb-date-to])');
         var toCell = root.querySelector('[data-hb-date-cell][data-hb-date-to]');
-        if (!fromCell || !toCell) return;
+        if (!fromCell && !toCell) return;
 
-        var fromInput = fromCell.querySelector('.hb-date-text')
+        var fromInput = fromCell && (fromCell.querySelector('.hb-date-text')
             || fromCell.querySelector('input[name="date_from"]')
-            || fromCell.querySelector('input[name$="-date_from"]');
-        var toInput = toCell.querySelector('.hb-date-text')
+            || fromCell.querySelector('input[name$="-date_from"]'));
+        var toInput = toCell && (toCell.querySelector('.hb-date-text')
             || toCell.querySelector('input[name="date_to"]')
-            || toCell.querySelector('input[name$="-date_to"]');
-        if (!fromInput || !toInput) return;
+            || toCell.querySelector('input[name$="-date_to"]'));
+        if (!fromInput && !toInput) return;
 
-        if (fromInput._airDatepicker) { fromInput._airDatepicker.destroy(); }
-        if (toInput._airDatepicker) { toInput._airDatepicker.destroy(); }
+        if (fromInput && fromInput._airDatepicker) { fromInput._airDatepicker.destroy(); }
+        if (toInput && toInput._airDatepicker) { toInput._airDatepicker.destroy(); }
 
         var lang = parseLang(root);
         var locale = getAirLocale(lang);
@@ -658,56 +790,62 @@
             onRenderCell: renderPastDayCells(function () { return today; }),
         };
 
-        dpFrom = new AirDatepicker(fromInput, Object.assign({}, baseOpts, {
-            onSelect: function(opts) {
-                if (!opts.date) return;
-                fromInput.value = fmtDate(opts.date);
-                syncDateFieldState(fromInput, fromCell);
-                if (dpTo) {
-                    dpTo.update({ minDate: opts.date });
-                    if (typeof dpTo.setViewDate === 'function') {
-                        dpTo.setViewDate(opts.date);
-                    }
-                    var toSel = dpTo.selectedDates[0];
-                    if (toSel && toSel <= opts.date) {
-                        var next = addDays(opts.date, 1);
-                        dpTo.selectDate(next, { silent: false });
-                        dpTo.setViewDate(next);
-                        toInput.value = fmtDate(next);
-                        syncDateFieldState(toInput, toCell);
-                    }
-                }
-            },
-            onShow: function() {
-                fromCell.classList.add('is-open');
-                if (typeof dpFrom._hbOnShowBridge === 'function') {
-                    setTimeout(function () { dpFrom._hbOnShowBridge(); }, 0);
-                }
-            },
-            onHide: function() { fromCell.classList.remove('is-open'); },
-        }));
+        dpFrom = null;
+        dpTo = null;
 
-        dpTo = new AirDatepicker(toInput, Object.assign({}, baseOpts, {
-            minDate: today,
-            onRenderCell: renderPastDayCells(function () {
-                return dpTo && dpTo.opts && dpTo.opts.minDate ? dpTo.opts.minDate : today;
-            }),
-            onSelect: function(opts) {
-                if (!opts.date) return;
-                toInput.value = fmtDate(opts.date);
-                syncDateFieldState(toInput, toCell);
-            },
-            onShow: function() {
-                toCell.classList.add('is-open');
-                if (typeof dpTo._hbOnShowBridge === 'function') {
-                    setTimeout(function () { dpTo._hbOnShowBridge(); }, 0);
-                }
-            },
-            onHide: function() { toCell.classList.remove('is-open'); },
-        }));
+        if (fromInput) {
+            dpFrom = new AirDatepicker(fromInput, Object.assign({}, baseOpts, {
+                onSelect: function(opts) {
+                    if (!opts.date) return;
+                    fromInput.value = fmtDate(opts.date);
+                    syncDateFieldState(fromInput, fromCell);
+                    if (dpTo && toInput) {
+                        dpTo.update({ minDate: opts.date });
+                        if (typeof dpTo.setViewDate === 'function') {
+                            dpTo.setViewDate(opts.date);
+                        }
+                        var toSel = dpTo.selectedDates[0];
+                        if (toSel && toSel <= opts.date) {
+                            var next = addDays(opts.date, 1);
+                            dpTo.selectDate(next, { silent: false });
+                            dpTo.setViewDate(next);
+                            toInput.value = fmtDate(next);
+                            syncDateFieldState(toInput, toCell);
+                        }
+                    }
+                },
+                onShow: function() {
+                    if (fromCell) fromCell.classList.add('is-open');
+                    if (typeof dpFrom._hbOnShowBridge === 'function') {
+                        setTimeout(function () { dpFrom._hbOnShowBridge(); }, 0);
+                    }
+                },
+                onHide: function() { if (fromCell) fromCell.classList.remove('is-open'); },
+            }));
+            fromInput._airDatepicker = dpFrom;
+        }
 
-        fromInput._airDatepicker = dpFrom;
-        toInput._airDatepicker = dpTo;
+        if (toInput) {
+            dpTo = new AirDatepicker(toInput, Object.assign({}, baseOpts, {
+                minDate: today,
+                onRenderCell: renderPastDayCells(function () {
+                    return dpTo && dpTo.opts && dpTo.opts.minDate ? dpTo.opts.minDate : today;
+                }),
+                onSelect: function(opts) {
+                    if (!opts.date) return;
+                    toInput.value = fmtDate(opts.date);
+                    syncDateFieldState(toInput, toCell);
+                },
+                onShow: function() {
+                    if (toCell) toCell.classList.add('is-open');
+                    if (typeof dpTo._hbOnShowBridge === 'function') {
+                        setTimeout(function () { dpTo._hbOnShowBridge(); }, 0);
+                    }
+                },
+                onHide: function() { if (toCell) toCell.classList.remove('is-open'); },
+            }));
+            toInput._airDatepicker = dpTo;
+        }
 
         function openDp(dp, otherDp) {
             if (otherDp && otherDp.visible) otherDp.hide();
@@ -768,15 +906,15 @@
         }
 
         if (supportsHoverOpen()) {
-            disableInputClickOpen(fromInput);
-            disableInputClickOpen(toInput);
+            if (fromInput) disableInputClickOpen(fromInput);
+            if (toInput) disableInputClickOpen(toInput);
         }
 
-        bindCell(fromCell, dpFrom, dpTo);
-        bindCell(toCell, dpTo, dpFrom);
+        if (fromCell && dpFrom) bindCell(fromCell, dpFrom, dpTo);
+        if (toCell && dpTo) bindCell(toCell, dpTo, dpFrom);
 
-        syncDateFieldState(fromInput, fromCell);
-        syncDateFieldState(toInput, toCell);
+        if (fromInput) syncDateFieldState(fromInput, fromCell);
+        if (toInput) syncDateFieldState(toInput, toCell);
     }
 
     function boot() {
@@ -784,11 +922,14 @@
 
         var hero = document.getElementById('hero-booking');
         var modalRoot = document.getElementById('booking-modal-root');
+        var contactRoot = document.getElementById('contact-booking-form-root');
 
         try { initBookingRoot(hero); } catch (err) { /* ignore */ }
         try { initBookingRoot(modalRoot); } catch (err) { /* ignore */ }
+        try { initBookingRoot(contactRoot); } catch (err) { /* ignore */ }
         try { initDateFields(hero); } catch (err) { /* ignore */ }
         try { initDateFields(modalRoot); } catch (err) { /* ignore */ }
+        try { initDateFields(contactRoot); } catch (err) { /* ignore */ }
     }
 
     if (document.readyState === 'loading') {
