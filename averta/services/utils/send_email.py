@@ -120,6 +120,7 @@ def format_booking_message(instance):
 
     date_from = date_format(instance.date_from, 'd-m-Y') if instance.date_from else '—'
     date_to   = date_format(instance.date_to,   'd-m-Y') if instance.date_to   else '—'
+    arrival_date = date_format(instance.arrival_date, 'd-m-Y') if instance.arrival_date else '—'
 
     return (
         f'Ad soyad:         {instance.full_name}\n'
@@ -127,6 +128,7 @@ def format_booking_message(instance):
         f'Mobil nömrə:      {phone}\n'
         f'Gediş tarixi:     {date_from}\n'
         f'Qayıdış tarixi:   {date_to}\n'
+        f'Gəliş tarixi:     {arrival_date}\n'
         f'Böyüklər:         {instance.adults_count}\n'
         f'Uşaqlar:          {instance.children_count}\n'
         f'Xidmətlər:        {services}\n'
@@ -166,6 +168,7 @@ def format_booking_message_html(instance):
 
     date_from = date_format(instance.date_from, 'd-m-Y') if instance.date_from else '—'
     date_to = date_format(instance.date_to, 'd-m-Y') if instance.date_to else '—'
+    arrival_date = date_format(instance.arrival_date, 'd-m-Y') if instance.arrival_date else '—'
 
     return (
         f'Ad soyad:         {html_lib.escape(instance.full_name)}<br>\n'
@@ -173,6 +176,7 @@ def format_booking_message_html(instance):
         f'Mobil nömrə:      {phone_html}<br>\n'
         f'Gediş tarixi:     {html_lib.escape(date_from)}<br>\n'
         f'Qayıdış tarixi:   {html_lib.escape(date_to)}<br>\n'
+        f'Gəliş tarixi:     {html_lib.escape(arrival_date)}<br>\n'
         f'Böyüklər:         {instance.adults_count}<br>\n'
         f'Uşaqlar:          {instance.children_count}<br>\n'
         f'Xidmətlər:        {services}<br>\n'
@@ -184,14 +188,16 @@ def format_booking_message_html(instance):
     )
 
 
-def _format_travel_dates(date_from, date_to):
-    date_from = (date_from or '').strip()
-    date_to = (date_to or '').strip()
-    if not date_from and not date_to:
+def _format_travel_dates(date_from, date_to, arrival_date=None):
+    parts = [
+        (date_from or '').strip(),
+        (date_to or '').strip(),
+        (arrival_date or '').strip(),
+    ]
+    parts = [p for p in parts if p]
+    if not parts:
         return '—'
-    if date_from and date_to:
-        return f'{date_from}\n{date_to}'
-    return date_from or date_to
+    return '\n'.join(parts)
 
 
 def _excel_cell(value):
@@ -209,6 +215,7 @@ def build_booking_xls(instance):
 
     date_from = date_format(instance.date_from, 'd-m-Y') if instance.date_from else ''
     date_to = date_format(instance.date_to, 'd-m-Y') if instance.date_to else ''
+    arrival_date = date_format(instance.arrival_date, 'd-m-Y') if instance.arrival_date else ''
 
     services = ' | '.join(str(s) for s in instance.services.all())
     packages = ' | '.join(str(p) for p in instance.packages.all())
@@ -219,7 +226,7 @@ def build_booking_xls(instance):
         'Ad soyad',
         'Mobil nömrə',
         'E-poçt',
-        'Gediş / Qayıdış tarixi',
+        'Gediş / Qayıdış / Gəliş tarixi',
         'Qeyd',
         'Böyük sayı',
         'Uşaq sayı',
@@ -232,7 +239,7 @@ def build_booking_xls(instance):
         instance.full_name or '',
         instance.phone or '',
         instance.email or '',
-        _format_travel_dates(date_from, date_to),
+        _format_travel_dates(date_from, date_to, arrival_date),
         instance.note or '',
         instance.adults_count,
         instance.children_count,

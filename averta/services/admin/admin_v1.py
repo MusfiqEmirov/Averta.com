@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib import admin
+from django.core.exceptions import ValidationError
 from django.template.response import TemplateResponse
 from django.utils import timezone
 from django.utils.formats import date_format
@@ -270,6 +271,18 @@ class PackageAdminForm(forms.ModelForm):
             field_name='sort_order',
         )
 
+    def clean(self):
+        cleaned_data = super().clean()
+        selected = sum(
+            1 for name in ('show_date_from', 'show_date_to', 'show_arrival_date')
+            if cleaned_data.get(name)
+        )
+        if selected > 2:
+            raise ValidationError(
+                _('Sifariş formunda eyni anda ən çoxu 2 tarix sahəsi seçilə bilər.')
+            )
+        return cleaned_data
+
 
 @admin.register(Package)
 class PackageAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin):
@@ -320,10 +333,10 @@ class PackageAdmin(AdminImageCompressMixin, AdminPageHelpMixin, admin.ModelAdmin
             ),
         }),
         (_('Sifariş formu'), {
-            'fields': ('show_date_from', 'show_date_to'),
+            'fields': ('show_date_from', 'show_date_to', 'show_arrival_date'),
             'description': _(
                 'Sifariş formunda hansı tarix sahələrinin göstəriləcəyini seçin. '
-                'Hər ikisini işarələsəniz, hər iki tarix sahəsi görünəcək.'
+                'Eyni anda ən çoxu 2 sahə seçilə bilər.'
             ),
         }),
         (_('Parametrlər'), {
@@ -480,6 +493,7 @@ class BookingAdmin(AdminPageHelpMixin, admin.ModelAdmin):
         'booking_target',
         'date_from_display',
         'date_to_display',
+        'arrival_date_display',
         'adults_count',
         'children_count',
         'email',
@@ -509,6 +523,7 @@ class BookingAdmin(AdminPageHelpMixin, admin.ModelAdmin):
         'phone',
         'date_from_display',
         'date_to_display',
+        'arrival_date_display',
         'note',
         'services',
         'packages',
@@ -521,7 +536,7 @@ class BookingAdmin(AdminPageHelpMixin, admin.ModelAdmin):
             'fields': ('full_name', 'email', 'phone', 'note'),
         }),
         (_('Sifariş'), {
-            'fields': ('services', 'packages', 'date_from_display', 'date_to_display', 'adults_count', 'children_count'),
+            'fields': ('services', 'packages', 'date_from_display', 'date_to_display', 'arrival_date_display', 'adults_count', 'children_count'),
         }),
         (_('Status'), {
             'fields': ('is_read', 'is_customer', 'is_deleted') + TIMESTAMP_READONLY,
@@ -546,6 +561,7 @@ class BookingAdmin(AdminPageHelpMixin, admin.ModelAdmin):
             'email': obj.email or '',
             'date_from': date_format(obj.date_from, 'd-m-Y') if obj.date_from else '',
             'date_to': date_format(obj.date_to, 'd-m-Y') if obj.date_to else '',
+            'arrival_date': date_format(obj.arrival_date, 'd-m-Y') if obj.arrival_date else '',
             'note': obj.note or '',
             'adults_count': obj.adults_count,
             'children_count': obj.children_count,
@@ -601,6 +617,12 @@ class BookingAdmin(AdminPageHelpMixin, admin.ModelAdmin):
         if not obj.date_to:
             return '—'
         return date_format(obj.date_to, 'd-m-Y')
+
+    @admin.display(description=_('Gəliş tarixi'), ordering='arrival_date')
+    def arrival_date_display(self, obj):
+        if not obj.arrival_date:
+            return '—'
+        return date_format(obj.arrival_date, 'd-m-Y')
 
     @admin.display(description=_('Seçim'))
     def booking_target(self, obj):

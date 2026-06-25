@@ -132,6 +132,17 @@
                                     </div>
                                     {% if modal_booking_form.date_to.errors %}<p class="hb-field-err">{{ modal_booking_form.date_to.errors.0 }}</p>{% endif %}
                                 </div>
+                                <div class="hb-date-cell" data-hb-date-cell data-hb-date-arrival="1">
+                                    <label class="hb-date-label" for="{{ modal_booking_form.arrival_date.id_for_label }}">
+                                        <i class="fas fa-calendar-check hb-date-icon"></i>
+                                        {% trans "Gəliş tarixi" %} *
+                                    </label>
+                                    <div class="hb-date-wrap">
+                                        {{ modal_booking_form.arrival_date }}
+                                        <i class="fas fa-chevron-down hb-date-chevron" aria-hidden="true"></i>
+                                    </div>
+                                    {% if modal_booking_form.arrival_date.errors %}<p class="hb-field-err">{{ modal_booking_form.arrival_date.errors.0 }}</p>{% endif %}
+                                </div>
                             </div>
 
                             <div class="hb-row4">

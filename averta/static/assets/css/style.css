@@ -1224,8 +1224,9 @@ h1, h2, h3, h4, h5, h6,
     color: #fff;
 }
 
-/* hide native checkbox; checked state via sibling */
-.hb-pill input[type="checkbox"] {
+/* hide native checkbox/radio; checked state via sibling */
+.hb-pill input[type="checkbox"],
+.hb-pill input[type="radio"] {
     position: absolute;
     width: 1px; height: 1px;
     margin: -1px; padding: 0;
@@ -1238,6 +1239,9 @@ h1, h2, h3, h4, h5, h6,
     border-color: var(--bs-primary);
     color: #fff;
     box-shadow: 0 4px 12px rgba(81, 32, 113,0.45);
+}
+
+.hb-pill:has(input[type="checkbox"]:checked) {
     padding-right: 0.45rem;
 }
 

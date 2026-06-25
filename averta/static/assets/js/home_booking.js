@@ -51,9 +51,21 @@
             var panel = root.querySelector('[data-booking-panel="' + kind + '"]');
             if (!valueEl || !panel) return;
 
+            if (kind === 'package') {
+                var selectedRadio = panel.querySelector('input[type="radio"]:checked');
+                if (!selectedRadio) {
+                    valueEl.textContent = i18n.package;
+                    return;
+                }
+                var pillLabel = selectedRadio.closest('label');
+                var pillSpan = pillLabel && pillLabel.querySelector('span');
+                valueEl.textContent = (pillSpan && pillSpan.textContent.trim()) || i18n.package;
+                return;
+            }
+
             var selected = panel.querySelectorAll('input[type="checkbox"]:checked');
             if (!selected.length) {
-                valueEl.textContent = kind === 'package' ? i18n.package : i18n.service;
+                valueEl.textContent = i18n.service;
                 return;
             }
 
@@ -114,9 +126,14 @@
             panels.forEach(function (panel) {
                 var show = panel.getAttribute('data-booking-panel') === type;
                 panel.classList.toggle('d-none', !show);
-                panel.querySelectorAll('input[type="checkbox"]').forEach(function (cb) {
-                    cb.disabled = !show;
-                    if (!show) cb.checked = false;
+                panel.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(function (input) {
+                    input.disabled = !show;
+                    if (!show && input.checked) {
+                        input.checked = false;
+                        if (input.type === 'checkbox') {
+                            input.dispatchEvent(new Event('change', { bubbles: true }));
+                        }
+                    }
                 });
             });
 
@@ -132,7 +149,13 @@
         }
 
         function checkboxShowsDate(cb, kind) {
-            var attr = kind === 'from' ? 'data-show-date-from' : 'data-show-date-to';
+            var attrMap = {
+                from: 'data-show-date-from',
+                to: 'data-show-date-to',
+                arrival: 'data-show-date-arrival',
+            };
+            var attr = attrMap[kind];
+            if (!attr) return false;
             var val = cb.getAttribute(attr);
             if (val === '0' || val === '1') {
                 return val === '1';
@@ -145,14 +168,16 @@
                 }
             }
             var flags = parsePackageDateFlags();
-            var f = flags[cb.value] || { from: false, to: false };
-            return kind === 'from' ? !!f.from : !!f.to;
+            var f = flags[cb.value] || { from: false, to: false, arrival: false };
+            if (kind === 'from') return !!f.from;
+            if (kind === 'to') return !!f.to;
+            return !!f.arrival;
         }
 
         function setDateCellVisible(cell, visible) {
             if (!cell) return;
             cell.classList.toggle('d-none', !visible);
-            var col = cell.closest('.col-md-6');
+            var col = cell.closest('.col-md-4, .col-md-6, .col-md-12');
             if (col) col.classList.toggle('d-none', !visible);
             var input = cell.querySelector('input');
             if (input && !visible) {
@@ -164,53 +189,88 @@
         }
 
         function updateDateFieldsVisibility() {
-            var fromCell = root.querySelector('[data-hb-date-cell]:not([data-hb-date-to])');
+            var fromCell = root.querySelector('[data-hb-date-cell]:not([data-hb-date-to]):not([data-hb-date-arrival])');
             var toCell = root.querySelector('[data-hb-date-cell][data-hb-date-to]');
+            var arrivalCell = root.querySelector('[data-hb-date-cell][data-hb-date-arrival]');
             var showFrom = true;
             var showTo = true;
+            var showArrival = false;
             var type = (typeInput && typeInput.value) || 'package';
 
             if (type === 'service') {
                 showFrom = true;
                 showTo = true;
+                showArrival = false;
             } else {
                 var panel = root.querySelector('[data-booking-panel="package"]');
-                var selected = panel ? panel.querySelectorAll('input[type="checkbox"]:checked') : [];
-                if (selected.length) {
+                var selectedRadio = panel ? panel.querySelector('input[type="radio"]:checked') : null;
+                if (selectedRadio) {
+                    showFrom = checkboxShowsDate(selectedRadio, 'from');
+                    showTo = checkboxShowsDate(selectedRadio, 'to');
+                    showArrival = checkboxShowsDate(selectedRadio, 'arrival');
+                } else {
                     showFrom = false;
                     showTo = false;
-                    selected.forEach(function (cb) {
-                        if (checkboxShowsDate(cb, 'from')) showFrom = true;
-                        if (checkboxShowsDate(cb, 'to')) showTo = true;
-                    });
+                    showArrival = false;
                 }
             }
 
             setDateCellVisible(fromCell, showFrom);
             setDateCellVisible(toCell, showTo);
+            setDateCellVisible(arrivalCell, showArrival);
 
-            var singleDate = (showFrom && !showTo) || (!showFrom && showTo);
+            var visibleCount = [showFrom, showTo, showArrival].filter(Boolean).length;
             var dateRow = root.querySelector('.hb-date-row');
             if (dateRow) {
-                dateRow.classList.toggle('d-none', !showFrom && !showTo);
-                dateRow.classList.toggle('hb-date-row--single', singleDate);
+                dateRow.classList.toggle('d-none', visibleCount === 0);
+                dateRow.classList.toggle('hb-date-row--single', visibleCount === 1);
+                dateRow.classList.toggle('hb-date-row--triple', visibleCount === 3);
             }
 
-            [fromCell, toCell].forEach(function (cell, idx) {
-                if (!cell) return;
-                var col = cell.closest('.col-md-6');
+            [
+                { cell: fromCell, visible: showFrom },
+                { cell: toCell, visible: showTo },
+                { cell: arrivalCell, visible: showArrival },
+            ].forEach(function (item) {
+                if (!item.cell) return;
+                var col = item.cell.closest('.col-md-6, .col-md-4, .col-md-12');
                 if (!col) return;
-                var visible = idx === 0 ? showFrom : showTo;
-                if (singleDate && visible) {
-                    col.classList.remove('col-md-6');
+                col.classList.remove('col-md-4', 'col-md-6', 'col-md-12');
+                if (!item.visible) return;
+                if (visibleCount === 1) {
                     col.classList.add('col-md-12');
-                } else {
-                    col.classList.remove('col-md-12');
+                } else if (visibleCount === 2) {
                     col.classList.add('col-md-6');
+                } else {
+                    col.classList.add('col-md-4');
                 }
             });
         }
 
+        function resetBookingSelection() {
+            var packageTab = root.querySelector('[data-booking-tab="package"]');
+            if (packageTab) {
+                packageTab.click();
+            } else if (typeInput) {
+                typeInput.value = 'package';
+            }
+
+            root.querySelectorAll('[data-booking-panel="package"] input[type="radio"]').forEach(function (radio) {
+                radio.checked = false;
+            });
+            root.querySelectorAll('[data-booking-panel="service"] input[type="checkbox"]').forEach(function (cb) {
+                cb.checked = false;
+                var clearBtn = cb.closest('.hb-pill') && cb.closest('.hb-pill').querySelector('.hb-pill-clear');
+                if (clearBtn) clearBtn.hidden = true;
+            });
+
+            closeAllPickers();
+            updatePickerLabel('package');
+            updatePickerLabel('service');
+            updateDateFieldsVisibility();
+        }
+
+        root._hbResetBookingSelection = resetBookingSelection;
         root._hbUpdateDateFieldsVisibility = updateDateFieldsVisibility;
         root._hbUpdatePickerLabel = updatePickerLabel;
         root._hbRefreshBookingSelection = function () {
@@ -236,13 +296,17 @@
             });
         });
 
+        root.querySelectorAll('[data-booking-panel="package"] input[type="radio"]').forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                updatePickerLabel('package');
+                updateDateFieldsVisibility();
+            });
+        });
+
         root.querySelectorAll('[data-booking-panel] input[type="checkbox"]').forEach(function (cb) {
             cb.addEventListener('change', function () {
                 var panel = cb.closest('[data-booking-panel]');
                 if (panel) updatePickerLabel(panel.getAttribute('data-booking-panel'));
-                if (panel && panel.getAttribute('data-booking-panel') === 'package') {
-                    updateDateFieldsVisibility();
-                }
             });
         });
 
@@ -494,6 +558,27 @@
             }
         }
 
+        if (!serviceId && !packageId) {
+            if (typeof root._hbResetBookingSelection === 'function') {
+                root._hbResetBookingSelection();
+            }
+            return;
+        }
+
+        if (serviceId) {
+            root.querySelectorAll('[data-booking-panel="package"] input[type="radio"]').forEach(function (radio) {
+                radio.checked = false;
+            });
+        }
+        if (packageId) {
+            root.querySelectorAll('[data-booking-panel="service"] input[type="checkbox"]').forEach(function (cb) {
+                if (cb.checked) {
+                    cb.checked = false;
+                    cb.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            });
+        }
+
         if (serviceId) {
             var serviceTab = root.querySelector('[data-booking-tab="service"]');
             if (serviceTab) serviceTab.click();
@@ -519,11 +604,11 @@
 
             var packagePanel = root.querySelector('[data-booking-panel="package"]');
             if (packagePanel) {
-                packagePanel.querySelectorAll('input[type="checkbox"]').forEach(function (cb) {
-                    var shouldCheck = String(cb.value) === String(packageId);
-                    if (cb.checked !== shouldCheck) {
-                        cb.checked = shouldCheck;
-                        cb.dispatchEvent(new Event('change', { bubbles: true }));
+                packagePanel.querySelectorAll('input[type="radio"]').forEach(function (radio) {
+                    var shouldCheck = String(radio.value) === String(packageId);
+                    if (radio.checked !== shouldCheck) {
+                        radio.checked = shouldCheck;
+                        radio.dispatchEvent(new Event('change', { bubbles: true }));
                     }
                 });
             }
@@ -583,6 +668,10 @@
             pendingModalSelection = null;
             var root = document.getElementById('booking-modal-root');
             if (!root) return;
+
+            if (typeof root._hbResetBookingSelection === 'function') {
+                root._hbResetBookingSelection();
+            }
 
             var guestsCell = root.querySelector('.hb-guests-cell');
             var guestsBtn = root.querySelector('[data-guests-open]');
@@ -727,9 +816,10 @@
         if (typeof AirDatepicker === 'undefined') return;
         if (!root) return;
 
-        var fromCell = root.querySelector('[data-hb-date-cell]:not([data-hb-date-to])');
+        var fromCell = root.querySelector('[data-hb-date-cell]:not([data-hb-date-to]):not([data-hb-date-arrival])');
         var toCell = root.querySelector('[data-hb-date-cell][data-hb-date-to]');
-        if (!fromCell && !toCell) return;
+        var arrivalCell = root.querySelector('[data-hb-date-cell][data-hb-date-arrival]');
+        if (!fromCell && !toCell && !arrivalCell) return;
 
         var fromInput = fromCell && (fromCell.querySelector('.hb-date-text')
             || fromCell.querySelector('input[name="date_from"]')
@@ -737,16 +827,20 @@
         var toInput = toCell && (toCell.querySelector('.hb-date-text')
             || toCell.querySelector('input[name="date_to"]')
             || toCell.querySelector('input[name$="-date_to"]'));
-        if (!fromInput && !toInput) return;
+        var arrivalInput = arrivalCell && (arrivalCell.querySelector('.hb-date-text')
+            || arrivalCell.querySelector('input[name="arrival_date"]')
+            || arrivalCell.querySelector('input[name$="-arrival_date"]'));
+        if (!fromInput && !toInput && !arrivalInput) return;
 
         if (fromInput && fromInput._airDatepicker) { fromInput._airDatepicker.destroy(); }
         if (toInput && toInput._airDatepicker) { toInput._airDatepicker.destroy(); }
+        if (arrivalInput && arrivalInput._airDatepicker) { arrivalInput._airDatepicker.destroy(); }
 
         var lang = parseLang(root);
         var locale = getAirLocale(lang);
         var today = startOfToday();
         var useHeroCalendar = root.id === 'hero-booking' || root.id === 'booking-modal-root';
-        var dpFrom, dpTo;
+        var dpFrom, dpTo, dpArrival;
 
         function fmtDate(d) {
             if (!d) return '';
@@ -792,6 +886,7 @@
 
         dpFrom = null;
         dpTo = null;
+        dpArrival = null;
 
         if (fromInput) {
             dpFrom = new AirDatepicker(fromInput, Object.assign({}, baseOpts, {
@@ -847,20 +942,40 @@
             toInput._airDatepicker = dpTo;
         }
 
-        function openDp(dp, otherDp) {
-            if (otherDp && otherDp.visible) otherDp.hide();
+        if (arrivalInput) {
+            dpArrival = new AirDatepicker(arrivalInput, Object.assign({}, baseOpts, {
+                onSelect: function(opts) {
+                    if (!opts.date) return;
+                    arrivalInput.value = fmtDate(opts.date);
+                    syncDateFieldState(arrivalInput, arrivalCell);
+                },
+                onShow: function() {
+                    if (arrivalCell) arrivalCell.classList.add('is-open');
+                    if (typeof dpArrival._hbOnShowBridge === 'function') {
+                        setTimeout(function () { dpArrival._hbOnShowBridge(); }, 0);
+                    }
+                },
+                onHide: function() { if (arrivalCell) arrivalCell.classList.remove('is-open'); },
+            }));
+            arrivalInput._airDatepicker = dpArrival;
+        }
+
+        function openDp(dp, otherDps) {
+            (otherDps || []).forEach(function (other) {
+                if (other && other.visible) other.hide();
+            });
             dp.show();
         }
 
-        function toggleDp(dp, otherDp) {
+        function toggleDp(dp, otherDps) {
             if (dp.visible) {
                 dp.hide();
             } else {
-                openDp(dp, otherDp);
+                openDp(dp, otherDps);
             }
         }
 
-        function bindCell(cell, dp, otherDp) {
+        function bindCell(cell, dp, otherDps) {
             var hideTimer = null;
 
             function clearHideTimer() {
@@ -879,7 +994,7 @@
 
             function openOnHover() {
                 clearHideTimer();
-                openDp(dp, otherDp);
+                openDp(dp, otherDps);
             }
 
             if (supportsHoverOpen()) {
@@ -894,7 +1009,7 @@
 
             function handleToggle(e) {
                 if (e.target.closest('.air-datepicker')) return;
-                toggleDp(dp, otherDp);
+                toggleDp(dp, otherDps);
             }
 
             cell.addEventListener('click', handleToggle);
@@ -908,13 +1023,21 @@
         if (supportsHoverOpen()) {
             if (fromInput) disableInputClickOpen(fromInput);
             if (toInput) disableInputClickOpen(toInput);
+            if (arrivalInput) disableInputClickOpen(arrivalInput);
         }
 
-        if (fromCell && dpFrom) bindCell(fromCell, dpFrom, dpTo);
-        if (toCell && dpTo) bindCell(toCell, dpTo, dpFrom);
+        var allDps = [dpFrom, dpTo, dpArrival];
+        function othersFor(dp) {
+            return allDps.filter(function (other) { return other && other !== dp; });
+        }
+
+        if (fromCell && dpFrom) bindCell(fromCell, dpFrom, othersFor(dpFrom));
+        if (toCell && dpTo) bindCell(toCell, dpTo, othersFor(dpTo));
+        if (arrivalCell && dpArrival) bindCell(arrivalCell, dpArrival, othersFor(dpArrival));
 
         if (fromInput) syncDateFieldState(fromInput, fromCell);
         if (toInput) syncDateFieldState(toInput, toCell);
+        if (arrivalInput) syncDateFieldState(arrivalInput, arrivalCell);
     }
 
     function boot() {

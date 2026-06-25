@@ -1,11 +1,9 @@
 // Shared booking export helpers (admin Excel)
 window.BookingExport = (function () {
-  function formatTravelDates(from, to) {
-    from = (from || '').trim();
-    to = (to || '').trim();
-    if (!from && !to) return '—';
-    if (from && to) return from + '\n' + to;
-    return from || to;
+  function formatTravelDates(from, to, arrival) {
+    var parts = [(from || '').trim(), (to || '').trim(), (arrival || '').trim()].filter(Boolean);
+    if (!parts.length) return '—';
+    return parts.join('\n');
   }
 
   function htmlEscape(s) {
@@ -33,7 +31,7 @@ window.BookingExport = (function () {
       'Ad soyad',
       'Mobil nömrə',
       'E-poçt',
-      'Gediş / Qayıdış tarixi',
+      'Gediş / Qayıdış / Gəliş tarixi',
       'Qeyd',
       'Böyük sayı',
       'Uşaq sayı',
@@ -52,7 +50,7 @@ window.BookingExport = (function () {
       data.full_name,
       data.phone,
       data.email,
-      formatTravelDates(data.date_from, data.date_to),
+      formatTravelDates(data.date_from, data.date_to, data.arrival_date),
       data.note,
       data.adults_count,
       data.children_count,
@@ -65,7 +63,7 @@ window.BookingExport = (function () {
     var headers = [
       'Ad soyad',
       'Seçim',
-      'Gediş / Qayıdış tarixi',
+      'Gediş / Qayıdış / Gəliş tarixi',
       'Böyük sayı',
       'Uşaq sayı',
       'E-poçt',
@@ -82,7 +80,7 @@ window.BookingExport = (function () {
     return [
       data.full_name,
       data.booking_target,
-      formatTravelDates(data.date_from, data.date_to),
+      formatTravelDates(data.date_from, data.date_to, data.arrival_date),
       data.adults_count,
       data.children_count,
       data.email,

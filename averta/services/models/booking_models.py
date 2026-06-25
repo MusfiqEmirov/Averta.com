@@ -43,6 +43,13 @@ class Booking(UpdatedAtMixin, models.Model):
         verbose_name='Qayıdış tarixi',
         help_text='Səyahətin qayıdış tarixi.',
     )
+    arrival_date = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name='Gəliş tarixi',
+        help_text='Səyahətin gəliş tarixi.',
+    )
+
     note = models.TextField(
         validators=[MaxLengthValidator(600)],
         null=True,

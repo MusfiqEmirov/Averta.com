@@ -115,7 +115,12 @@ class Package(SluggedModel, UpdatedAtMixin):
     show_date_to = models.BooleanField(
         default=True,
         verbose_name='Sifariş formunda qayıdış tarixi',
-        help_text='İşarələnərsə sifariş formunda qayıdış (gəliş) tarixi sahəsi göstərilir.',
+        help_text='İşarələnərsə sifariş formunda qayıdış tarixi sahəsi göstərilir.',
+    )
+    show_arrival_date = models.BooleanField(
+        default=False,
+        verbose_name='Sifariş formunda gəliş tarixi',
+        help_text='İşarələnərsə sifariş formunda gəliş tarixi sahəsi göstərilir.',
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
