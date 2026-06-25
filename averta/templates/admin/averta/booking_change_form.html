@@ -30,13 +30,13 @@
             <label>Qonaqlar</label>
             <span>{{ original.adults_count }} böyük · {{ original.children_count }} uşaq</span>
         </div>
-        {% if original.date_from or original.date_to %}
+        {% if original.date_from or original.date_to or original.arrival_date %}
         <div class="booking-admin-meta__item">
-            <label>Gediş / Qayıdış</label>
+            <label>Səyahət tarixləri</label>
             <span>
-                {% if original.date_from %}{{ original.date_from|date:"d-m-Y" }}{% else %}—{% endif %}
-                →
-                {% if original.date_to %}{{ original.date_to|date:"d-m-Y" }}{% else %}—{% endif %}
+                {% if original.date_from %}Gediş: {{ original.date_from|date:"d-m-Y" }}{% endif %}
+                {% if original.date_to %}{% if original.date_from %} · {% endif %}Qayıdış: {{ original.date_to|date:"d-m-Y" }}{% endif %}
+                {% if original.arrival_date %}{% if original.date_from or original.date_to %} · {% endif %}Gəliş: {{ original.arrival_date|date:"d-m-Y" }}{% endif %}
             </span>
         </div>
         {% endif %}

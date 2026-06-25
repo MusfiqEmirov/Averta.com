@@ -1,155 +1,230 @@
 ## Averta.com
 
-A Django-based web project. The site includes a multilingual UI (AZ/EN/RU), admin-managed content (About, services, packages, blog, partners, FAQ, etc.), and a standard Django static/media setup.
+Django-based multilingual travel agency website (AZ / EN / RU). Content is managed from the Django Admin; the public site renders server-side templates with cached page/query data for performance.
 
 ### Product overview
 
-This project is built as a content-driven website where most sections are managed from the Django Admin (CMS-like workflow). The frontend renders server-side HTML templates and consumes database-backed content such as services, packages, blog posts, partners, FAQs, and site-wide settings.
+The site is a content-driven CMS-style product: services, packages, blog, partners, FAQ, about, contact, reviews, and booking orders are stored in PostgreSQL and edited by non-developers in the admin panel.
 
-### Main pages & sections
+Public users can browse content, submit contact messages, place booking requests, and leave reviews (reviews require a known customer phone number).
 
-- Home page
-  - About intro (dynamic)
-  - Packages slider (dynamic)
-  - Services explorer/listing (dynamic)
-  - Blog highlights (dynamic)
-  - Testimonials / reviews (dynamic)
-  - Partners strip (dynamic)
-  - FAQ section (dynamic)
-  - Contact form (dynamic)
-- Services listing + service detail pages (dynamic)
-  - Service detail pages include a media/gallery experience and related services section
-- About page (dynamic)
-  - About content, gallery, video block, and statistics/metrics
-- Blog list + blog detail pages (dynamic)
-- FAQ page (dynamic)
-- Contact page (form)
+### Main pages
 
-### Dynamic content (Admin-managed)
+| Route | Description |
+|-------|-------------|
+| `/` | Home — hero booking form, about intro, packages carousel, services, blog highlights, reviews, partners, FAQ, contact section |
+| `/services/` | Services listing |
+| `/services/<slug>/` | Service detail — gallery, related services, booking modal entry |
+| `/about/` | About page — text, gallery, video, statistics |
+| `/blog/` | Blog list |
+| `/blog/<slug>/` | Blog detail |
+| `/faq/` | FAQ page |
+| `/contact/` | Contact page — appeal form + embedded booking form |
 
-Content is designed to be edited by non-developers through the Django Admin panel. Typical dynamic entities include:
+Language switch: `POST /i18n/setlang/` (via `LocaleMiddleware`).
 
-- About content (titles, rich text, images, gallery, optional video)
-- Services and service detail content (including media)
-- Packages (cards, pricing, metadata)
-- Blog posts and blog-related blocks
-- Partners (logos/names)
-- FAQ items
-- Contact information / site settings
+### Admin-managed content
+
+- **About** — titles, rich text, gallery, optional hero video
+- **Services** — multilingual names/descriptions, media, sort order, homepage flags
+- **Packages** — pricing, currency, images, linked services, expiry date, booking date-field toggles
+- **Blog** — posts with slugs and view counts
+- **Partners** — logos and names
+- **FAQ** — questions/answers, homepage visibility
+- **Contact** — address, phone, email, social links, map embed
+- **Media** — page background images, content galleries
+- **Reviews** — moderation (`is_read`), customer flag
+- **Bookings** — orders from the site; read/unread, customer flag, soft delete, Excel export
+- **AppealContact** — contact form submissions
+
+### Booking system
+
+Booking is available in three places:
+
+1. **Home hero form** (`#hero-booking`)
+2. **Global booking modal** (opened from navbar, package cards, service pages)
+3. **Contact page embed**
+
+Behaviour:
+
+- User chooses **Package** (single selection, radio) or **Service** (multiple checkboxes).
+- Date fields depend on context:
+  - **Service** — departure + return dates
+  - **Package** — admin configures up to **2 of 3** fields per package: departure (`show_date_from`), return (`show_date_to`), arrival (`show_arrival_date`)
+- Dates use **Air Datepicker** on the frontend; validation runs server-side in `BookingForm`.
+- Successful submissions create a `Booking` record and send an email notification (if mail is configured).
+- Booking forms do **not** use Turnstile captcha.
+- Modal closes → selection resets automatically (`home_booking.js`).
+
+Admin: bookings list/detail with client-side Excel export (`admin_booking_export.js`).
 
 ### Tech stack
 
 - Python 3.11+
 - Django 5.2+
-- PostgreSQL
-- Gunicorn (production)
-- `django-ckeditor`, `django-cleanup`, `django-compressor`
+- PostgreSQL 15
+- Gunicorn + Nginx (Docker production stack)
+- Frontend: Bootstrap 5, jQuery, Owl Carousel, Lightbox, Air Datepicker
+- `django-ckeditor`, `django-cleanup`, `django-compressor` (in dependencies)
+- Dependency management: **uv** (`pyproject.toml`, `uv.lock`)
 
-### Key functionality
+### Caching
 
-- **Server-side rendered UI** with Django templates (`averta/templates/`)
-- **Multilingual (AZ/EN/RU)** with `LocaleMiddleware` and a language switch endpoint
-- **Rich-text editing** via `django-ckeditor`
-- **Static/media management**
-  - `STATICFILES_DIRS` for development assets
-  - `STATIC_ROOT` for collected assets in production
-  - `MEDIA_ROOT` for uploaded images/media
-- **Caching** using Django’s local memory cache for improved response times
-- **Production-ready containerization** (Docker + Gunicorn)
+- Backend: Django `LocMemCache` with versioned keys (`services/utils/cache_utils.py`)
+- Page and query helpers decorated with `@cached_page_data` / `@cached_query`
+- Admin saves invalidate cache via signals (`services/signals.py`) — global `cache_version` bump
+- `CACHE_SCHEMA_VERSION` in settings must be incremented when cached payload shape changes
 
-### Project structure (high level)
+### Tech stack — project layout
 
-- `averta/manage.py`: Django management entrypoint
-- `averta/averta/`: project configuration (`settings.py`, `urls.py`, `wsgi.py`, `asgi.py`)
-- `averta/services/`: main app (site content and pages)
-- `averta/templates/`: HTML templates
-- `averta/static/`: static files for development
-- `averta/staticfiles/`: `collectstatic` output (for deployment)
-- `averta/media/`: uploaded media (for deployment)
-- `docker/`: Docker files (`Dockerfile`, `entrypoint.sh`)
+```
+Averta.com/
+├── averta/                    # Django project root (manage.py lives here)
+│   ├── averta/                # settings, urls, wsgi
+│   ├── services/              # main app (models, views, admin, forms, signals)
+│   ├── templates/             # HTML templates
+│   ├── static/                # dev static assets
+│   ├── staticfiles/           # collectstatic output
+│   ├── media/                 # uploads
+│   └── locale/                # AZ source + EN/RU .po/.mo
+├── docker/                    # Dockerfile, entrypoint, compose, .env
+├── nginx/                     # reverse proxy config + SSL mount
+├── pyproject.toml
+└── uv.lock
+```
+
+Key frontend scripts:
+
+- `static/assets/js/home_booking.js` — booking UI, date pickers, modal
+- `static/assets/js/ajax_forms.js` — AJAX form submit (no full page reload)
+- `static/assets/js/home_testimonial.js` — reviews carousel/form
 
 ### Environment variables
 
-`averta/averta/settings.py` uses the following variables:
+Configure via `docker/.env` (loaded by `settings.py` and `settings_local.py`).
 
-- `SECRET_KEY`
-- `DEBUG` (currently hardcoded as `True` in settings; use a separate production configuration)
-- `ALLOWED_HOSTS` (comma-separated)
-- `CSRF_TRUSTED_ORIGINS` (comma-separated, for additional origins)
-- `ADMIN_URL` (required; used to hide the admin route in production)
-- PostgreSQL:
-  - `POSTGRES_DB`
-  - `POSTGRES_USER`
-  - `POSTGRES_PASSWORD`
-  - `POSTGRES_HOST`
-  - `POSTGRES_PORT`
-- Email (optional):
-  - `EMAIL_BACKEND`
-  - `EMAIL_HOST`
-  - `EMAIL_PORT`
-  - `EMAIL_HOST_USER`
-  - `EMAIL_HOST_PASSWORD`
-  - `EMAIL_USE_TLS`
+**Required**
 
-### Captcha (Cloudflare Turnstile)
+| Variable | Purpose |
+|----------|---------|
+| `SECRET_KEY` | Django secret |
+| `ADMIN_URL` | Secret admin path (e.g. `averta-admin-xyz/`) |
+| `POSTGRES_DB` | Database name |
+| `POSTGRES_USER` | Database user |
+| `POSTGRES_PASSWORD` | Database password |
+| `POSTGRES_HOST` | Database host |
+| `POSTGRES_PORT` | Database port |
 
-Cloudflare Turnstile checkbox is implemented for **contact forms only**:
+**Common**
 
-- Home page contact form (appeal/contact section)
+| Variable | Purpose |
+|----------|---------|
+| `DEBUG` | `true` / `false` (default `false` in `settings.py`) |
+| `ALLOWED_HOSTS` | Comma-separated hosts |
+| `CSRF_TRUSTED_ORIGINS` | Extra CSRF origins (comma-separated) |
+
+**Email** (contact + booking notifications)
+
+| Variable | Purpose |
+|----------|---------|
+| `EMAIL_HOST`, `EMAIL_PORT` | SMTP server |
+| `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD` | SMTP credentials |
+| `EMAIL_USE_TLS`, `EMAIL_USE_SSL` | Transport security |
+| `DEFAULT_FROM_EMAIL` | From address |
+| `CONTACT_RECEIVER_EMAIL` | Inbox for contact/booking emails |
+| `SITE_NAME` | Used in email templates (default `Averta.az`) |
+
+**Cloudflare Turnstile** (contact forms only)
+
+| Variable | Purpose |
+|----------|---------|
+| `TURNSTILE_SITE_KEY` | Public site key |
+| `TURNSTILE_SECRET_KEY` | Server verification key |
+
+Turnstile is enabled on:
+
+- Home page contact/appeal section
 - Contact page “Mesaj göndərin” form
 
-Required environment variables:
+Widget field: `cf-turnstile-response`.
 
-- `TURNSTILE_SITE_KEY`
-- `TURNSTILE_SECRET_KEY`
+### Local development
 
-Notes:
+1. Install [uv](https://github.com/astral-sh/uv) and Python 3.11+.
+2. Create `docker/.env` with the variables above (`POSTGRES_HOST=localhost` when DB runs locally or in Docker).
+3. Install dependencies from the repo root:
 
-- The widget posts a token via `cf-turnstile-response`, verified server-side.
-- Booking forms do **not** include captcha.
+```bash
+uv pip sync uv.lock --system
+# or inside a venv:
+uv sync
+```
 
-### Local run (high level)
+4. Start PostgreSQL (local install or `docker compose -f docker/docker-compose.yaml up db -d`).
+5. Run migrations and dev server from `averta/`:
 
-- Create and activate a Python virtual environment
-- Install dependencies from `pyproject.toml`/`uv.lock`
-- Provide PostgreSQL connection via environment variables
-- Run migrations
-- Collect static files (`collectstatic`)
-- Start the Django development server
+```bash
+cd averta
+python manage.py migrate
+python manage.py collectstatic --noinput
+python manage.py runserver
+```
 
-### Run with Docker
+**Local settings:** `averta/averta/settings_local.py` is imported at the end of `settings.py` when present. It typically sets `DEBUG=True`, relaxes secure cookies, and loads `docker/.env`. For pure production deploys, omit or exclude `settings_local.py`.
 
-`docker/Dockerfile` + `docker/entrypoint.sh`:
+**Translations** (after editing `locale/*/LC_MESSAGES/django.po`):
 
-- Waits for PostgreSQL to be ready
-- Runs migrations and collects static files
-- Starts the app with Gunicorn
+```bash
+cd averta
+python manage.py compilemessages   # requires GNU gettext (installed in Docker image)
+```
 
-Local Docker development uses `docker/docker-compose-local.yaml`. Environment variables are typically provided via `docker/.env`.
+On Windows without gettext, compile with Babel:
+
+```bash
+python -c "from babel.messages import pofile, mofile; ..."
+```
+
+(Docker image includes `gettext`.)
+
+### Docker (production-style stack)
+
+`docker/docker-compose.yaml` runs:
+
+- **db** — PostgreSQL 15
+- **web** — Gunicorn (entrypoint: migrate + collectstatic)
+- **nginx** — static/media proxy, ports 80/443
+
+```bash
+docker compose -f docker/docker-compose.yaml up --build
+```
+
+Environment: `docker/.env`. SSL certs mount from `nginx/ssl/`.
 
 ### Admin panel
 
-The admin route is defined by the `ADMIN_URL` environment variable. In production, always use a unique path.
+- URL: `https://<domain>/<ADMIN_URL>`
+- Use a non-guessable `ADMIN_URL` in production.
+- Admin UI language defaults to AZ (`ADMIN_LANGUAGE_CODE`).
 
-### I18N / Languages
+### Public forms (AJAX)
 
-AZ/EN/RU languages are enabled. Language switching is available via `i18n/setlang/` and `LocaleMiddleware` is used.
+Forms marked `data-ajax="1"` submit via `fetch` (`ajax_forms.js`). The server returns JSON for validation errors or success messages without a full page reload.
 
-### Static files
-
-- Development: `averta/static/`
-- Production: `collectstatic` outputs to `STATIC_ROOT` at `averta/staticfiles/`
-
-### Notes
-
-- `DEBUG` should be disabled in production and Django’s security checklist should be followed.
-- Static and media assets can be served from a dedicated storage/CDN in production.
-
-### Form UX (no page refresh)
-
-Public-facing forms are progressively enhanced to submit via AJAX (fetch) so users can see success/error feedback **without a full page refresh**.
+Applies to: booking, contact/appeal, review.
 
 ### Reviews (customer-only)
 
-Submitting a review requires the phone number to exist in bookings marked as a customer (an anti-spam/business rule). If the phone is not recognized, the form returns a clear error message.
+Review submission checks that the phone number exists on at least one booking marked **Müştərimizdir?** (`is_customer`). Unknown numbers receive a clear validation error (anti-spam / business rule).
 
+### Security notes (production)
+
+- Keep `DEBUG=false` and do not deploy `settings_local.py` to production.
+- `settings.py` enables `SECURE_SSL_REDIRECT`, secure session/CSRF cookies behind HTTPS.
+- Rotate `SECRET_KEY` and `ADMIN_URL`; restrict `ALLOWED_HOSTS`.
+- Serve static/media via Nginx or CDN; do not expose admin on a predictable path.
+
+### Notes
+
+- `pyproject.toml` project name is legacy (`ganaqro`); the site brand is **Averta**.
+- CKEditor 4 bundled with `django-ckeditor` has known upstream warnings; consider migrating to CKEditor 5 long term.

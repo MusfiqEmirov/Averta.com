@@ -12,8 +12,8 @@ from services.utils.queries import get_localized_field_name, get_packages, get_s
 from services.utils.turnstile import verify_turnstile_response, is_turnstile_configured
 
 
-class PackageBookingCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
-    """Paket checkbox-larına sifariş formu tarix ayarlarını data-atribut kimi əlavə edir."""
+class PackageBookingRadioSelect(forms.RadioSelect):
+    """Paket radio düymələrinə sifariş formu tarix ayarlarını data-atribut kimi əlavə edir."""
 
     def __init__(self, attrs=None, package_date_flags=None):
         self.package_date_flags = package_date_flags or {}
@@ -33,9 +33,10 @@ class PackageBookingCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
         )
         pk = self._choice_pk(value)
         if pk is not None:
-            flags = self.package_date_flags.get(pk, {'from': True, 'to': True})
+            flags = self.package_date_flags.get(pk, {'from': True, 'to': True, 'arrival': False})
             option['attrs']['data-show-date-from'] = '1' if flags.get('from', True) else '0'
             option['attrs']['data-show-date-to'] = '1' if flags.get('to', True) else '0'
+            option['attrs']['data-show-date-arrival'] = '1' if flags.get('arrival', False) else '0'
         return option
 
 
@@ -295,6 +296,20 @@ class BookingForm(forms.ModelForm):
         ),
         label=_('Qayıdış tarixi'),
     )
+    arrival_date = forms.DateField(
+        required=False,
+        input_formats=['%d-%m-%Y', '%d.%m.%Y', '%Y-%m-%d'],
+        widget=forms.DateInput(
+            format='%d-%m-%Y',
+            attrs={
+                'class': 'hero-booking__input hb-date-input hb-date-text',
+                'placeholder': '.....',
+                'autocomplete': 'off',
+                'readonly': 'readonly',
+            },
+        ),
+        label=_('Gəliş tarixi'),
+    )
     note = forms.CharField(
         widget=forms.TextInput(attrs={
             'class': 'hero-booking__input',
@@ -326,11 +341,11 @@ class BookingForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'hb-check'}),
         label=_('Xidmətlər'),
     )
-    packages = forms.ModelMultipleChoiceField(
+    packages = forms.ModelChoiceField(
         queryset=Package.objects.none(),
         required=False,
-        widget=PackageBookingCheckboxSelectMultiple(attrs={'class': 'hb-check'}),
-        label=_('Paketlər'),
+        widget=PackageBookingRadioSelect(attrs={'class': 'hb-check'}),
+        label=_('Paket'),
     )
 
     class Meta:
@@ -341,6 +356,7 @@ class BookingForm(forms.ModelForm):
             'phone',
             'date_from',
             'date_to',
+            'arrival_date',
             'note',
             'adults_count',
             'children_count',
@@ -359,6 +375,7 @@ class BookingForm(forms.ModelForm):
                 'phone_ph': 'Mobil nömrə *',
                 'date_from_label': 'Gediş tarixi',
                 'date_to_label': 'Qayıdış tarixi',
+                'arrival_date_label': 'Gəliş tarixi',
                 'note_label': 'Qeyd',
                 'note_ph': 'Əlavə qeydiniz varsa, yazın',
                 'svc': 'Xidmət',
@@ -373,6 +390,7 @@ class BookingForm(forms.ModelForm):
                 'phone_ph': 'Mobile number *',
                 'date_from_label': 'Departure date',
                 'date_to_label': 'Return date',
+                'arrival_date_label': 'Arrival date',
                 'note_label': 'Note',
                 'note_ph': 'If you have an additional note, write it',
                 'svc': 'Service',
@@ -387,6 +405,7 @@ class BookingForm(forms.ModelForm):
                 'phone_ph': 'Мобильный номер *',
                 'date_from_label': 'Дата вылета',
                 'date_to_label': 'Дата возврата',
+                'arrival_date_label': 'Дата прилёта',
                 'note_label': 'Комментарий',
                 'note_ph': 'Если есть дополнительная заметка, напишите',
                 'svc': 'Услуга',
@@ -403,7 +422,8 @@ class BookingForm(forms.ModelForm):
             self.fields['phone'].widget.attrs['placeholder'] = ui['phone_ph']
             self.fields['date_from'].label = ui['date_from_label']
             self.fields['date_to'].label = ui['date_to_label']
-            for name in ('date_from', 'date_to'):
+            self.fields['arrival_date'].label = ui['arrival_date_label']
+            for name in ('date_from', 'date_to', 'arrival_date'):
                 self.fields[name].widget.format = '%d-%m-%Y'
             self.fields['note'].label = ui['note_label']
             self.fields['note'].widget.attrs['placeholder'] = ui['note_ph']
@@ -423,26 +443,27 @@ class BookingForm(forms.ModelForm):
 
         self.package_date_flags = {}
         try:
-            for row in package_qs.values('pk', 'show_date_from', 'show_date_to'):
+            for row in package_qs.values('pk', 'show_date_from', 'show_date_to', 'show_arrival_date'):
                 self.package_date_flags[str(row['pk'])] = {
                     'from': row['show_date_from'],
                     'to': row['show_date_to'],
+                    'arrival': row['show_arrival_date'],
                 }
         except Exception:
             for package in package_qs.only('pk'):
-                self.package_date_flags[str(package.pk)] = {'from': True, 'to': True}
+                self.package_date_flags[str(package.pk)] = {'from': True, 'to': True, 'arrival': False}
 
         self.package_date_flags_json = json.dumps(self.package_date_flags, ensure_ascii=False)
         self.fields['packages'].widget.package_date_flags = self.package_date_flags
 
-    def _booking_date_requirements(self, booking_type, packages):
-        if booking_type != self.BOOKING_TYPE_PACKAGE:
-            return True, True
-        if not packages:
-            return True, True
-        show_from = any(getattr(p, 'show_date_from', True) for p in packages)
-        show_to = any(getattr(p, 'show_date_to', True) for p in packages)
-        return show_from, show_to
+    def _booking_date_requirements(self, booking_type, package):
+        if booking_type != self.BOOKING_TYPE_PACKAGE or not package:
+            return True, True, False
+        return (
+            getattr(package, 'show_date_from', True),
+            getattr(package, 'show_date_to', True),
+            getattr(package, 'show_arrival_date', False),
+        )
 
     def clean_website(self):
         value = self.cleaned_data.get('website')
@@ -458,16 +479,17 @@ class BookingForm(forms.ModelForm):
 
         if booking_type == self.BOOKING_TYPE_PACKAGE:
             if not packages:
-                self.add_error('packages', _('Ən azı bir paket seçin.'))
+                self.add_error('packages', _('Paket seçin.'))
             cleaned_data['services'] = []
         else:
             if not services:
                 self.add_error('services', _('Ən azı bir xidmət seçin.'))
             cleaned_data['packages'] = []
 
-        show_from, show_to = self._booking_date_requirements(booking_type, packages)
+        show_from, show_to, show_arrival = self._booking_date_requirements(booking_type, packages)
         date_from = cleaned_data.get('date_from')
         date_to = cleaned_data.get('date_to')
+        arrival_date = cleaned_data.get('arrival_date')
         today = timezone.localdate()
 
         if show_from:
@@ -483,6 +505,14 @@ class BookingForm(forms.ModelForm):
                 self.add_error('date_to', _('Qayıdış tarixi mütləqdir.'))
         else:
             cleaned_data['date_to'] = None
+
+        if show_arrival:
+            if not arrival_date:
+                self.add_error('arrival_date', _('Gəliş tarixi mütləqdir.'))
+            elif arrival_date < today:
+                self.add_error('arrival_date', _('Gəliş tarixi keçmiş ola bilməz.'))
+        else:
+            cleaned_data['arrival_date'] = None
 
         date_from = cleaned_data.get('date_from')
         date_to = cleaned_data.get('date_to')
@@ -511,7 +541,7 @@ class BookingForm(forms.ModelForm):
             instance.save()
             if booking_type == self.BOOKING_TYPE_PACKAGE:
                 instance.services.clear()
-                instance.packages.set(packages or [])
+                instance.packages.set([packages] if packages else [])
             else:
                 instance.packages.clear()
                 instance.services.set(services or [])

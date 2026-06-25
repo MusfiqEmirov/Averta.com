@@ -1,11 +1,9 @@
 // Admin booking Excel export (list + single order)
 (function () {
-  function formatTravelDates(from, to) {
-    from = (from || '').trim();
-    to = (to || '').trim();
-    if (!from && !to) return '—';
-    if (from && to) return from + '\n' + to;
-    return from || to;
+  function formatTravelDates(from, to, arrival) {
+    var parts = [(from || '').trim(), (to || '').trim(), (arrival || '').trim()].filter(Boolean);
+    if (!parts.length) return '—';
+    return parts.join('\n');
   }
 
   function htmlEscape(s) {
@@ -89,15 +87,15 @@
     var services = (data.services || []).join(' | ');
     var packages = (data.packages || []).join(' | ');
     return {
-      headers: ['ID', 'Tarix', 'Ad soyad', 'Mobil nömrə', 'E-poçt', 'Gediş / Qayıdış tarixi', 'Qeyd', 'Böyük sayı', 'Uşaq sayı', 'Xidmətlər', 'Paketlər'],
-      row: [data.id, data.created_at, data.full_name, data.phone, data.email, formatTravelDates(data.date_from, data.date_to), data.note, data.adults_count, data.children_count, services, packages]
+      headers: ['ID', 'Tarix', 'Ad soyad', 'Mobil nömrə', 'E-poçt', 'Gediş / Qayıdış / Gəliş tarixi', 'Qeyd', 'Böyük sayı', 'Uşaq sayı', 'Xidmətlər', 'Paketlər'],
+      row: [data.id, data.created_at, data.full_name, data.phone, data.email, formatTravelDates(data.date_from, data.date_to, data.arrival_date), data.note, data.adults_count, data.children_count, services, packages]
     };
   }
 
   function buildListRow(data) {
     return {
-      headers: ['Ad soyad', 'Seçim', 'Gediş / Qayıdış tarixi', 'Böyük sayı', 'Uşaq sayı', 'E-poçt', 'Mobil nömrə', 'Oxunub', 'Müştəri', 'Silinib', 'Tarix'],
-      row: [data.full_name, data.booking_target, formatTravelDates(data.date_from, data.date_to), data.adults_count, data.children_count, data.email, data.phone, boolLabel(data.is_read), boolLabel(data.is_customer), boolLabel(data.is_deleted), data.created_at]
+      headers: ['Ad soyad', 'Seçim', 'Gediş / Qayıdış / Gəliş tarixi', 'Böyük sayı', 'Uşaq sayı', 'E-poçt', 'Mobil nömrə', 'Oxunub', 'Müştəri', 'Silinib', 'Tarix'],
+      row: [data.full_name, data.booking_target, formatTravelDates(data.date_from, data.date_to, data.arrival_date), data.adults_count, data.children_count, data.email, data.phone, boolLabel(data.is_read), boolLabel(data.is_customer), boolLabel(data.is_deleted), data.created_at]
     };
   }
 

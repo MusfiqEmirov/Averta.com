@@ -23,6 +23,12 @@ msgstr "Contact"
 msgid "Sifariş et"
 msgstr "Book now"
 
+msgid "Sifariş formunda eyni anda ən çoxu 2 tarix sahəsi seçilə bilər."
+msgstr "At most 2 date fields can be selected at the same time on the booking form."
+
+msgid "Sifariş formunda hansı tarix sahələrinin göstəriləcəyini seçin. Eyni anda ən çoxu 2 sahə seçilə bilər."
+msgstr "Choose which date fields appear on the booking form. At most 2 fields can be selected at the same time."
+
 msgid "Səyahət planlamaq çətin olmamalıdır.<br>Doğru komanda ilə bu proses rahat, sürətli və güvənli olur."
 msgstr "Planning a trip shouldn't be hard.<br>With the right team, the process is easy, fast, and reliable."
 
@@ -302,6 +308,15 @@ msgstr "Departure date"
 msgid "Gediş tarixi keçmiş ola bilməz."
 msgstr "Departure date cannot be in the past."
 
+msgid "Gəliş tarixi"
+msgstr "Arrival date"
+
+msgid "Gəliş tarixi keçmiş ola bilməz."
+msgstr "Arrival date cannot be in the past."
+
+msgid "Gəliş tarixi mütləqdir."
+msgstr "Arrival date is required."
+
 msgid "Geri"
 msgstr "Back"
 
@@ -337,6 +352,9 @@ msgstr "Next image"
 
 msgid "Paket yoxdur."
 msgstr "No packages available."
+
+msgid "Paket seçin."
+msgstr "Select a package."
 
 msgid "Please verify that you are human."
 msgstr "Please verify that you are human."

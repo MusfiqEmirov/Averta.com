@@ -24,6 +24,12 @@ msgstr "Контакты"
 msgid "Sifariş et"
 msgstr "Забронировать"
 
+msgid "Sifariş formunda eyni anda ən çoxu 2 tarix sahəsi seçilə bilər."
+msgstr "На форме заказа одновременно можно выбрать не более 2 полей даты."
+
+msgid "Sifariş formunda hansı tarix sahələrinin göstəriləcəyini seçin. Eyni anda ən çoxu 2 sahə seçilə bilər."
+msgstr "Выберите, какие поля даты показывать в форме заказа. Одновременно можно выбрать не более 2 полей."
+
 msgid "Səyahət planlamaq çətin olmamalıdır.<br>Doğru komanda ilə bu proses rahat, sürətli və güvənli olur."
 msgstr "Планирование путешествия не должно быть сложным.<br>С правильной командой этот процесс становится удобным, быстрым и надёжным."
 
@@ -303,6 +309,15 @@ msgstr "Дата выезда"
 msgid "Gediş tarixi keçmiş ola bilməz."
 msgstr "Дата выезда не может быть в прошлом."
 
+msgid "Gəliş tarixi"
+msgstr "Дата прилёта"
+
+msgid "Gəliş tarixi keçmiş ola bilməz."
+msgstr "Дата прилёта не может быть в прошлом."
+
+msgid "Gəliş tarixi mütləqdir."
+msgstr "Дата прилёта обязательна."
+
 msgid "Geri"
 msgstr "Назад"
 
@@ -338,6 +353,9 @@ msgstr "Следующее изображение"
 
 msgid "Paket yoxdur."
 msgstr "Пакетов нет."
+
+msgid "Paket seçin."
+msgstr "Выберите пакет."
 
 msgid "Please verify that you are human."
 msgstr "Подтвердите, что вы не робот."

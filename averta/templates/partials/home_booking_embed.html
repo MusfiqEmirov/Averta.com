@@ -197,6 +197,17 @@
         {% endif %}
       </div>
 
+      <div class="col-md-6">
+        <div class="form-floating hb-embed-date" data-hb-date-cell data-hb-date-arrival="1">
+          {{ booking_form.arrival_date }}
+          <i class="fas fa-chevron-down hb-embed-date-chevron" aria-hidden="true"></i>
+          <label for="id_arrival_date"><i class="fas fa-calendar-check hb-embed-date-icon me-1"></i>{% trans "Gəliş tarixi" %} *</label>
+        </div>
+        {% if booking_form.arrival_date.errors %}
+        <div class="text-warning small mt-1">{{ booking_form.arrival_date.errors.0 }}</div>
+        {% endif %}
+      </div>
+
       <div class="col-12">
         <div class="hb-embed-note-field" data-hb-note-field>
           <label class="hb-embed-note-label" for="bk_note">{% trans "Qeyd" %}</label>
