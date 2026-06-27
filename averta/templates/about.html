@@ -116,7 +116,12 @@
     if (statValues.length) {
         var easeOut = function (t) { return 1 - Math.pow(1 - t, 3); };
         var animateValue = function (el) {
-            var target = parseInt(el.getAttribute('data-count'), 10) || 0;
+            var raw = (el.getAttribute('data-count') || '').trim();
+            if (!/^\d+$/.test(raw)) {
+                el.textContent = raw;
+                return;
+            }
+            var target = parseInt(raw, 10) || 0;
             var duration = 1600;
             var start = null;
             var step = function (ts) {
