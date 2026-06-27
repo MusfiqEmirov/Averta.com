@@ -380,7 +380,7 @@ def get_statistics(lang='az'):
 
     cards = []
     for value, caption_base, icon_val, default_icon, variant in card_defs:
-        if value is None:
+        if not value:
             continue
         cards.append({
             'value': value,
