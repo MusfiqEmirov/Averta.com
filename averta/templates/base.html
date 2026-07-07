@@ -2,8 +2,10 @@
 {% load i18n %}
 <html lang="{{ language|default:'az' }}">
 <head>
-    {% include 'partials/head.html' %}
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     {% block seo_meta %}{% endblock %}
+    {% include 'partials/head.html' %}
     {% block extra_head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
