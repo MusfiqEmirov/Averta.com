@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
-{% load static i18n %}
+{% load static i18n averta_tags %}
 
-{% block title %}{% trans "Bloqlar" %} — Averta{% endblock %}
+{% block seo_meta %}
+{% trans "Səyahət məsləhətləri, viza yenilikləri, tur paketləri və dünyanın ən populyar istiqamətləri haqqında faydalı məlumatları Averta Travel blogunda oxuyun." as seo_description %}
+{% seo_meta description=seo_description %}
+{% endblock %}
 
 {% block content %}
 {% include 'partials/page_header.html' %}

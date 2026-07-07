@@ -1,7 +1,11 @@
 {% extends 'base.html' %}
-{% load static i18n %}
+{% load static i18n averta_tags %}
 
-{% block title %}Averta — {% trans "Ana səhifə" %}{% endblock %}
+{% block seo_meta %}
+{% trans "averta: 13 illik təcrübəyə malik Averta Travel ilə daxili və xarici tur paketləri, aviabilet, viza xidmətləri və otel rezervasiyasını etibarlı şəkildə sifariş edin." as seo_description %}
+{% seo_meta description=seo_description %}
+{% endblock %}
+
 {% block body_class %}page-home{% endblock %}
 
 {% block hero %}
@@ -24,10 +28,10 @@
                 </div>
             </div>
             <div class="col-lg-7">
-                <h5 class="section-about-title pe-3">About Us</h5>
-                <h1 class="mb-4">Welcome to <span class="text-primary">Travela</span></h1>
-                <p class="mb-4">Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias, dolorum, doloribus sunt dicta, officia voluptatibus libero necessitatibus natus impedit quam ullam assumenda?</p>
-                <a class="btn btn-primary rounded-pill py-3 px-5 mt-2" href="{% url 'services:about-page' %}">Read More</a>
+                <h5 class="section-about-title pe-3">{% trans "Haqqımızda" %}</h5>
+                <h1 class="mb-4">{% trans "Xoş gəlmisiniz —" %} <span class="text-primary">Averta</span></h1>
+                <p class="mb-4">{% trans "Averta səyahət və tur xidmətləri üzrə etibarlı tərəfdaşınızdır. Sifariş və paketlər haqqında məlumat üçün bizimlə əlaqə saxlayın." %}</p>
+                <a class="btn btn-primary rounded-pill py-3 px-5 mt-2" href="{% url 'services:about-page' %}">{% trans "Ətraflı" %}</a>
             </div>
         </div>
     </div>

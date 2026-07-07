@@ -1,7 +1,11 @@
 {% extends 'base.html' %}
-{% load i18n %}
+{% load i18n averta_tags %}
 
-{% block title %}{{ service.name }} — Averta{% endblock %}
+{% block seo_meta %}
+{% with seo_description=service.description|plain_text|truncatechars:160 %}
+{% seo_meta title=service.name description=seo_description image=og_image %}
+{% endwith %}
+{% endblock %}
 
 {% block body_class %}page-service-detail{% endblock %}
 

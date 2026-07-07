@@ -1,7 +1,11 @@
 {% extends 'base.html' %}
-{% load i18n %}
+{% load i18n averta_tags %}
 
-{% block title %}{{ blog.name }} — Averta{% endblock %}
+{% block seo_meta %}
+{% with seo_description=blog.description|plain_text|truncatechars:160 %}
+{% seo_meta title=blog.name description=seo_description og_type="article" schema_type="article" article_headline=blog.name article_date=blog.date|date:"Y-m-d" image=og_image %}
+{% endwith %}
+{% endblock %}
 
 {% block content %}
 {% include 'partials/page_header.html' %}

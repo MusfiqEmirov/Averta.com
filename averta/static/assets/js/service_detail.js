@@ -76,27 +76,6 @@
             updateRelatedNav();
         }
 
-        // ── Lightbox (legacy) ─────────────────────────────────────
-        // Service detail üçün premium viewer istifadə edirik (service_gallery_lightbox.js).
-        // Əgər o aktivdirsə, burada Lightbox2 binding etməyək.
-        if (document.querySelector('.aglb[data-sdp-lightbox]')) {
-            return;
-        }
-
-        if (typeof lightbox === 'undefined') {
-            return;
-        }
-
-        lightbox.option({
-            fadeDuration: 200,
-            imageFadeDuration: 150,
-            resizeDuration: 200,
-            wrapAround: true,
-            albumLabel: '%1 / %2',
-            disableScrolling: true,
-            alwaysShowNavOnTouchDevices: true,
-        });
-
     });
 
 }(jQuery));

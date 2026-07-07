@@ -3,7 +3,7 @@
 <html lang="{{ language|default:'az' }}">
 <head>
     {% include 'partials/head.html' %}
-    <title>{% block title %}Averta{% endblock %}</title>
+    {% block seo_meta %}{% endblock %}
     {% block extra_head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
