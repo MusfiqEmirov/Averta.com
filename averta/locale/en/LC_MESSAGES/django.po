@@ -496,5 +496,29 @@ msgstr "%(name)s — Gallery"
 msgid "© 2026 Averta Travel. Bütün hüquqlar qorunur."
 msgstr "© 2026 Averta Travel. All rights reserved."
 
+msgid "Averta Travel — Aviabilet, Tur, Viza və Otel Xidmətləri Azərbaycanda"
+msgstr "Averta Travel — Flights, Tours, Visa and Hotel Services in Azerbaijan"
+
 msgid "Menyu"
 msgstr "Menu"
+
+msgid "averta: 13 illik təcrübəyə malik Averta Travel ilə daxili və xarici tur paketləri, aviabilet, viza xidmətləri və otel rezervasiyasını etibarlı şəkildə sifariş edin."
+msgstr "averta: With 13 years of experience, book domestic and international tour packages, flights, visa services and hotel reservations reliably with Averta Travel."
+
+msgid "tur paketləri, xarici turlar, daxili turlar, aviabilet, aviabilet satışı, ucuz aviabiletlər, viza xidmətləri, viza dəstəyi, otel rezervasiyası, turizm agentliyi, turizm şirkəti, səyahət agentliyi, transfer xidməti, istirahət turları, yay turları, bayram turları, Dubay turları, Türkiyə turları, Avropa turları, Şengen vizası, Amerika vizası, İngiltərə vizası, qrup turları, fərdi turlar, balayı turları"
+msgstr "tour packages, international tours, domestic tours, flights, flight tickets, cheap flights, visa services, visa support, hotel reservation, travel agency, tourism company, travel company, transfer service, vacation tours, summer tours, holiday tours, Dubai tours, Turkey tours, Europe tours, Schengen visa, US visa, UK visa, group tours, private tours, honeymoon tours"
+
+msgid "Averta Travel viza dəstəyi, aviabilet satışı, otel rezervasiyası və fərdi tur paketləri ilə rahat, təhlükəsiz və peşəkar səyahət xidmətləri təqdim edir."
+msgstr "Averta Travel offers comfortable, safe and professional travel services with visa support, flight ticket sales, hotel reservations and custom tour packages."
+
+msgid "Səyahət məsləhətləri, viza yenilikləri, tur paketləri və dünyanın ən populyar istiqamətləri haqqında faydalı məlumatları Averta Travel blogunda oxuyun."
+msgstr "Read useful travel tips, visa updates, tour packages and information about the world's most popular destinations on the Averta Travel blog."
+
+msgid "Tur paketləri, viza dəstəyi, aviabiletlər və digər səyahət xidmətləri ilə bağlı suallarınız üçün Averta Travel komandası ilə əlaqə saxlayın."
+msgstr "Contact the Averta Travel team with your questions about tour packages, visa support, flights and other travel services."
+
+msgid "Viza müraciəti, tur paketləri, aviabiletlər, rezervasiya və səyahət prosesləri ilə bağlı ən çox verilən sualların cavablarını kəşf edin."
+msgstr "Discover answers to the most frequently asked questions about visa applications, tour packages, flights, reservations and travel processes."
+
+msgid "Viza dəstəyi, aviabilet satışı, otel rezervasiyası, transfer xidməti və fərdi səyahət planlaması üçün Averta Travel xidmətlərindən yararlanın."
+msgstr "Take advantage of Averta Travel services for visa support, flight ticket sales, hotel reservations, transfers and custom travel planning."

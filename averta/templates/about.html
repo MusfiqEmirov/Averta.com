@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
-{% load static i18n %}
+{% load static i18n averta_tags %}
 
-{% block title %}{% trans "Haqqımızda" %} — Averta{% endblock %}
+{% block seo_meta %}
+{% trans "Averta Travel viza dəstəyi, aviabilet satışı, otel rezervasiyası və fərdi tur paketləri ilə rahat, təhlükəsiz və peşəkar səyahət xidmətləri təqdim edir." as seo_description %}
+{% seo_meta description=seo_description %}
+{% endblock %}
 
 {% block body_class %}page-about{% endblock %}
 
@@ -18,8 +21,8 @@
                 <img src="{% static 'assets/img/about-img.jpg' %}" class="img-fluid w-100" alt="">
             </div>
             <div class="col-lg-7">
-                <h1 class="mb-4">Welcome to <span class="text-primary">Travela</span></h1>
-                <p class="mb-4">Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                <h1 class="mb-4">{% trans "Xoş gəlmisiniz —" %} <span class="text-primary">Averta</span></h1>
+                <p class="mb-4">{% trans "Averta səyahət və tur xidmətləri üzrə etibarlı tərəfdaşınızdır. Sifariş və paketlər haqqında məlumat üçün bizimlə əlaqə saxlayın." %}</p>
             </div>
         </div>
     </div>

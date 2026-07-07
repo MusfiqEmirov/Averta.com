@@ -2,12 +2,6 @@
 {% if service.gallery_images %}
 <section class="sdp-gallery" aria-label="{% trans 'Qalereya' %}">
 
-    <div class="sdp-gallery__triggers" aria-hidden="true">
-        {% for image in service.gallery_images %}
-        <a href="{{ image }}" data-lightbox="service-{{ service.slug }}" tabindex="-1"></a>
-        {% endfor %}
-    </div>
-
     <div class="sdp-gallery__header">
         <h2 class="sdp-gallery__title">{% trans "Qalereya" %}</h2>
         <div class="sdp-gallery__controls sdp-gallery__controls--desktop">

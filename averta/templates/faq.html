@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
-{% load i18n %}
+{% load i18n averta_tags %}
 
-{% block title %}{% trans "FAQ" %} — Averta{% endblock %}
+{% block seo_meta %}
+{% trans "Viza müraciəti, tur paketləri, aviabiletlər, rezervasiya və səyahət prosesləri ilə bağlı ən çox verilən sualların cavablarını kəşf edin." as seo_description %}
+{% seo_meta description=seo_description %}
+{% endblock %}
 
 {% block content %}
 {% include 'partials/page_header.html' %}

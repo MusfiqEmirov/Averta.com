@@ -1,10 +1,38 @@
 import logging
 
 from django.conf import settings
+from django.contrib.staticfiles import finders
+from django.templatetags.static import static
 
 from services.forms.forms_v1 import BookingForm
 from services.models import Service
 from services.utils.queries import get_background_image, get_contact, get_language_from_request, serialize_contact
+
+
+def _absolute_uri(request, path):
+    return request.build_absolute_uri(path)
+
+
+def _resolve_default_og_image(request):
+    og_rel = 'assets/img/averta-logo.webp'
+    favicon_rel = 'assets/img/averta-favicon.webp'
+    rel_path = og_rel if finders.find(og_rel) else favicon_rel
+    return _absolute_uri(request, static(rel_path))
+
+
+def seo(request):
+    site_root = _absolute_uri(request, '/').rstrip('/')
+    logo_path = static('assets/img/averta-logo.webp')
+    if not finders.find('assets/img/averta-logo.webp'):
+        logo_path = static('assets/img/averta-favicon.webp')
+
+    return {
+        'site_url': site_root,
+        'site_name': 'Averta Travel',
+        'canonical_url': _absolute_uri(request, request.path),
+        'default_og_image': _resolve_default_og_image(request),
+        'seo_logo_url': _absolute_uri(request, logo_path),
+    }
 
 
 def navbar_services(request):

@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sitemaps',
     
     # Third Packages
     'django_cleanup.apps.CleanupConfig',
@@ -108,6 +109,7 @@ TEMPLATES = [
                 'services.context_processors.site_contact',
                 'services.context_processors.turnstile',
                 'services.context_processors.modal_booking_form',
+                'services.context_processors.seo',
             ],
         },
     },
@@ -237,4 +239,7 @@ EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'False').lower() in ('true', '1', 'ye
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
 CONTACT_RECEIVER_EMAIL = os.getenv('CONTACT_RECEIVER_EMAIL', EMAIL_HOST_USER)
 SITE_NAME = os.getenv('SITE_NAME', 'Averta.az')
+
+# Sitemap / SEO
+SITE_DOMAIN = os.getenv('SITE_DOMAIN', 'www.avertatravel.com')
 

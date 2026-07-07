@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
-{% load i18n %}
+{% load i18n averta_tags %}
 
-{% block title %}{% trans "Xidmətlər" %} — Averta{% endblock %}
+{% block seo_meta %}
+{% trans "Viza dəstəyi, aviabilet satışı, otel rezervasiyası, transfer xidməti və fərdi səyahət planlaması üçün Averta Travel xidmətlərindən yararlanın." as seo_description %}
+{% seo_meta description=seo_description %}
+{% endblock %}
 
 {% block content %}
 {% include 'partials/page_header.html' %}

@@ -329,14 +329,19 @@ class ServiceDetailPageView(View):
             raise Http404(_('Service not found'))
 
         contact = get_contact(lang)
+        service_data = serialize_service(service, lang)
         context = {
-            'service': serialize_service(service, lang),
+            'service': service_data,
             'other_services': get_other_services(service_slug, lang),
             'contact': serialize_contact(contact, lang) if contact else None,
             'language': lang,
             'background_image': get_background_image('service'),
             'page_motto': get_page_motto('service', lang),
             'active_nav': 'services',
+            'og_image': (
+                request.build_absolute_uri(service_data['cover_image'])
+                if service_data.get('cover_image') else None
+            ),
         }
         return render(request, self.template_name, context)
 
@@ -571,6 +576,10 @@ class BlogDetailPageView(View):
             'background_image': get_background_image('blog'),
             'page_motto': get_page_motto('blog', lang),
             'active_nav': 'blog',
+            'og_image': (
+                request.build_absolute_uri(blog_data['image'])
+                if blog_data.get('image') else None
+            ),
         }
         return render(request, self.template_name, context)
 

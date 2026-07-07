@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
-{% load static i18n %}
+{% load static i18n averta_tags %}
 
-{% block title %}{% trans "Əlaqə" %} — Averta{% endblock %}
+{% block seo_meta %}
+{% trans "Tur paketləri, viza dəstəyi, aviabiletlər və digər səyahət xidmətləri ilə bağlı suallarınız üçün Averta Travel komandası ilə əlaqə saxlayın." as seo_description %}
+{% seo_meta description=seo_description %}
+{% endblock %}
 
 {% block messages %}{% endblock %}
 
