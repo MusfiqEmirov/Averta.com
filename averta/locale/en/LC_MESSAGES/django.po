@@ -502,8 +502,8 @@ msgstr "Averta Travel — Flights, Tours, Visa and Hotel Services in Azerbaijan"
 msgid "Menyu"
 msgstr "Menu"
 
-msgid "averta: 13 illik təcrübəyə malik Averta Travel ilə daxili və xarici tur paketləri, aviabilet, viza xidmətləri və otel rezervasiyasını etibarlı şəkildə sifariş edin."
-msgstr "averta: With 13 years of experience, book domestic and international tour packages, flights, visa services and hotel reservations reliably with Averta Travel."
+msgid "13 illik təcrübəyə malik Averta Travel ilə daxili və xarici tur paketləri, aviabilet, viza xidmətləri və otel rezervasiyasını etibarlı şəkildə sifariş edin."
+msgstr "With 13 years of experience, book domestic and international tour packages, flights, visa services and hotel reservations reliably with Averta Travel."
 
 msgid "tur paketləri, xarici turlar, daxili turlar, aviabilet, aviabilet satışı, ucuz aviabiletlər, viza xidmətləri, viza dəstəyi, otel rezervasiyası, turizm agentliyi, turizm şirkəti, səyahət agentliyi, transfer xidməti, istirahət turları, yay turları, bayram turları, Dubay turları, Türkiyə turları, Avropa turları, Şengen vizası, Amerika vizası, İngiltərə vizası, qrup turları, fərdi turlar, balayı turları"
 msgstr "tour packages, international tours, domestic tours, flights, flight tickets, cheap flights, visa services, visa support, hotel reservation, travel agency, tourism company, travel company, transfer service, vacation tours, summer tours, holiday tours, Dubai tours, Turkey tours, Europe tours, Schengen visa, US visa, UK visa, group tours, private tours, honeymoon tours"
