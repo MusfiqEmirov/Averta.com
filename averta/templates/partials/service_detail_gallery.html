@@ -1,0 +1,82 @@
+{% load i18n %}
+{% if service.gallery_images %}
+<section class="sdp-gallery" aria-label="{% trans 'Qalereya' %}">
+
+    <div class="sdp-gallery__header">
+        <h2 class="sdp-gallery__title">{% trans "Qalereya" %}</h2>
+        <div class="sdp-gallery__controls sdp-gallery__controls--desktop">
+            <span class="sdp-gallery__count">{% blocktrans count count=service.gallery_images|length %}{{ count }} şəkil{% plural %}{{ count }} şəkil{% endblocktrans %}</span>
+            <button class="sdp-gallery-btn sdp-gallery-btn--prev" aria-label="{% trans 'Əvvəlki şəkil' %}" type="button">
+                <i class="fas fa-chevron-left" aria-hidden="true"></i>
+            </button>
+            <button class="sdp-gallery-btn sdp-gallery-btn--next" aria-label="{% trans 'Növbəti şəkil' %}" type="button">
+                <i class="fas fa-chevron-right" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="sdp-gallery__stage">
+    <div class="sdp-gallery__toolbar sdp-gallery__toolbar--mobile">
+        <button class="sdp-gallery-btn sdp-gallery-btn--prev" aria-label="{% trans 'Əvvəlki şəkil' %}" type="button">
+            <i class="fas fa-chevron-left" aria-hidden="true"></i>
+        </button>
+        <button class="sdp-gallery-btn sdp-gallery-btn--next" aria-label="{% trans 'Növbəti şəkil' %}" type="button">
+            <i class="fas fa-chevron-right" aria-hidden="true"></i>
+        </button>
+    </div>
+    <div class="sdp-gallery__carousel owl-carousel" id="sdpGalleryCarousel">
+        {% for image in service.gallery_images %}
+        <div
+            class="sdp-gallery-card"
+            data-gallery-index="{{ forloop.counter0 }}"
+            role="button"
+            tabindex="0"
+            aria-label="{% blocktrans with name=service.name num=forloop.counter %}{{ name }} — şəkil {{ num }}{% endblocktrans %}"
+        >
+            <div class="sdp-gallery-card__frame">
+                <img
+                    src="{{ image }}"
+                    alt="{% blocktrans with name=service.name num=forloop.counter %}{{ name }} — şəkil {{ num }}{% endblocktrans %}"
+                    loading="lazy"
+                    class="sdp-gallery-card__img"
+                >
+                <div class="sdp-gallery-card__overlay" aria-hidden="true">
+                    <span class="sdp-gallery-card__zoom">
+                        <i class="fas fa-expand-alt"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <span class="sdp-gallery__count sdp-gallery__count--mobile">{% blocktrans count count=service.gallery_images|length %}{{ count }} şəkil{% plural %}{{ count }} şəkil{% endblocktrans %}</span>
+    </div>
+
+</section>
+
+<div class="aglb" hidden aria-hidden="true" data-sdp-lightbox>
+    <div class="aglb__overlay" data-aglb-close></div>
+    <div class="aglb__dialog" role="dialog" aria-modal="true" aria-label="{% blocktrans with name=service.name %}{{ name }} — Qalereya{% endblocktrans %}" tabindex="-1">
+        <button type="button" class="aglb__back" data-aglb-close aria-label="{% trans 'Geri' %}">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i>
+            <span class="aglb__back-text">{% trans "Geri" %}</span>
+        </button>
+        <button type="button" class="aglb__close" data-aglb-close aria-label="{% trans 'Bağla' %}">
+            <span aria-hidden="true">×</span>
+        </button>
+
+        <div class="aglb__content">
+            <div class="aglb__media" aria-live="polite">
+                <button type="button" class="aglb__nav aglb__nav--prev" data-aglb-prev aria-label="{% trans 'Əvvəlki şəkil' %}"></button>
+                <figure class="aglb__figure">
+                    <img class="aglb__img" alt="" />
+                </figure>
+                <button type="button" class="aglb__nav aglb__nav--next" data-aglb-next aria-label="{% trans 'Növbəti şəkil' %}"></button>
+                <div class="aglb__counter" aria-hidden="true"></div>
+            </div>
+
+            <div class="aglb__thumbs" role="tablist" aria-label="{% trans 'Thumbnail navigation' %}"></div>
+        </div>
+    </div>
+</div>
+{% endif %}

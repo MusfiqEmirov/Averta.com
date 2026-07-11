@@ -1,0 +1,524 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Averta\n"
+"POT-Creation-Date: 2026-05-27 00:00+0000\n"
+"PO-Revision-Date: 2026-05-27 00:00+0000\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Yüklənir..."
+msgstr "Loading..."
+
+msgid "Bağla"
+msgstr "Close"
+
+msgid "Dil seçimi"
+msgstr "Language selection"
+
+msgid "Əlaqə"
+msgstr "Contact"
+
+msgid "Sifariş et"
+msgstr "Book now"
+
+msgid "Sifariş formunda eyni anda ən çoxu 2 tarix sahəsi seçilə bilər."
+msgstr "At most 2 date fields can be selected at the same time on the booking form."
+
+msgid "Sifariş formunda hansı tarix sahələrinin göstəriləcəyini seçin. Eyni anda ən çoxu 2 sahə seçilə bilər."
+msgstr "Choose which date fields appear on the booking form. At most 2 fields can be selected at the same time."
+
+msgid "Səyahət planlamaq çətin olmamalıdır.<br>Doğru komanda ilə bu proses rahat, sürətli və güvənli olur."
+msgstr "Planning a trip shouldn't be hard.<br>With the right team, the process is easy, fast, and reliable."
+
+msgid "Averta Travel olaraq bütün xidmətləri bir məkanda təqdim edirik: viza, aviabilet, transfer, otel — hamısı bir paketdə."
+msgstr "At Averta Travel, we provide everything in one place: visa, flights, transfer, hotel — all in one package."
+
+msgid "Planlama və sənədləşmə işlərini biz görürük, sən isə sadəcə səyahətin dadını çıxarırsan."
+msgstr "We handle planning and paperwork, and you simply enjoy your trip."
+
+msgid "2013-cü ildən qazandığımız təcrübə, minlərlə məmnun müştəri və daimi dəstək komandamızla hər addımda yanındayıq."
+msgstr "With experience since 2013, thousands of happy customers, and continuous support, we're with you every step of the way."
+
+msgid "Rahatlıq, komfort və etibar axtarırsansa, doğru seçim bəllidir."
+msgstr "If you're looking for convenience, comfort, and trust, the right choice is clear."
+
+msgid "Bizə yaz və növbəti səyahətini Averta Travel ilə planla!"
+msgstr "Message us and plan your next trip with Averta Travel!"
+
+msgid "Ünvan"
+msgstr "Address"
+
+msgid "Telefon"
+msgstr "Phone"
+
+msgid "Yazın"
+msgstr "Write to us"
+
+msgid "E-poçt"
+msgstr "Email"
+
+msgid "Əlaqə məlumatı admin paneldən əlavə edilir."
+msgstr "Contact info is added from the admin panel."
+
+msgid "Mesaj göndərin"
+msgstr "Send a message"
+
+msgid "Göndər"
+msgstr "Send"
+
+msgid "Xəritədə biz"
+msgstr "Find us on the map"
+
+msgid "Xəritə"
+msgstr "Map"
+
+msgid "Paket"
+msgstr "Package"
+
+msgid "Xidmət"
+msgstr "Service"
+
+msgid "Sifarişiniz qəbul olundu. Tezliklə sizinlə əlaqə saxlayacağıq."
+msgstr "Your booking has been received. We'll contact you soon."
+
+msgid "Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin."
+msgstr "Something went wrong. Please try again."
+
+msgid "Aktiv paket yoxdur."
+msgstr "No active packages."
+
+msgid "Aktiv xidmət yoxdur."
+msgstr "No active services."
+
+msgid "Qonaqlar"
+msgstr "Guests"
+
+msgid "Qonaq sayını seçin"
+msgstr "Select number of guests"
+
+msgid "Paketinizi seçin"
+msgstr "Select your package"
+
+msgid "Xidmətinizi seçin"
+msgstr "Select your service"
+
+msgid "Böyük"
+msgstr "Adults"
+
+msgid "Uşaq"
+msgstr "Children"
+
+msgid "Böyük: %(a)s • Uşaq: %(c)s"
+msgstr "Adults: %(a)s • Children: %(c)s"
+
+msgid "Qonaq sayı"
+msgstr "Guest count"
+
+msgid "18+ yaş"
+msgstr "18+ years"
+
+msgid "0–17 yaş"
+msgstr "0–17 years"
+
+msgid "Azalt"
+msgstr "Decrease"
+
+msgid "Artır"
+msgstr "Increase"
+
+msgid "Hazır"
+msgstr "Done"
+
+msgid "Qeyd"
+msgstr "Note"
+
+msgid "Haqqımızda"
+msgstr "About us"
+
+msgid "Ətraflı"
+msgstr "Read more"
+
+msgid "Paketlər"
+msgstr "Packages"
+
+msgid "Əvvəlki"
+msgstr "Previous"
+
+msgid "Növbəti"
+msgstr "Next"
+
+msgid "Xidmətlər"
+msgstr "Services"
+
+msgid "Xidmətlərimiz"
+msgstr "Our services"
+
+msgid "Bütün xidmətlər"
+msgstr "All services"
+
+msgid "Bloqlar"
+msgstr "Blogs"
+
+msgid "Ətraflı oxu"
+msgstr "Read more"
+
+msgid "Bütün yazılar"
+msgstr "All posts"
+
+msgid "Tərəfdaşlar"
+msgstr "Partners"
+
+msgid "Bizə yazın"
+msgstr "Write to us"
+
+msgid "Mesajınızı göndərin, tezliklə sizinlə əlaqə saxlayacağıq."
+msgstr "Send your message and we will contact you soon."
+
+msgid "Mesajınız qəbul olundu."
+msgstr "Your message has been received."
+
+msgid "Müştərilərimiz nə deyir!"
+msgstr "What our clients say!"
+
+msgid "Əvvəlki rəylər"
+msgstr "Previous reviews"
+
+msgid "Növbəti rəylər"
+msgstr "Next reviews"
+
+msgid "Rəyiniz qəbul edildi. Təsdiqdən sonra saytda görünəcək."
+msgstr "Your review has been received. It will appear on the site after approval."
+
+msgid "Rəyiniz göndərilmədi. Zəhmət olmasa yenidən cəhd edin."
+msgstr "Your review could not be sent. Please try again."
+
+msgid "Rəy yaz"
+msgstr "Write a review"
+
+msgid "Rəyinizi yazın"
+msgstr "Write your review"
+
+msgid "Ad"
+msgstr "Name"
+
+msgid "(ən çoxu 50 simvol)"
+msgstr "(max 50 characters)"
+
+msgid "(saytda göstərilmir)"
+msgstr "(not shown on the site)"
+
+msgid "Aldığınız xidmət və ya paketi seçin"
+msgstr "Select the service or package you purchased"
+
+msgid "Bizi qiymətləndirin"
+msgstr "Rate us"
+
+msgid "Rəy"
+msgstr "Review"
+
+msgid "(ən çoxu 190 simvol)"
+msgstr "(max 190 characters)"
+
+msgid "Tez-tez verilən suallar"
+msgstr "Frequently asked questions"
+
+msgid "Bütün suallar"
+msgstr "All questions"
+
+msgid "Daxil olan xidmətlər:"
+msgstr "Included services:"
+
+msgid "Bitmə tarixi"
+msgstr "End date"
+
+msgid "ətraflı"
+msgstr "details"
+
+msgid "Sürətli keçidlər"
+msgstr "Quick links"
+
+msgid "About us"
+msgstr "About us"
+
+msgid "Ad Soyad"
+msgstr "Full name"
+
+msgid "Ad soyad"
+msgstr "Full name"
+
+msgid "Ad soyad *"
+msgstr "Full name *"
+
+msgid "Adınız"
+msgstr "Your name"
+
+msgid "Aldığınız xidmət və ya paketi seçin."
+msgstr "Select the service or package you purchased."
+
+msgid "Ana səhifə"
+msgstr "Home"
+
+msgid "Blog"
+msgstr "Blogs"
+
+msgid "Blog post not found"
+msgstr "Blog post not found"
+
+msgid "Böyük sayı"
+msgstr "Number of adults"
+
+msgid "Başqa yazı yoxdur."
+msgstr "No other posts."
+
+msgid "Bütün hüquqlar qorunur."
+msgstr "All rights reserved."
+
+msgid "Captcha verification failed. Please try again."
+msgstr "Captcha verification failed. Please try again."
+
+msgid "Contact"
+msgstr "Contact"
+
+msgid "Digər xidmətlər"
+msgstr "Other services"
+
+msgid "Digər yazılar"
+msgstr "Other posts"
+
+msgid "E-poçt (istəyə görə)"
+msgstr "Email (optional)"
+
+msgid "E-poçt və ya mobil nömrədən ən azı biri mütləqdir."
+msgstr "At least email or mobile number is required."
+
+msgid "Email address"
+msgstr "Email address"
+
+msgid "FAQ"
+msgstr "FAQ"
+
+msgid "Full name"
+msgstr "Full name"
+
+msgid "Gediş tarixi"
+msgstr "Departure date"
+
+msgid "Gediş tarixi keçmiş ola bilməz."
+msgstr "Departure date cannot be in the past."
+
+msgid "Gəliş tarixi"
+msgstr "Arrival date"
+
+msgid "Gəliş tarixi keçmiş ola bilməz."
+msgstr "Arrival date cannot be in the past."
+
+msgid "Gəliş tarixi mütləqdir."
+msgstr "Arrival date is required."
+
+msgid "Geri"
+msgstr "Back"
+
+msgid "Hamısı"
+msgstr "View all"
+
+msgid "Hazırlayan"
+msgstr "Developed by"
+
+msgid "Haqqında"
+msgstr "About"
+
+msgid "Hələ sual əlavə edilməyib."
+msgstr "No questions have been added yet."
+
+msgid "Mobil nömrə"
+msgstr "Mobile number"
+
+msgid "Mobil nömrə (məs: 050 123 45 67)"
+msgstr "Mobile number (e.g. +994 50 123 45 67)"
+
+msgid "Mobil nömrə *"
+msgstr "Mobile number *"
+
+msgid "Mobil nömrə mütləqdir."
+msgstr "Mobile number is required."
+
+msgid "Mobile number"
+msgstr "Mobile number"
+
+msgid "Növbəti şəkil"
+msgstr "Next image"
+
+msgid "Paket yoxdur."
+msgstr "No packages available."
+
+msgid "Paket seçin."
+msgstr "Select a package."
+
+msgid "Please verify that you are human."
+msgstr "Please verify that you are human."
+
+msgid "Qalereya"
+msgstr "Gallery"
+
+msgid "Qaleriya şəkli"
+msgstr "Gallery image"
+
+msgid "Qayıdış tarixi"
+msgstr "Return date"
+
+msgid "Rəylər"
+msgstr "Reviews"
+
+msgid "Reytinq 1 ilə 5 arasında olmalıdır."
+msgstr "Rating must be between 1 and 5."
+
+msgid "Rəyiniz"
+msgstr "Your review"
+
+msgid "Service not found"
+msgstr "Service not found"
+
+msgid "Services"
+msgstr "Services"
+
+msgid "Seçimi sil"
+msgstr "Clear selection"
+
+msgid "Sosial şəbəkələr"
+msgstr "Social networks"
+
+msgid "Something went wrong. Please try again."
+msgstr "Something went wrong. Please try again."
+
+msgid "Sualınıza cavab tapmadınızsa, bizimlə əlaqə saxlayın — komandamız sizə kömək etməyə hazırdır."
+msgstr "If you didn't find an answer to your question, contact us — our team is ready to help."
+
+msgid "Subject"
+msgstr "Subject"
+
+msgid "Səhifələmə"
+msgstr "Pagination"
+
+msgid "Səyahət və turizm xidmətləri — etibarlı tərəfdaşınız."
+msgstr "Travel and tourism services — your trusted partner."
+
+msgid "Thumbnail navigation"
+msgstr "Thumbnail navigation"
+
+msgid "Uşaq sayı"
+msgstr "Number of children"
+
+msgid "Video"
+msgstr "Video"
+
+msgid "Xidmət yoxdur."
+msgstr "No services available."
+
+msgid "Xidmətlərə qayıt"
+msgstr "Back to services"
+
+msgid "Xidmətə daxildir"
+msgstr "Included in the service"
+
+msgid "Your full name"
+msgstr "Your full name"
+
+msgid "Your message"
+msgstr "Your message"
+
+msgid "Yuxarı qalx"
+msgstr "Back to top"
+
+msgid "Zəhmət olmasa formadakı xətaları düzəldin."
+msgstr "Please fix the errors in the form."
+
+msgid "Zəhmət olmasa ulduz reytinqi seçin."
+msgstr "Please select a star rating."
+
+msgid "Əlaqə saxla"
+msgstr "Contact us"
+
+msgid "Əlavə qeydiniz varsa, yazın"
+msgstr "If you have additional notes, write them here"
+
+msgid "Ən azı bir paket seçin."
+msgstr "Select at least one package."
+
+msgid "Ən azı bir xidmət seçin."
+msgstr "Select at least one service."
+
+msgid "Ətraflı məlumat"
+msgstr "Detailed information"
+
+msgid "Əvvəlki şəkil"
+msgstr "Previous image"
+
+msgid "Paket bir neçə səyahət xidmətini (viza, uçuş, otel və s.) bir yerdə təklif edir. Uyğun paketi seçin — formu doldurub göndərdikdə sorğunuz komandamıza çatır və tezliklə sizinlə əlaqə saxlanılır."
+msgstr "A package combines several travel services (visa, flights, hotel, etc.) in one offer. Choose a suitable package — when you complete and submit the form, your request reaches our team and we will contact you shortly."
+
+msgid "Oxu"
+msgstr "Read"
+
+msgid "Sürətli əlaqə"
+msgstr "Quick contact"
+
+msgid "Zəng et"
+msgstr "Call"
+
+msgid "Footer naviqasiya"
+msgstr "Footer navigation"
+
+msgid "Videonu oxut"
+msgstr "Play video"
+
+msgid "Əvvəlki xidmət"
+msgstr "Previous service"
+
+msgid "Növbəti xidmət"
+msgstr "Next service"
+
+msgid "%(rating)s ulduz"
+msgstr "%(rating)s stars"
+
+msgid "%(count)s şəkil"
+msgid_plural "%(count)s şəkil"
+msgstr[0] "%(count)s image"
+msgstr[1] "%(count)s images"
+
+msgid "%(name)s — şəkil %(num)s"
+msgstr "%(name)s — image %(num)s"
+
+msgid "%(name)s — Qalereya"
+msgstr "%(name)s — Gallery"
+
+msgid "© 2026 Averta Travel. Bütün hüquqlar qorunur."
+msgstr "© 2026 Averta Travel. All rights reserved."
+
+msgid "Averta Travel — Aviabilet, Tur, Viza və Otel Xidmətləri Azərbaycanda"
+msgstr "Averta Travel — Flights, Tours, Visa and Hotel Services in Azerbaijan"
+
+msgid "Menyu"
+msgstr "Menu"
+
+msgid "13 illik təcrübəyə malik Averta Travel ilə daxili və xarici tur paketləri, aviabilet, viza xidmətləri və otel rezervasiyasını etibarlı şəkildə sifariş edin."
+msgstr "With 13 years of experience, book domestic and international tour packages, flights, visa services and hotel reservations reliably with Averta Travel."
+
+msgid "tur paketləri, xarici turlar, daxili turlar, aviabilet, aviabilet satışı, ucuz aviabiletlər, viza xidmətləri, viza dəstəyi, otel rezervasiyası, turizm agentliyi, turizm şirkəti, səyahət agentliyi, transfer xidməti, istirahət turları, yay turları, bayram turları, Dubay turları, Türkiyə turları, Avropa turları, Şengen vizası, Amerika vizası, İngiltərə vizası, qrup turları, fərdi turlar, balayı turları"
+msgstr "tour packages, international tours, domestic tours, flights, flight tickets, cheap flights, visa services, visa support, hotel reservation, travel agency, tourism company, travel company, transfer service, vacation tours, summer tours, holiday tours, Dubai tours, Turkey tours, Europe tours, Schengen visa, US visa, UK visa, group tours, private tours, honeymoon tours"
+
+msgid "Averta Travel viza dəstəyi, aviabilet satışı, otel rezervasiyası və fərdi tur paketləri ilə rahat, təhlükəsiz və peşəkar səyahət xidmətləri təqdim edir."
+msgstr "Averta Travel offers comfortable, safe and professional travel services with visa support, flight ticket sales, hotel reservations and custom tour packages."
+
+msgid "Səyahət məsləhətləri, viza yenilikləri, tur paketləri və dünyanın ən populyar istiqamətləri haqqında faydalı məlumatları Averta Travel blogunda oxuyun."
+msgstr "Read useful travel tips, visa updates, tour packages and information about the world's most popular destinations on the Averta Travel blog."
+
+msgid "Tur paketləri, viza dəstəyi, aviabiletlər və digər səyahət xidmətləri ilə bağlı suallarınız üçün Averta Travel komandası ilə əlaqə saxlayın."
+msgstr "Contact the Averta Travel team with your questions about tour packages, visa support, flights and other travel services."
+
+msgid "Viza müraciəti, tur paketləri, aviabiletlər, rezervasiya və səyahət prosesləri ilə bağlı ən çox verilən sualların cavablarını kəşf edin."
+msgstr "Discover answers to the most frequently asked questions about visa applications, tour packages, flights, reservations and travel processes."
+
+msgid "Viza dəstəyi, aviabilet satışı, otel rezervasiyası, transfer xidməti və fərdi səyahət planlaması üçün Averta Travel xidmətlərindən yararlanın."
+msgstr "Take advantage of Averta Travel services for visa support, flight ticket sales, hotel reservations, transfers and custom travel planning."

@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% load static i18n averta_tags %}
+
+{% block seo_meta %}
+{% trans "Averta Travel viza dəstəyi, aviabilet satışı, otel rezervasiyası və fərdi tur paketləri ilə rahat, təhlükəsiz və peşəkar səyahət xidmətləri təqdim edir." as seo_description %}
+{% seo_meta description=seo_description %}
+{% endblock %}
+
+{% block body_class %}page-about{% endblock %}
+
+{% block content %}
+{% include 'partials/page_header.html' %}
+
+{% if about %}
+{% include 'partials/about_intro.html' with show_read_more=False show_video=True about_page_layout=True %}
+{% else %}
+<div class="container-fluid about py-5">
+    <div class="container py-5">
+        <div class="row g-5 align-items-center">
+            <div class="col-lg-5">
+                <img src="{% static 'assets/img/about-img.jpg' %}" class="img-fluid w-100" alt="">
+            </div>
+            <div class="col-lg-7">
+                <h1 class="mb-4">{% trans "Xoş gəlmisiniz —" %} <span class="text-primary">Averta</span></h1>
+                <p class="mb-4">{% trans "Averta səyahət və tur xidmətləri üzrə etibarlı tərəfdaşınızdır. Sifariş və paketlər haqqında məlumat üçün bizimlə əlaqə saxlayın." %}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if about and about.gallery_images %}
+{% include 'partials/about_gallery.html' %}
+{% endif %}
+
+{% if statistics %}
+{% include 'partials/about_statistics.html' %}
+{% endif %}
+
+{% if partners %}
+<section class="partners-strip" aria-labelledby="partners-title">
+    <div class="partners-strip__head">
+        <h3 class="partners-strip__title" id="partners-title">{% trans "Tərəfdaşlar" %}</h3>
+        <span class="partners-strip__rule" aria-hidden="true"></span>
+    </div>
+    <div class="partner-carousel partners-strip__carousel">
+        {% for partner in partners %}
+        <div class="partners-strip__item">
+            <div class="partners-strip__bubble">
+                {% if partner.logo %}
+                <img src="{{ partner.logo }}" alt="{{ partner.name }}" class="partners-strip__logo">
+                {% else %}
+                <span class="partners-strip__fallback">{{ partner.name|slice:":2" }}</span>
+                {% endif %}
+            </div>
+            <div class="partners-strip__name" title="{{ partner.name }}">{{ partner.name }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+{% if about and about.gallery_images %}
+(function () {
+    window.aboutGalleryUrls = [
+        {% for img in about.gallery_images %}"{{ img|escapejs }}"{% if not forloop.last %}, {% endif %}{% endfor %}
+    ];
+})();
+(function () {
+    var count = {{ about.gallery_images|length }};
+    var $carousel = $('.about-gallery__owl');
+    $carousel.owlCarousel({
+        loop: count > 5,
+        margin: 16,
+        nav: false,
+        dots: count > 1,
+        autoplay: count > 1,
+        autoplayTimeout: 4000,
+        autoplayHoverPause: true,
+        slideBy: 'page',
+        responsive: {
+            0:   { items: Math.min(count, 2), slideBy: 2 },
+            576: { items: Math.min(count, 2), slideBy: 2 },
+            992: { items: Math.min(count, 3), slideBy: 3 },
+            1200:{ items: Math.min(count, 5), slideBy: 5 }
+        }
+    });
+    $('.about-gallery__prev').on('click', function () {
+        $carousel.trigger('prev.owl.carousel');
+    });
+    $('.about-gallery__next').on('click', function () {
+        $carousel.trigger('next.owl.carousel');
+    });
+
+    function bumpCenter() {
+        var $actives = $carousel.find('.owl-item.active');
+        if (!$actives.length) return;
+        var mid = Math.floor(($actives.length - 1) / 2);
+        var $card = $actives.eq(mid).find('.about-gallery__card');
+        if (!$card.length) return;
+        $card.addClass('is-bump');
+        window.setTimeout(function () { $card.removeClass('is-bump'); }, 260);
+    }
+
+    // When using custom buttons, give a hover-like feedback
+    $('.about-gallery__prev, .about-gallery__next').on('click', function () {
+        window.setTimeout(bumpCenter, 40);
+    });
+
+    $carousel.on('translated.owl.carousel', bumpCenter);
+})();
+{% endif %}
+
+(function () {
+    var statValues = document.querySelectorAll('.about-stats-value[data-count]');
+    if (statValues.length) {
+        var easeOut = function (t) { return 1 - Math.pow(1 - t, 3); };
+        var animateValue = function (el) {
+            var raw = (el.getAttribute('data-count') || '').trim();
+            if (!/^\d+$/.test(raw)) {
+                el.textContent = raw;
+                return;
+            }
+            var target = parseInt(raw, 10) || 0;
+            var duration = 1600;
+            var start = null;
+            var step = function (ts) {
+                if (!start) start = ts;
+                var p = Math.min((ts - start) / duration, 1);
+                el.textContent = Math.floor(easeOut(p) * target).toLocaleString('az-Latn');
+                if (p < 1) requestAnimationFrame(step);
+                else el.textContent = target.toLocaleString('az-Latn');
+            };
+            requestAnimationFrame(step);
+        };
+        if ('IntersectionObserver' in window) {
+            var obs = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (!entry.isIntersecting) return;
+                    var el = entry.target;
+                    if (el.dataset.animated) return;
+                    el.dataset.animated = '1';
+                    animateValue(el);
+                    obs.unobserve(el);
+                });
+            }, { threshold: 0.35 });
+            statValues.forEach(function (el) { obs.observe(el); });
+        } else {
+            statValues.forEach(animateValue);
+        }
+    }
+
+    var modalEl = document.getElementById('aboutVideoModal');
+    if (!modalEl) return;
+    var video = document.getElementById('aboutVideoPlayer');
+    modalEl.addEventListener('hidden.bs.modal', function () {
+        if (video) {
+            video.pause();
+            video.currentTime = 0;
+        }
+    });
+    modalEl.addEventListener('shown.bs.modal', function () {
+        if (video) {
+            video.play().catch(function () {});
+        }
+    });
+    var poster = document.querySelector('.about-video-poster');
+    if (poster) {
+        poster.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                poster.click();
+            }
+        });
+    }
+})();
+
+</script>
+{% if about and about.gallery_images %}
+<script src="{% static 'assets/js/about_gallery_lightbox.js' %}?v=1"></script>
+{% endif %}
+{% endblock %}

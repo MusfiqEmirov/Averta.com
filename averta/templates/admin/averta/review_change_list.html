@@ -1,0 +1,19 @@
+{% extends "admin/averta/change_list.html" %}
+
+{% block extrahead %}
+{{ block.super }}
+<script>
+(function () {
+    document.addEventListener('DOMContentLoaded', function () {
+        var table = document.querySelector('#result_list');
+        if (!table) return;
+        table.querySelectorAll('tbody tr').forEach(function (row) {
+            var readCb = row.querySelector('input[name$="-is_read"]');
+            var activeCb = row.querySelector('input[name$="-is_active"]');
+            if (readCb && !readCb.checked) row.classList.add('review-row--unread');
+            if (activeCb && !activeCb.checked) row.classList.add('review-row--inactive');
+        });
+    });
+})();
+</script>
+{% endblock %}

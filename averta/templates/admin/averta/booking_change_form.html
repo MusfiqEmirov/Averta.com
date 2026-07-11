@@ -1,0 +1,57 @@
+{% extends "admin/averta/change_form.html" %}
+
+{% block content %}
+<div class="booking-admin-page">
+    {% if original %}
+    {% if original.is_deleted %}
+    <div class="booking-admin-alert booking-admin-alert--danger">Bu sifariş “Silinib?” kimi işarələnib.</div>
+    {% elif not original.is_read %}
+    <div class="booking-admin-alert">Yeni sifariş — zəhmət olmasa yoxlayın və «Oxunub» işarələyin.</div>
+    {% endif %}
+
+    <div class="booking-admin-meta">
+        <div class="booking-admin-meta__item">
+            <label>ID</label>
+            <span>#{{ original.id }}</span>
+        </div>
+        <div class="booking-admin-meta__item">
+            <label>Tarix</label>
+            <span>{{ original.created_at|date:"d.m.Y H:i" }}</span>
+        </div>
+        <div class="booking-admin-meta__item">
+            <label>Status</label>
+            <span>
+                {% if original.is_read %}Oxunub{% else %}Oxunmayıb{% endif %}
+                · {% if original.is_customer %}Müştəri{% else %}Yeni{% endif %}
+                · {% if original.is_deleted %}Silinib{% else %}Aktiv{% endif %}
+            </span>
+        </div>
+        <div class="booking-admin-meta__item">
+            <label>Qonaqlar</label>
+            <span>{{ original.adults_count }} böyük · {{ original.children_count }} uşaq</span>
+        </div>
+        {% if original.date_from or original.date_to or original.arrival_date %}
+        <div class="booking-admin-meta__item">
+            <label>Səyahət tarixləri</label>
+            <span>
+                {% if original.date_from %}Gediş: {{ original.date_from|date:"d-m-Y" }}{% endif %}
+                {% if original.date_to %}{% if original.date_from %} · {% endif %}Qayıdış: {{ original.date_to|date:"d-m-Y" }}{% endif %}
+                {% if original.arrival_date %}{% if original.date_from or original.date_to %} · {% endif %}Gəliş: {{ original.arrival_date|date:"d-m-Y" }}{% endif %}
+            </span>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="booking-admin-actions" style="margin:0 0 1rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
+        <a href="#" class="button" id="bookingExportOneXlsBtn">Excel (bu sifariş)</a>
+    </div>
+
+    {% if booking_export_json %}{{ booking_export_json|json_script:"bookingExportOneData" }}{% endif %}
+    {% endif %}
+
+    <div class="booking-admin-form-wrap">
+        {{ block.super }}
+    </div>
+</div>
+{% endblock %}
+

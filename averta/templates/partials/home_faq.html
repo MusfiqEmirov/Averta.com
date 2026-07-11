@@ -1,0 +1,19 @@
+{% load i18n %}
+<section class="home-faq" id="faq">
+    <div class="home-faq-bg" aria-hidden="true"></div>
+    <div class="container position-relative py-5">
+        <div class="row g-4 g-lg-5 align-items-start">
+            <div class="col-lg-4">
+                <div class="home-faq-intro">
+                    <h2 class="home-faq-title mb-4">{% trans "Tez-tez verilən suallar" %}</h2>
+                    <a href="{% url 'services:faq-page' %}" class="btn btn-primary rounded-pill py-3 px-4">
+                        {% trans "Bütün suallar" %}
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                {% include 'partials/faq_accordion.html' with accordion_id='homeFaq' %}
+            </div>
+        </div>
+    </div>
+</section>

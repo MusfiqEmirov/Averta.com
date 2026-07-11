@@ -1,0 +1,721 @@
+from django import forms
+from django.core.exceptions import ValidationError
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+from django.conf import settings
+from datetime import timedelta
+import json
+from services.models import AppealContact, Booking, Package, Review, Service
+from services.models.review_models import REVIEW_MESSAGE_MAX_LENGTH, REVIEW_NAME_MAX_LENGTH
+from services.utils import normalize_az_phone
+from services.utils.queries import get_localized_field_name, get_packages, get_services
+from services.utils.turnstile import verify_turnstile_response, is_turnstile_configured
+
+
+class PackageBookingRadioSelect(forms.RadioSelect):
+    """Paket radio düymələrinə sifariş formu tarix ayarlarını data-atribut kimi əlavə edir."""
+
+    def __init__(self, attrs=None, package_date_flags=None):
+        self.package_date_flags = package_date_flags or {}
+        super().__init__(attrs)
+
+    @staticmethod
+    def _choice_pk(value):
+        if value is None or value == '':
+            return None
+        if hasattr(value, 'value'):
+            value = value.value
+        return str(value)
+
+    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
+        option = super().create_option(
+            name, value, label, selected, index, subindex=subindex, attrs=attrs,
+        )
+        pk = self._choice_pk(value)
+        if pk is not None:
+            flags = self.package_date_flags.get(pk, {'from': True, 'to': True, 'arrival': False})
+            option['attrs']['data-show-date-from'] = '1' if flags.get('from', True) else '0'
+            option['attrs']['data-show-date-to'] = '1' if flags.get('to', True) else '0'
+            option['attrs']['data-show-date-arrival'] = '1' if flags.get('arrival', False) else '0'
+        return option
+
+
+class TurnstileMixin:
+    """
+    Cloudflare Turnstile checkbox validation.
+    Expects the widget to post `cf-turnstile-response`.
+    """
+
+    def __init__(self, *args, request=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._turnstile_request = request
+        # NOTE: This mixin is not a Django Form subclass, so declaring a Field
+        # as a class attribute would not be picked up by Django's form metaclass.
+        # We must inject it into `self.fields` so templates render a BoundField.
+        self.fields.setdefault(
+            'turnstile',
+            forms.CharField(required=False, widget=forms.HiddenInput(), label=''),
+        )
+
+    def _turnstile_is_enabled(self) -> bool:
+        return is_turnstile_configured()
+
+    def _turnstile_verify(self) -> bool:
+        if not self._turnstile_is_enabled():
+            return True
+
+        token = (self.data.get('cf-turnstile-response') or '').strip()
+        if not token:
+            self.add_error('turnstile', _('Please verify that you are human.'))
+            return False
+
+        remote_ip = None
+        req = getattr(self, '_turnstile_request', None)
+        if req is not None:
+            remote_ip = req.META.get('REMOTE_ADDR')
+
+        ok = verify_turnstile_response(token, remote_ip=remote_ip)
+        if not ok:
+            self.add_error('turnstile', _('Captcha verification failed. Please try again.'))
+        return ok
+
+
+class AppealContactForm(TurnstileMixin, forms.ModelForm):
+    website = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput(),
+        label='',
+    )
+    full_name = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'form-control form-control-lg',
+            'placeholder': _('Your full name')
+        }),
+        required=True,
+        label=_('Full name')
+    )
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control form-control-lg',
+            'placeholder': _('Email address')
+        }),
+        required=False,
+        label=_('Email address')
+    )
+    phone = forms.CharField(
+        max_length=40,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control form-control-lg',
+            'placeholder': _('Mobile number'),
+            'inputmode': 'tel',
+            'autocomplete': 'tel',
+        }),
+        label=_('Mobile number'),
+    )
+    subject = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'form-control form-control-lg',
+            'placeholder': _('Subject')
+        }),
+        required=True,
+        label=_('Subject'),
+        max_length=250
+    )
+    info = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'class': 'form-control form-control-lg contact-message-field',
+            'rows': 8,
+            'placeholder': _('Your message')
+        }),
+        required=True,
+        label=_('Your message'),
+        max_length=500
+    )
+
+    class Meta:
+        model = AppealContact
+        fields = [
+            'full_name',
+            'email',
+            'phone',
+            'subject',
+            'info'
+        ]
+
+    def clean_website(self):
+        value = self.cleaned_data.get('website')
+        if value:
+            raise ValidationError(_('Something went wrong. Please try again.'))
+        return value
+
+    def clean(self):
+        cleaned_data = super().clean()
+        email = (cleaned_data.get('email') or '').strip()
+        phone = (cleaned_data.get('phone') or '').strip()
+
+        if not email and not phone:
+            raise ValidationError(_('E-poçt və ya mobil nömrədən ən azı biri mütləqdir.'))
+        self._turnstile_verify()
+        return cleaned_data
+
+    def clean_email(self):
+        email = (self.cleaned_data.get('email') or '').strip().lower()
+        return email
+
+    def clean_phone(self):
+        raw = (self.cleaned_data.get('phone') or '').strip()
+        if not raw:
+            return ''
+        # Accept broader phone formats (international / different spacing).
+        # Normalize Azerbaijan numbers if possible, otherwise keep user's input.
+        normalized = normalize_az_phone(raw)
+        return normalized or raw
+
+    def __init__(self, *args, lang='az', **kwargs):
+        super().__init__(*args, **kwargs)
+        self.lang = lang
+        ui = {
+            'az': {
+                'full_name_label': 'Ad soyad *',
+                'full_name_ph': 'Ad soyad *',
+                'email_label': 'E-poçt (istəyə görə)',
+                'email_ph': 'E-poçt (istəyə görə)',
+                'phone_label': 'Mobil nömrə *',
+                'phone_ph': 'Mobil nömrə *',
+                'info_label': 'Mesajınız *',
+                'info_ph': 'Mesajınız *',
+            },
+            'en': {
+                'full_name_label': 'Full name *',
+                'full_name_ph': 'Full name *',
+                'email_label': 'Email (optional)',
+                'email_ph': 'Email (optional)',
+                'phone_label': 'Mobile number *',
+                'phone_ph': 'Mobile number *',
+                'info_label': 'Your message *',
+                'info_ph': 'Your message *',
+            },
+            'ru': {
+                'full_name_label': 'Имя и фамилия *',
+                'full_name_ph': 'Имя и фамилия *',
+                'email_label': 'Эл. почта (необязательно)',
+                'email_ph': 'Эл. почта (необязательно)',
+                'phone_label': 'Мобильный номер *',
+                'phone_ph': 'Мобильный номер *',
+                'info_label': 'Ваше сообщение *',
+                'info_ph': 'Ваше сообщение *',
+            },
+        }.get(lang)
+
+        if ui:
+            self.fields['full_name'].label = ui['full_name_label']
+            self.fields['full_name'].widget.attrs['placeholder'] = ui['full_name_ph']
+            self.fields['email'].label = ui['email_label']
+            self.fields['email'].widget.attrs['placeholder'] = ui['email_ph']
+            self.fields['phone'].label = ui['phone_label']
+            self.fields['phone'].widget.attrs['placeholder'] = ui['phone_ph']
+            self.fields['info'].label = ui['info_label']
+            self.fields['info'].widget.attrs['placeholder'] = ui['info_ph']
+
+
+class BookingForm(forms.ModelForm):
+    """Ana səhifə hero sifariş formu."""
+
+    BOOKING_TYPE_SERVICE = 'service'
+    BOOKING_TYPE_PACKAGE = 'package'
+    BOOKING_TYPE_CHOICES = (
+        (BOOKING_TYPE_SERVICE, _('Xidmət')),
+        (BOOKING_TYPE_PACKAGE, _('Paket')),
+    )
+
+    website = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput(),
+        label='',
+    )
+    booking_type = forms.ChoiceField(
+        choices=BOOKING_TYPE_CHOICES,
+        initial=BOOKING_TYPE_PACKAGE,
+        widget=forms.HiddenInput(),
+    )
+    full_name = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'hero-booking__input',
+            'placeholder': _('Ad soyad *'),
+            'autocomplete': 'name',
+        }),
+        required=True,
+        label=_('Ad soyad'),
+    )
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={
+            'class': 'hero-booking__input',
+            'placeholder': _('E-poçt (istəyə görə)'),
+            'autocomplete': 'email',
+        }),
+        required=False,
+        label=_('E-poçt (istəyə görə)'),
+    )
+    phone = forms.CharField(
+        max_length=40,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'hero-booking__input',
+            'placeholder': _('Mobil nömrə *'),
+            'inputmode': 'tel',
+            'autocomplete': 'tel',
+        }),
+        label=_('Mobil nömrə'),
+    )
+    date_from = forms.DateField(
+        required=False,
+        input_formats=['%d-%m-%Y', '%d.%m.%Y', '%Y-%m-%d'],
+        widget=forms.DateInput(
+            format='%d-%m-%Y',
+            attrs={
+                'class': 'hero-booking__input hb-date-input hb-date-text',
+                'placeholder': '.....',
+                'autocomplete': 'off',
+                'readonly': 'readonly',
+            },
+        ),
+        label=_('Gediş tarixi'),
+    )
+    date_to = forms.DateField(
+        required=False,
+        input_formats=['%d-%m-%Y', '%d.%m.%Y', '%Y-%m-%d'],
+        widget=forms.DateInput(
+            format='%d-%m-%Y',
+            attrs={
+                'class': 'hero-booking__input hb-date-input hb-date-text',
+                'placeholder': '.....',
+                'autocomplete': 'off',
+                'readonly': 'readonly',
+            },
+        ),
+        label=_('Qayıdış tarixi'),
+    )
+    arrival_date = forms.DateField(
+        required=False,
+        input_formats=['%d-%m-%Y', '%d.%m.%Y', '%Y-%m-%d'],
+        widget=forms.DateInput(
+            format='%d-%m-%Y',
+            attrs={
+                'class': 'hero-booking__input hb-date-input hb-date-text',
+                'placeholder': '.....',
+                'autocomplete': 'off',
+                'readonly': 'readonly',
+            },
+        ),
+        label=_('Gəliş tarixi'),
+    )
+    note = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'hero-booking__input',
+            'maxlength': '200',
+            'placeholder': 'Əlavə qeydiniz varsa, yazın',
+            'autocomplete': 'off',
+        }),
+        required=False,
+        label=_('Qeyd'),
+        max_length=200,
+    )
+    adults_count = forms.IntegerField(
+        min_value=1,
+        max_value=100,
+        initial=1,
+        widget=forms.HiddenInput(attrs={'class': 'hero-booking__count-input', 'data-counter': 'adults'}),
+        label=_('Böyük sayı'),
+    )
+    children_count = forms.IntegerField(
+        min_value=0,
+        max_value=100,
+        initial=0,
+        widget=forms.HiddenInput(attrs={'class': 'hero-booking__count-input', 'data-counter': 'children'}),
+        label=_('Uşaq sayı'),
+    )
+    services = forms.ModelMultipleChoiceField(
+        queryset=Service.objects.none(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'hb-check'}),
+        label=_('Xidmətlər'),
+    )
+    packages = forms.ModelChoiceField(
+        queryset=Package.objects.none(),
+        required=False,
+        widget=PackageBookingRadioSelect(attrs={'class': 'hb-check'}),
+        label=_('Paket'),
+    )
+
+    class Meta:
+        model = Booking
+        fields = [
+            'full_name',
+            'email',
+            'phone',
+            'date_from',
+            'date_to',
+            'arrival_date',
+            'note',
+            'adults_count',
+            'children_count',
+        ]
+
+    def __init__(self, *args, lang='az', **kwargs):
+        super().__init__(*args, **kwargs)
+        self.lang = lang
+        ui = {
+            'az': {
+                'full_name_label': 'Ad soyad',
+                'full_name_ph': 'Ad soyad *',
+                'email_label': 'E-poçt (istəyə görə)',
+                'email_ph': 'E-poçt (istəyə görə)',
+                'phone_label': 'Mobil nömrə',
+                'phone_ph': 'Mobil nömrə *',
+                'date_from_label': 'Gediş tarixi',
+                'date_to_label': 'Qayıdış tarixi',
+                'arrival_date_label': 'Gəliş tarixi',
+                'note_label': 'Qeyd',
+                'note_ph': 'Əlavə qeydiniz varsa, yazın',
+                'svc': 'Xidmət',
+                'pkg': 'Paket',
+            },
+            'en': {
+                'full_name_label': 'Full name',
+                'full_name_ph': 'Full name *',
+                'email_label': 'Email (optional)',
+                'email_ph': 'Email (optional)',
+                'phone_label': 'Mobile number',
+                'phone_ph': 'Mobile number *',
+                'date_from_label': 'Departure date',
+                'date_to_label': 'Return date',
+                'arrival_date_label': 'Arrival date',
+                'note_label': 'Note',
+                'note_ph': 'If you have an additional note, write it',
+                'svc': 'Service',
+                'pkg': 'Package',
+            },
+            'ru': {
+                'full_name_label': 'Имя и фамилия',
+                'full_name_ph': 'Имя и фамилия *',
+                'email_label': 'Эл. почта (необязательно)',
+                'email_ph': 'Эл. почта (необязательно)',
+                'phone_label': 'Мобильный номер',
+                'phone_ph': 'Мобильный номер *',
+                'date_from_label': 'Дата вылета',
+                'date_to_label': 'Дата возврата',
+                'arrival_date_label': 'Дата прилёта',
+                'note_label': 'Комментарий',
+                'note_ph': 'Если есть дополнительная заметка, напишите',
+                'svc': 'Услуга',
+                'pkg': 'Пакет',
+            },
+        }.get(lang)
+
+        if ui:
+            self.fields['full_name'].label = ui['full_name_label']
+            self.fields['full_name'].widget.attrs['placeholder'] = ui['full_name_ph']
+            self.fields['email'].label = ui['email_label']
+            self.fields['email'].widget.attrs['placeholder'] = ui['email_ph']
+            self.fields['phone'].label = ui['phone_label']
+            self.fields['phone'].widget.attrs['placeholder'] = ui['phone_ph']
+            self.fields['date_from'].label = ui['date_from_label']
+            self.fields['date_to'].label = ui['date_to_label']
+            self.fields['arrival_date'].label = ui['arrival_date_label']
+            for name in ('date_from', 'date_to', 'arrival_date'):
+                self.fields[name].widget.format = '%d-%m-%Y'
+            self.fields['note'].label = ui['note_label']
+            self.fields['note'].widget.attrs['placeholder'] = ui['note_ph']
+            self.fields['services'].label = ui['svc']
+            self.fields['packages'].label = ui['pkg']
+        name_field = get_localized_field_name('name', lang)
+
+        def label_instance(obj):
+            return getattr(obj, name_field, None) or getattr(obj, 'name_az', str(obj))
+
+        service_qs = get_services(lang=lang, is_active=True)
+        package_qs = get_packages(lang=lang, is_active=True)
+        self.fields['services'].queryset = service_qs
+        self.fields['packages'].queryset = package_qs
+        self.fields['services'].label_from_instance = label_instance
+        self.fields['packages'].label_from_instance = label_instance
+
+        self.package_date_flags = {}
+        try:
+            for row in package_qs.values('pk', 'show_date_from', 'show_date_to', 'show_arrival_date'):
+                self.package_date_flags[str(row['pk'])] = {
+                    'from': row['show_date_from'],
+                    'to': row['show_date_to'],
+                    'arrival': row['show_arrival_date'],
+                }
+        except Exception:
+            for package in package_qs.only('pk'):
+                self.package_date_flags[str(package.pk)] = {'from': True, 'to': True, 'arrival': False}
+
+        self.package_date_flags_json = json.dumps(self.package_date_flags, ensure_ascii=False)
+        self.fields['packages'].widget.package_date_flags = self.package_date_flags
+
+    def _booking_date_requirements(self, booking_type, package):
+        if booking_type != self.BOOKING_TYPE_PACKAGE or not package:
+            return True, True, False
+        return (
+            getattr(package, 'show_date_from', True),
+            getattr(package, 'show_date_to', True),
+            getattr(package, 'show_arrival_date', False),
+        )
+
+    def clean_website(self):
+        value = self.cleaned_data.get('website')
+        if value:
+            raise ValidationError(_('Something went wrong. Please try again.'))
+        return value
+
+    def clean(self):
+        cleaned_data = super().clean()
+        booking_type = cleaned_data.get('booking_type') or self.BOOKING_TYPE_PACKAGE
+        services = cleaned_data.get('services')
+        packages = cleaned_data.get('packages')
+
+        if booking_type == self.BOOKING_TYPE_PACKAGE:
+            if not packages:
+                self.add_error('packages', _('Paket seçin.'))
+            cleaned_data['services'] = []
+        else:
+            if not services:
+                self.add_error('services', _('Ən azı bir xidmət seçin.'))
+            cleaned_data['packages'] = []
+
+        show_from, show_to, show_arrival = self._booking_date_requirements(booking_type, packages)
+        date_from = cleaned_data.get('date_from')
+        date_to = cleaned_data.get('date_to')
+        arrival_date = cleaned_data.get('arrival_date')
+        today = timezone.localdate()
+
+        if show_from:
+            if not date_from:
+                self.add_error('date_from', _('Gediş tarixi mütləqdir.'))
+            elif date_from < today:
+                self.add_error('date_from', _('Gediş tarixi keçmiş ola bilməz.'))
+        else:
+            cleaned_data['date_from'] = None
+
+        if show_to:
+            if not date_to:
+                self.add_error('date_to', _('Qayıdış tarixi mütləqdir.'))
+        else:
+            cleaned_data['date_to'] = None
+
+        if show_arrival:
+            if not arrival_date:
+                self.add_error('arrival_date', _('Gəliş tarixi mütləqdir.'))
+            elif arrival_date < today:
+                self.add_error('arrival_date', _('Gəliş tarixi keçmiş ola bilməz.'))
+        else:
+            cleaned_data['arrival_date'] = None
+
+        date_from = cleaned_data.get('date_from')
+        date_to = cleaned_data.get('date_to')
+        if show_from and show_to and date_from and date_to and date_to < date_from:
+            cleaned_data['date_to'] = date_from + timedelta(days=1)
+
+        return cleaned_data
+
+    def clean_email(self):
+        return (self.cleaned_data.get('email') or '').strip().lower()
+
+    def clean_phone(self):
+        raw = (self.cleaned_data.get('phone') or '').strip()
+        if not raw:
+            raise ValidationError(_('Mobil nömrə mütləqdir.'))
+        normalized = normalize_az_phone(raw)
+        return normalized or raw
+
+    def save(self, commit=True):
+        booking_type = self.cleaned_data.get('booking_type') or self.BOOKING_TYPE_PACKAGE
+        services = self.cleaned_data.get('services')
+        packages = self.cleaned_data.get('packages')
+
+        instance = super().save(commit=False)
+        if commit:
+            instance.save()
+            if booking_type == self.BOOKING_TYPE_PACKAGE:
+                instance.services.clear()
+                instance.packages.set([packages] if packages else [])
+            else:
+                instance.packages.clear()
+                instance.services.set(services or [])
+        return instance
+
+
+class BookingAdminForm(forms.ModelForm):
+    class Meta:
+        model = Booking
+        fields = '__all__'
+
+
+class ReviewForm(forms.ModelForm):
+    """Müştəri rəy formu — honeypot spam qoruması ilə."""
+
+    website = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput(),
+        label='',
+    )
+    name = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': _('Adınız'),
+            'autocomplete': 'name',
+        }),
+        required=True,
+        label=_('Ad'),
+        min_length=2,
+        max_length=REVIEW_NAME_MAX_LENGTH,
+        strip=True,
+    )
+    message = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 4,
+            'placeholder': _('Rəyiniz'),
+        }),
+        required=True,
+        label=_('Rəy'),
+        min_length=5,
+        max_length=REVIEW_MESSAGE_MAX_LENGTH,
+        strip=True,
+    )
+    rating = forms.IntegerField(
+        widget=forms.HiddenInput(),
+        required=True,
+        initial=0,
+    )
+    target = forms.ChoiceField(
+        required=True,
+        choices=[],
+        widget=forms.Select(attrs={'class': 'form-select', 'id': 'reviewTarget'}),
+        label=_('Aldığınız xidmət və ya paketi seçin'),
+    )
+    service = forms.ModelChoiceField(
+        queryset=Service.objects.none(),
+        required=False,
+        widget=forms.HiddenInput(),
+        label=_('Xidmət'),
+    )
+    package = forms.ModelChoiceField(
+        queryset=Package.objects.none(),
+        required=False,
+        widget=forms.HiddenInput(),
+        label=_('Paket'),
+    )
+
+    class Meta:
+        model = Review
+        fields = ['name', 'message', 'rating', 'service', 'package']
+
+    def __init__(self, *args, lang='az', **kwargs):
+        super().__init__(*args, **kwargs)
+        self.lang = lang
+        ui = {
+            'az': {
+                'name_label': 'Ad',
+                'name_ph': 'Adınız',
+                'msg_label': 'Rəy',
+                'msg_ph': 'Rəyiniz',
+                'target_label': 'Aldığınız xidmət və ya paketi seçin',
+                'target_empty': 'Aldığınız xidmət və ya paketi seçin',
+            },
+            'en': {
+                'name_label': 'Name',
+                'name_ph': 'Your name',
+                'msg_label': 'Review',
+                'msg_ph': 'Your review',
+                'target_label': 'Select the service or package you purchased',
+                'target_empty': 'Select the service or package you purchased',
+            },
+            'ru': {
+                'name_label': 'Имя',
+                'name_ph': 'Ваше имя',
+                'msg_label': 'Отзыв',
+                'msg_ph': 'Ваш отзыв',
+                'target_label': 'Выберите приобретённую услугу или пакет',
+                'target_empty': 'Выберите приобретённую услугу или пакет',
+            },
+        }.get(lang)
+
+        if ui:
+            self.fields['name'].label = ui['name_label']
+            self.fields['name'].widget.attrs['placeholder'] = ui['name_ph']
+            self.fields['message'].label = ui['msg_label']
+            self.fields['message'].widget.attrs['placeholder'] = ui['msg_ph']
+            self.fields['target'].label = ui['target_label']
+            target_empty = ui['target_empty']
+        else:
+            target_empty = _('Aldığınız xidmət və ya paketi seçin')
+        name_field = get_localized_field_name('name', lang)
+
+        def label_instance(obj):
+            return getattr(obj, name_field, None) or getattr(obj, 'name_az', str(obj))
+
+        service_qs = get_services(lang=lang, is_active=True)
+        package_qs = get_packages(lang=lang, is_active=True)
+        self.fields['service'].queryset = service_qs
+        self.fields['package'].queryset = package_qs
+
+        target_choices = [('', target_empty)]
+        for service in service_qs:
+            target_choices.append((f'service:{service.pk}', label_instance(service)))
+        for package in package_qs:
+            target_choices.append((f'package:{package.pk}', label_instance(package)))
+        self.fields['target'].choices = target_choices
+
+    def clean(self):
+        cleaned_data = super().clean()
+        target = (cleaned_data.get('target') or '').strip()
+        if not target:
+            raise ValidationError(_('Aldığınız xidmət və ya paketi seçin.'))
+
+        prefix, _, pk_str = target.partition(':')
+        try:
+            pk = int(pk_str)
+        except (TypeError, ValueError):
+            raise ValidationError(_('Aldığınız xidmət və ya paketi seçin.'))
+
+        if prefix == 'service':
+            try:
+                cleaned_data['service'] = self.fields['service'].queryset.get(pk=pk)
+            except Service.DoesNotExist:
+                raise ValidationError(_('Aldığınız xidmət və ya paketi seçin.'))
+            cleaned_data['package'] = None
+        elif prefix == 'package':
+            try:
+                cleaned_data['package'] = self.fields['package'].queryset.get(pk=pk)
+            except Package.DoesNotExist:
+                raise ValidationError(_('Aldığınız xidmət və ya paketi seçin.'))
+            cleaned_data['service'] = None
+        else:
+            raise ValidationError(_('Aldığınız xidmət və ya paketi seçin.'))
+        return cleaned_data
+
+    def clean_website(self):
+        value = self.cleaned_data.get('website')
+        if value:
+            raise ValidationError(_('Something went wrong. Please try again.'))
+        return value
+
+    def clean_rating(self):
+        rating = self.cleaned_data.get('rating')
+        if not rating or rating < 1:
+            raise ValidationError(_('Zəhmət olmasa ulduz reytinqi seçin.'))
+        if rating > 5:
+            raise ValidationError(_('Reytinq 1 ilə 5 arasında olmalıdır.'))
+        return rating
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.is_active = False
+        instance.phone = ''
+        if commit:
+            instance.save()
+        return instance

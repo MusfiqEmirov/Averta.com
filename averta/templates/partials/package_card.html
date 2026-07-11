@@ -1,0 +1,60 @@
+{% load i18n %}
+<article class="pkg-card">
+
+    <div class="pkg-card__header{% if package.image %} pkg-card__header--has-image{% endif %}">
+        {% if package.image %}
+        <img src="{{ package.image }}" alt="" class="pkg-card__cover" loading="lazy" decoding="async">
+        <div class="pkg-card__header-overlay" aria-hidden="true"></div>
+        {% endif %}
+        {% if package.price_display %}
+        <div class="pkg-card__price-badge">{{ package.price_display }}</div>
+        {% endif %}
+    </div>
+
+    <div class="pkg-card__name-wrap">
+        <h3 class="pkg-card__name">{{ package.name }}</h3>
+    </div>
+
+    <div class="pkg-card__scroll">
+        {% if package.services %}
+        <p class="pkg-card__section-label">{% trans "Daxil olan xidmətlər:" %}</p>
+        <ul class="pkg-card__services list-unstyled mb-0">
+            {% for s in package.services %}
+            <li class="pkg-card__service-item">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="pkg-card__check"><polyline points="3 8 6.5 11.5 13 5"/></svg>
+                <span>{{ s.name }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if package.description_html %}
+        {% if package.services %}<hr class="pkg-card__divider">{% endif %}
+        <div class="pkg-card__desc">{{ package.description_html }}</div>
+        {% endif %}
+    </div>
+
+    <div class="pkg-card__footer">
+        {% if package.end_date %}
+        <div class="pkg-card__deadline">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="14" height="13" rx="2"/><line x1="3" y1="8" x2="17" y2="8"/><line x1="7" y1="2" x2="7" y2="6"/><line x1="13" y1="2" x2="13" y2="6"/></svg>
+            <div class="pkg-card__deadline-text">
+                <span class="pkg-card__deadline-label">{% trans "Bitmə tarixi" %}</span>
+                <span class="pkg-card__deadline-value">{{ package.end_date|date:"d.m.Y" }}</span>
+            </div>
+        </div>
+        {% else %}
+        <span></span>
+        {% endif %}
+        <button type="button"
+                class="hb-submit pkg-card__cta"
+                data-booking-open
+                data-bs-toggle="modal"
+                data-bs-target="#bookingModal"
+                data-booking-package="{{ package.id }}">
+            <i class="fas fa-paper-plane" aria-hidden="true"></i>
+            <span>{% trans "Sifariş et" %}</span>
+        </button>
+    </div>
+
+</article>

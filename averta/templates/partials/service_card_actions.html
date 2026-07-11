@@ -1,0 +1,16 @@
+{% load i18n %}
+{# Sifariş et (sol) + Ətraflı (sağ) #}
+<div class="service-card-actions">
+    <button type="button"
+            class="service-card-actions__order btn btn-primary rounded-pill btn-averta-order"
+            data-booking-open
+            data-bs-toggle="modal"
+            data-bs-target="#bookingModal"
+            data-booking-service="{{ service.id }}">
+        {% trans "Sifariş et" %}
+    </button>
+    <a href="{% url 'services:service-detail' service.slug %}" class="service-card-actions__detail" aria-label="{{ service.name }} — {% trans 'ətraflı' %}">
+        {% trans "Ətraflı" as detail_label %}
+        {% include 'partials/card_link_action.html' with label=detail_label %}
+    </a>
+</div>

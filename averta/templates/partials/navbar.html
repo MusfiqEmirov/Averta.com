@@ -1,0 +1,67 @@
+{% load static i18n %}
+<nav class="navbar navbar-expand-lg navbar-light px-4 px-lg-5 py-3 py-lg-0">
+    <a href="{% url 'services:home-page' %}" class="navbar-brand p-0">
+        <img src="{% static 'assets/img/averta-logo.webp' %}" alt="Averta Travel" class="navbar-logo">
+    </a>
+    <div class="d-flex align-items-center ms-auto d-lg-none navbar-mobile-actions">
+        {% include 'partials/lang_switcher.html' with mobile=True %}
+        <button class="navbar-toggler ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-label="{% trans 'Menyu' %}">
+            <span class="fa fa-bars"></span>
+        </button>
+    </div>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+        <div class="navbar-nav ms-auto py-0">
+            <a href="{% url 'services:home-page' %}" class="nav-item nav-link {% if active_nav == 'home' %}active{% endif %}">
+                {% trans "Ana səhifə" %}
+            </a>
+            <a href="{% url 'services:about-page' %}" class="nav-item nav-link {% if active_nav == 'about' %}active{% endif %}">
+                {% trans "Haqqımızda" %}
+            </a>
+            <div class="nav-item dropdown">
+                <a href="{% url 'services:service-page' %}" class="nav-link dropdown-toggle {% if active_nav == 'services' %}active{% endif %}" data-bs-toggle="dropdown" aria-expanded="false">
+                    {% trans "Xidmətlər" %}
+                </a>
+                <div class="dropdown-menu m-0">
+                    <a href="{% url 'services:service-page' %}" class="dropdown-item">
+                        {% trans "Bütün xidmətlər" %}
+                    </a>
+                    {% if navbar_services %}
+                    <div class="dropdown-divider"></div>
+                    {% endif %}
+                    {% for nav_service in navbar_services %}
+                    <a href="{% url 'services:service-detail' nav_service.slug %}" class="dropdown-item">{{ nav_service.name }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+            <a href="{% url 'services:home-page' %}#packages" class="nav-item nav-link">
+                {% trans "Paketlər" %}
+            </a>
+            <a href="{% url 'services:home-page' %}#testimonial" class="nav-item nav-link">
+                {% trans "Rəylər" %}
+            </a>
+            <a href="{% url 'services:blog-page' %}" class="nav-item nav-link {% if active_nav == 'blog' %}active{% endif %}">
+                {% trans "Bloqlar" %}
+            </a>
+            <a href="{% url 'services:contact-page' %}" class="nav-item nav-link {% if active_nav == 'contact' %}active{% endif %}">
+                {% trans "Əlaqə" %}
+            </a>
+            <button type="button"
+                    class="nav-item navbar-mobile-order d-lg-none"
+                    data-booking-open
+                    data-bs-toggle="modal"
+                    data-bs-target="#bookingModal">
+                <span class="navbar-mobile-order__inner">
+                    <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                    {% trans "Sifariş et" %}
+                </span>
+            </button>
+        </div>
+        <button type="button"
+                class="btn btn-primary rounded-pill py-2 px-4 ms-lg-4 navbar-contact-btn d-none d-lg-inline-block"
+                data-booking-open
+                data-bs-toggle="modal"
+                data-bs-target="#bookingModal">
+            {% trans "Sifariş et" %}
+        </button>
+    </div>
+</nav>

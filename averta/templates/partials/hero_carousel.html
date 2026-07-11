@@ -1,0 +1,45 @@
+{% load i18n %}
+{% if hero_carousel %}
+<div class="carousel-header">
+    <div id="carouselId" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000" data-bs-pause="false">
+        {% if hero_carousel|length > 1 %}
+        <ol class="carousel-indicators">
+            {% for slide in hero_carousel %}
+            <li data-bs-target="#carouselId" data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></li>
+            {% endfor %}
+        </ol>
+        {% endif %}
+        <div class="carousel-inner" role="listbox">
+            {% for slide in hero_carousel %}
+            <div class="carousel-item hero-carousel-slide {% if forloop.first %}active{% endif %}"
+                 style="background-image: url('{{ slide.image_url }}');">
+                <img src="{{ slide.image_url }}"
+                     class="img-fluid hero-carousel-slide__img"
+                     alt=""
+                     loading="eager"
+                     decoding="async"
+                     {% if forloop.first %}fetchpriority="high"{% endif %}>
+                <div class="carousel-caption">
+                    <div class="p-3" style="max-width: 900px;">
+                        {% if slide.motto %}
+                        <p class="hero-motto text-white mb-4">{{ slide.motto }}</p>
+                        {% endif %}
+                        {# CTA removed per request (Paketlər button) #}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% if hero_carousel|length > 1 %}
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselId" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">{% trans "Əvvəlki" %}</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselId" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">{% trans "Növbəti" %}</span>
+        </button>
+        {% endif %}
+    </div>
+</div>
+{% endif %}

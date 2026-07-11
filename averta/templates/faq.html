@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load i18n averta_tags %}
+
+{% block seo_meta %}
+{% trans "Viza müraciəti, tur paketləri, aviabiletlər, rezervasiya və səyahət prosesləri ilə bağlı ən çox verilən sualların cavablarını kəşf edin." as seo_description %}
+{% seo_meta description=seo_description %}
+{% endblock %}
+
+{% block content %}
+{% include 'partials/page_header.html' %}
+
+<section class="home-faq faq-page">
+    <div class="home-faq-bg" aria-hidden="true"></div>
+    <div class="container position-relative py-5">
+        <div class="mx-auto text-center mb-5" style="max-width: 720px;">
+            <h5 class="section-title px-3">{{ page_heading }}</h5>
+            <p class="home-faq-lead text-muted mb-0">
+                {% trans "Sualınıza cavab tapmadınızsa, bizimlə əlaqə saxlayın — komandamız sizə kömək etməyə hazırdır." %}
+            </p>
+        </div>
+        {% if faqs %}
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-9">
+                {% include 'partials/faq_accordion.html' with accordion_id='faqPage' %}
+            </div>
+        </div>
+        <div class="text-center mt-5">
+            <a href="{% url 'services:contact-page' %}" class="btn btn-primary rounded-pill py-3 px-5">{% trans "Əlaqə saxla" %}</a>
+        </div>
+        {% else %}
+        <p class="text-center text-muted mb-4">{% trans "Hələ sual əlavə edilməyib." %}</p>
+        <div class="text-center">
+            <a href="{% url 'services:contact-page' %}" class="btn btn-primary rounded-pill py-3 px-5">{% trans "Əlaqə saxla" %}</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

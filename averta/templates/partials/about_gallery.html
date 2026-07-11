@@ -1,0 +1,66 @@
+{% load i18n %}
+{% with images=about.gallery_images %}
+{% if images %}
+<section class="about-gallery py-4">
+    <div class="container-fluid px-0">
+        <div class="about-gallery__stage">
+            <div class="about-gallery__owl owl-carousel">
+                {% for img in images %}
+                <div class="about-gallery__card">
+                    <a href="{{ img }}"
+                       data-about-gallery-item
+                       data-about-gallery-index="{{ forloop.counter0 }}"
+                       aria-label="{% trans 'Qaleriya şəkli' %} {{ forloop.counter }}">
+                        <img src="{{ img }}"
+                             loading="lazy"
+                             decoding="async"
+                             class="about-gallery__card-img"
+                             alt="{% trans 'Qaleriya şəkli' %} {{ forloop.counter }}">
+                        <span class="about-gallery__zoom" aria-hidden="true">
+                            <i class="fa fa-search-plus"></i>
+                        </span>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            {% if images|length > 1 %}
+            <div class="about-gallery__toolbar">
+                <button type="button"
+                        class="about-gallery__prev"
+                        aria-label="{% trans 'Əvvəlki şəkil' %}">
+                    <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                </button>
+                <button type="button"
+                        class="about-gallery__next"
+                        aria-label="{% trans 'Növbəti şəkil' %}">
+                    <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<div class="aglb" hidden aria-hidden="true">
+    <div class="aglb__overlay" data-aglb-close></div>
+    <div class="aglb__dialog" role="dialog" aria-modal="true" aria-label="{% trans 'Qalereya' %}" tabindex="-1">
+        <button type="button" class="aglb__close" data-aglb-close aria-label="{% trans 'Bağla' %}">
+            <span aria-hidden="true">×</span>
+        </button>
+
+        <div class="aglb__content">
+            <div class="aglb__media" aria-live="polite">
+                <button type="button" class="aglb__nav aglb__nav--prev" data-aglb-prev aria-label="{% trans 'Əvvəlki şəkil' %}"></button>
+                <figure class="aglb__figure">
+                    <img class="aglb__img" alt="" />
+                </figure>
+                <button type="button" class="aglb__nav aglb__nav--next" data-aglb-next aria-label="{% trans 'Növbəti şəkil' %}"></button>
+                <div class="aglb__counter" aria-hidden="true"></div>
+            </div>
+
+            <div class="aglb__thumbs" role="tablist" aria-label="{% trans 'Thumbnail navigation' %}"></div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endwith %}

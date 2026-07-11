@@ -1,0 +1,167 @@
+{% load i18n %}
+<div class="container-fluid testimonial py-5 px-0" id="testimonial"
+     data-review-form-errors="{% if review_form.errors %}true{% else %}false{% endif %}">
+
+    <div class="testimonial-inner py-3">
+        <div class="text-center mb-5">
+            <h1 class="mb-0">{% trans "Müştərilərimiz nə deyir!" %}</h1>
+        </div>
+    </div>
+
+    {% if reviews %}
+    {% with reviews|length as rev_count %}
+    <div class="testimonial-carousel-wrap"
+         data-review-count="{{ rev_count }}"
+         data-few-threshold="4">
+        <div class="testimonial-carousel-stage">
+            <div class="owl-carousel testimonial-carousel">
+                {% for review in reviews %}
+                {% include 'partials/review_card.html' %}
+                {% endfor %}
+            </div>
+            <div class="testimonial-carousel-toolbar">
+                <button type="button"
+                        class="testimonial-carousel-prev"
+                        aria-label="{% trans 'Əvvəlki rəylər' %}">
+                    <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                </button>
+                <button type="button"
+                        class="testimonial-carousel-next"
+                        aria-label="{% trans 'Növbəti rəylər' %}">
+                    <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endwith %}
+    {% endif %}
+
+    <div class="testimonial-inner py-3">
+        {% if review_feedback == 'success' %}
+        <div class="alert alert-success text-center rounded-3 mb-4 mx-auto review-feedback-alert form-feedback-alert" style="max-width:520px;" role="alert" data-form-feedback data-feedback-auto-dismiss="2000">
+            <i class="fa fa-check-circle me-2"></i>
+            {% trans "Rəyiniz qəbul edildi. Təsdiqdən sonra saytda görünəcək." %}
+        </div>
+        {% elif review_feedback == 'error' %}
+        <div class="alert alert-danger text-center rounded-3 mb-4 mx-auto review-feedback-alert form-feedback-alert" style="max-width:520px;" role="alert" data-form-feedback data-feedback-auto-dismiss="2000">
+            <i class="fa fa-exclamation-circle me-2"></i>
+            {% trans "Rəyiniz göndərilmədi. Zəhmət olmasa yenidən cəhd edin." %}
+        </div>
+        {% endif %}
+
+        <div class="text-center {% if reviews %}mt-2{% endif %}">
+            <button type="button"
+                    class="btn btn-primary rounded-pill py-2 px-5 testimonial-review-btn"
+                    data-bs-toggle="modal"
+                    data-bs-target="#reviewModal">
+                <i class="fa fa-pencil-alt me-2"></i>
+                {% trans "Rəy yaz" %}
+            </button>
+        </div>
+    </div>
+</div>
+
+{# ======== Modal ======== #}
+<div class="modal fade" id="reviewModal" tabindex="-1"
+     aria-labelledby="reviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-semibold" id="reviewModalLabel">{% trans "Rəyinizi yazın" %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="{% trans 'Bağla' %}"></button>
+            </div>
+
+            <div class="modal-body pt-2">
+                <form id="reviewForm" method="post"
+                      action="{% url 'services:home-page' %}"
+                      novalidate data-ajax="1" data-feedback-auto-dismiss="2000">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="review">
+                    {{ review_form.website }}
+
+                    {% if review_form.non_field_errors %}
+                    <div class="alert alert-warning py-2 px-3 rounded-3 mb-3" role="alert">
+                        {{ review_form.non_field_errors.0 }}
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold mb-1" for="reviewName">
+                            {% trans "Ad" %} <span class="text-danger">*</span>
+                            <span class="text-muted fw-normal">{% trans "(ən çoxu 50 simvol)" %}</span>
+                        </label>
+                        <input type="text"
+                               name="name"
+                               id="reviewName"
+                               class="form-control{% if review_form.name.errors %} is-invalid{% endif %}"
+                               placeholder="{{ review_form.fields.name.widget.attrs.placeholder }}"
+                               maxlength="50"
+                               value="{{ review_form.name.value|default:'' }}"
+                               autocomplete="name">
+                        {% if review_form.name.errors %}
+                        <div class="invalid-feedback d-block">{{ review_form.name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold mb-1" for="reviewTarget">
+                            {% trans "Aldığınız xidmət və ya paketi seçin" %} <span class="text-danger">*</span>
+                        </label>
+                        <div class="{% if review_form.target.errors or review_form.non_field_errors %} is-invalid{% endif %}">
+                            {{ review_form.target }}
+                        </div>
+                        {% if review_form.target.errors %}
+                        <div class="invalid-feedback d-block">{{ review_form.target.errors.0 }}</div>
+                        {% elif review_form.non_field_errors %}
+                        <div class="invalid-feedback d-block">{{ review_form.non_field_errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold mb-1">
+                            {% trans "Bizi qiymətləndirin" %} <span class="text-danger">*</span>
+                        </label>
+                        <div class="d-flex gap-2 mb-1" id="starPicker">
+                            {% for n in "12345" %}
+                            <i class="fa fa-star star-btn"
+                               data-val="{{ n }}"
+                               style="font-size:1.8rem; cursor:pointer; color:#ddd; transition:color .12s;"></i>
+                            {% endfor %}
+                        </div>
+                        <input type="hidden" name="rating" id="ratingInput"
+                               value="{{ review_form.rating.value|default:'0' }}">
+                        {% if review_form.rating.errors %}
+                        <div class="text-danger small mt-1">{{ review_form.rating.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-semibold mb-1" for="reviewMessage">
+                            {% trans "Rəy" %} <span class="text-danger">*</span>
+                            <span class="text-muted fw-normal">{% trans "(ən çoxu 190 simvol)" %}</span>
+                        </label>
+                        <textarea name="message"
+                                  id="reviewMessage"
+                                  class="form-control{% if review_form.message.errors %} is-invalid{% endif %}"
+                                  rows="4"
+                                  placeholder="{{ review_form.fields.message.widget.attrs.placeholder }}"
+                                  maxlength="190">{{ review_form.message.value|default:'' }}</textarea>
+                        <div class="form-text text-end small text-muted" id="reviewMessageCounter">0 / 190</div>
+                        {% if review_form.message.errors %}
+                        <div class="invalid-feedback d-block">{{ review_form.message.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary rounded-pill py-2">
+                            {% trans "Göndər" %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>

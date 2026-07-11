@@ -1,0 +1,22 @@
+{% load i18n %}
+{% if pagination and pagination.total_pages > 1 %}
+<nav class="mt-5" aria-label="{% trans 'Səhifələmə' %}">
+    <ul class="pagination justify-content-center">
+        {% if pagination.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ pagination.current_page|add:'-1' }}">{% trans "Əvvəlki" %}</a>
+        </li>
+        {% endif %}
+        {% for p in pagination.page_range %}
+        <li class="page-item {% if p == pagination.current_page %}active{% endif %}">
+            <a class="page-link" href="?page={{ p }}">{{ p }}</a>
+        </li>
+        {% endfor %}
+        {% if pagination.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ pagination.current_page|add:'1' }}">{% trans "Növbəti" %}</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
