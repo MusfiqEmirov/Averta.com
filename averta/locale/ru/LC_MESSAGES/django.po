@@ -504,8 +504,8 @@ msgstr "Averta Travel — Авиабилеты, туры, виза и отели
 msgid "Menyu"
 msgstr "Меню"
 
-msgid "averta: 13 illik təcrübəyə malik Averta Travel ilə daxili və xarici tur paketləri, aviabilet, viza xidmətləri və otel rezervasiyasını etibarlı şəkildə sifariş edin."
-msgstr "averta: За 13 лет опыта надёжно заказывайте внутренние и зарубежные туры, авиабилеты, визовые услуги и бронирование отелей с Averta Travel."
+msgid "13 illik təcrübəyə malik Averta Travel ilə daxili və xarici tur paketləri, aviabilet, viza xidmətləri və otel rezervasiyasını etibarlı şəkildə sifariş edin."
+msgstr "За 13 лет опыта надёжно заказывайте внутренние и зарубежные туры, авиабилеты, визовые услуги и бронирование отелей с Averta Travel."
 
 msgid "tur paketləri, xarici turlar, daxili turlar, aviabilet, aviabilet satışı, ucuz aviabiletlər, viza xidmətləri, viza dəstəyi, otel rezervasiyası, turizm agentliyi, turizm şirkəti, səyahət agentliyi, transfer xidməti, istirahət turları, yay turları, bayram turları, Dubay turları, Türkiyə turları, Avropa turları, Şengen vizası, Amerika vizası, İngiltərə vizası, qrup turları, fərdi turlar, balayı turları"
 msgstr "турпакеты, зарубежные туры, внутренние туры, авиабилеты, продажа авиабилетов, дешёвые авиабилеты, визовые услуги, визовая поддержка, бронирование отелей, туристическое агентство, туристическая компания, турагентство, трансфер, отдых туры, летние туры, праздничные туры, туры в Дубай, туры в Турцию, туры в Европу, шенгенская виза, виза в США, виза в Великобританию, групповые туры, индивидуальные туры, медовый месяц"
