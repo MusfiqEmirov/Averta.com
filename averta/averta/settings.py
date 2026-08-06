@@ -35,7 +35,10 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:8000',
 ]
 
+SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin-allow-popups'
+
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 USE_X_FORWARDED_HOST = True
 
 _extra_csrf = os.getenv('CSRF_TRUSTED_ORIGINS', '')
