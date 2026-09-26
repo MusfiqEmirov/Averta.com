@@ -5,6 +5,16 @@
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     {% block meta_pixel %}{% endblock %}
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18476161346"></script>
+
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'AW-18476161346');
+    </script>
     {% block seo_meta %}{% endblock %}
     {% include 'partials/head.html' %}
     {% block extra_head %}{% endblock %}
