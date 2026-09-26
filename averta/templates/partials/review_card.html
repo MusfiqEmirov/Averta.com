@@ -1,0 +1,36 @@
+{% load i18n %}
+<div class="review-card testimonial-item h-100"
+     style="--review-card-bg: {{ review.card_bg }}; --review-star-color: {{ review.star_color }};">
+    <span class="review-card__avatar-icon" role="img" aria-label="{{ review.name }}">
+        <i class="bi bi-person-fill" aria-hidden="true"></i>
+    </span>
+    <h6 class="review-card__name" title="{{ review.name }}">{{ review.name }}</h6>
+    <div class="review-card__stars" aria-label="{% blocktrans with rating=review.rating %}{{ rating }} ulduz{% endblocktrans %}">
+        {% for i in review.rating_range %}
+        <i class="fa fa-star review-card__star review-card__star--filled"></i>
+        {% endfor %}
+        {% for i in review.empty_stars %}
+        <i class="fa fa-star review-card__star review-card__star--empty"></i>
+        {% endfor %}
+    </div>
+    {% if review.target %}
+    <p class="review-card__target">
+        {% if review.target.type == 'service' %}
+        <a href="{% url 'services:service-detail' review.target.slug %}" class="review-card__target-link">
+            <i class="bi bi-briefcase-fill" aria-hidden="true"></i>
+            <span>{{ review.target.name }}</span>
+        </a>
+        {% else %}
+        <a href="{% url 'services:home-page' %}#packages" class="review-card__target-link">
+            <span class="review-card__target-pkg-badge"
+                  style="background: {{ review.target.icon_gradient }};"
+                  aria-hidden="true">
+                <i class="bi bi-box-seam-fill review-card__pkg-icon" aria-hidden="true"></i>
+            </span>
+            <span>{{ review.target.name }}</span>
+        </a>
+        {% endif %}
+    </p>
+    {% endif %}
+    <p class="review-card__message">{{ review.message }}</p>
+</div>

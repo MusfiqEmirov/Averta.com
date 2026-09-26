@@ -1,0 +1,24 @@
+{% load static i18n %}
+<div class="col-lg-4 col-md-6 d-flex">
+    <div class="blog-item w-100">
+        <a href="{% url 'services:blog-detail' blog.slug %}" class="blog-img blog-img-link d-block" aria-label="{{ blog.name }}">
+            <div class="blog-img-inner">
+                {% if blog.image %}
+                <img src="{{ blog.image }}" alt="{{ blog.name }}" loading="lazy">
+                {% else %}
+                <img src="{% static 'assets/img/blog-1.jpg' %}" alt="{{ blog.name }}" loading="lazy">
+                {% endif %}
+            </div>
+        </a>
+        <div class="blog-content border border-top-0 rounded-bottom p-4">
+            {% if blog.topic %}
+            <p class="blog-card-topic mb-2">{{ blog.topic }}</p>
+            {% endif %}
+            <a href="{% url 'services:blog-detail' blog.slug %}" class="h4 d-block blog-card-title">{{ blog.name }}</a>
+            {% if blog.description_preview %}
+            <div class="blog-card-excerpt my-3">{{ blog.description_preview }}</div>
+            {% endif %}
+            <a href="{% url 'services:blog-detail' blog.slug %}" class="btn btn-primary rounded-pill py-2 px-4">{% trans "Ətraflı oxu" %}</a>
+        </div>
+    </div>
+</div>

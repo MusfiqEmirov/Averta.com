@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load i18n averta_tags %}
+
+{% block seo_meta %}
+{% with seo_description=service.description|plain_text|truncatechars:160 %}
+{% seo_meta title=service.name description=seo_description image=og_image %}
+{% endwith %}
+{% endblock %}
+
+{% block body_class %}page-service-detail{% endblock %}
+
+{% block content %}
+{% include 'partials/page_header.html' %}
+
+<article class="sdp-page">
+    <div class="container sdp-body">
+        <header class="sdp-header">
+            <a href="{% url 'services:service-page' %}" class="sdp-back">
+                <i class="fas fa-arrow-left me-2" aria-hidden="true"></i>{% trans "Xidmətlərə qayıt" %}
+            </a>
+            <div class="sdp-header__row">
+                <h1 class="sdp-title">{{ service.name }}</h1>
+            </div>
+        </header>
+
+        <div class="sdp-layout{% if other_services %} sdp-layout--split{% endif %}">
+
+            {% if service.cover_image and other_services %}
+            <figure class="sdp-cover sdp-cover--lead">
+                <img
+                    src="{{ service.cover_image }}"
+                    alt="{{ service.name }}"
+                    class="sdp-cover__img"
+                    loading="eager"
+                >
+            </figure>
+            <aside class="sdp-layout__aside">
+                <div class="sdp-sidebar">
+                    {% include 'partials/service_detail_related_carousel.html' %}
+                    <div class="sdp-sidebar__order">
+                        <button type="button"
+                                class="btn btn-primary rounded-pill sdp-order-btn btn-averta-order"
+                                data-booking-open
+                                data-bs-toggle="modal"
+                                data-bs-target="#bookingModal"
+                                data-booking-service="{{ service.id }}">
+                            {% trans "Sifariş et" %}
+                        </button>
+                    </div>
+                </div>
+            </aside>
+            {% elif other_services %}
+            <aside class="sdp-layout__aside sdp-layout__aside--solo">
+                <div class="sdp-sidebar">
+                    {% include 'partials/service_detail_related_carousel.html' %}
+                    <div class="sdp-sidebar__order">
+                        <button type="button"
+                                class="btn btn-primary rounded-pill sdp-order-btn btn-averta-order"
+                                data-booking-open
+                                data-bs-toggle="modal"
+                                data-bs-target="#bookingModal"
+                                data-booking-service="{{ service.id }}">
+                            {% trans "Sifariş et" %}
+                        </button>
+                    </div>
+                </div>
+            </aside>
+            {% endif %}
+
+            <div class="sdp-layout__content">
+                {% if service.cover_image and not other_services %}
+                <figure class="sdp-cover sdp-cover--wide">
+                    <img
+                        src="{{ service.cover_image }}"
+                        alt="{{ service.name }}"
+                        class="sdp-cover__img"
+                        loading="eager"
+                    >
+                    <div class="sdp-cover__order">
+                        <button type="button"
+                            class="btn btn-primary rounded-pill sdp-order-btn btn-averta-order"
+                            data-booking-open
+                            data-bs-toggle="modal"
+                            data-bs-target="#bookingModal"
+                            data-booking-service="{{ service.id }}">
+                            {% trans "Sifariş et" %}
+                        </button>
+                    </div>
+                </figure>
+                {% endif %}
+
+                {% if service.description_html %}
+                <section class="sdp-panel sdp-panel--content" aria-labelledby="sdp-about">
+                    <div class="sdp-panel__head">
+                        <h2 id="sdp-about" class="sdp-panel__title">{% trans "Haqqında" %}</h2>
+                        <span class="sdp-panel__badge">{% trans "Ətraflı məlumat" %}</span>
+                    </div>
+                    <div class="sdp-prose blog-rich-text">
+                        {{ service.description_html|safe }}
+                    </div>
+                </section>
+                {% endif %}
+
+                {% include 'partials/service_detail_features.html' %}
+
+                {% include 'partials/service_detail_gallery.html' %}
+
+                {% if service.videos %}
+                <section class="sdp-panel" aria-labelledby="sdp-videos">
+                    <div class="sdp-panel__head">
+                        <h2 id="sdp-videos" class="sdp-panel__title">{% trans "Video" %}</h2>
+                    </div>
+                    <div class="sdp-videos">
+                        {% for video in service.videos %}
+                        <video class="sdp-video" controls preload="metadata" playsinline>
+                            <source src="{{ video }}">
+                        </video>
+                        {% endfor %}
+                    </div>
+                </section>
+                {% endif %}
+            </div>
+
+        </div>
+
+        {% if not service.cover_image %}
+        <div class="sdp-order-bar">
+            <button type="button"
+                    class="btn btn-primary rounded-pill sdp-order-btn btn-averta-order"
+                    data-booking-open
+                    data-bs-toggle="modal"
+                    data-bs-target="#bookingModal"
+                    data-booking-service="{{ service.id }}">
+                {% trans "Sifariş et" %}
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</article>
+{% endblock %}
+
+{% block extra_js %}
+{% load static %}
+<script>
+    window.serviceGalleryUrls = [
+        {% for image in service.gallery_images %}"{{ image|escapejs }}"{% if not forloop.last %}, {% endif %}{% endfor %}
+    ];
+</script>
+<script src="{% static 'assets/js/service_detail.js' %}?v=5"></script>
+{% if service.gallery_images %}
+<script src="{% static 'assets/js/service_gallery_lightbox.js' %}?v=1"></script>
+{% endif %}
+{% endblock %}

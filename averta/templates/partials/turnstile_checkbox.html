@@ -1,0 +1,11 @@
+{% load i18n %}
+{% if turnstile_site_key %}
+<div class="turnstile-wrap">
+    <div class="cf-turnstile" data-sitekey="{{ turnstile_site_key }}" data-appearance="always"></div>
+    {% if form.turnstile.errors %}
+    <div class="text-danger small mt-2">{{ form.turnstile.errors.0 }}</div>
+    {% endif %}
+    {{ form.turnstile }}
+</div>
+{% endif %}
+

@@ -1,0 +1,59 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: averta_db_local
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-averta_local}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - postgres_data_local:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5433:5432"  # Expose on different port to avoid conflicts
+
+  web:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile-local
+    container_name: averta_web_local
+    command: gunicorn --bind 0.0.0.0:8000 --workers 2 --timeout 120 --graceful-timeout 30 --keep-alive 5 --chdir averta averta.wsgi_local:application
+    volumes:
+      - ..:/app                                  # entire project mount
+      - ../averta/staticfiles:/app/averta/staticfiles  # collectstatic mount
+      - ../averta/media:/app/averta/media               # media mount
+    ports:
+      - "8000:8000"  # Expose directly for local development
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-averta_local}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_HOST: ${POSTGRES_HOST:-db}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      DEBUG: "True"
+      SECRET_KEY: ${SECRET_KEY:-django-insecure-local-dev-key-change-in-production}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1}
+      ADMIN_URL: ${ADMIN_URL:-admin/}
+      EMAIL_BACKEND: ${EMAIL_BACKEND:-django.core.mail.backends.smtp.EmailBackend}
+      EMAIL_HOST: ${EMAIL_HOST:-smtp.gmail.com}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_USE_TLS: ${EMAIL_USE_TLS:-True}
+      EMAIL_USE_SSL: ${EMAIL_USE_SSL:-False}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER:-}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD:-}
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL:-}
+      CONTACT_RECEIVER_EMAIL: ${CONTACT_RECEIVER_EMAIL:-}
+      TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:-}
+      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+volumes:
+  postgres_data_local:
+
+

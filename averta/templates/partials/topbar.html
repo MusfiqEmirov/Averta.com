@@ -1,0 +1,42 @@
+{% load static %}
+<div class="container-fluid bg-primary px-5 d-none d-lg-block">
+    <div class="row gx-0">
+        <div class="col-lg-8 text-center text-lg-start mb-2 mb-lg-0">
+            <div class="d-inline-flex align-items-center topbar-left" style="height: 45px;">
+                <div class="d-inline-flex align-items-center topbar-contact-group">
+                    {% if contact.phone %}
+                    <a href="tel:{{ contact.phone }}" class="topbar-contact-link text-light text-decoration-none">
+                        <i class="fas fa-phone-alt me-1"></i>{{ contact.phone }}
+                    </a>
+                    {% endif %}
+                    {% if contact.email %}
+                    <a href="mailto:{{ contact.email }}" class="topbar-contact-link text-light text-decoration-none">
+                        <i class="fas fa-envelope me-1"></i>{{ contact.email }}
+                    </a>
+                    {% endif %}
+                </div>
+                {% if contact.facebook or contact.instagram or contact.linkedn or contact.youtube %}
+                <div class="d-inline-flex align-items-center topbar-social">
+                    {% if contact.facebook %}
+                    <a class="btn btn-sm btn-outline-light btn-sm-square rounded-circle" href="{{ contact.facebook }}" target="_blank" rel="noopener"><i class="fab fa-facebook-f fw-normal"></i></a>
+                    {% endif %}
+                    {% if contact.instagram %}
+                    <a class="btn btn-sm btn-outline-light btn-sm-square rounded-circle" href="{{ contact.instagram }}" target="_blank" rel="noopener"><i class="fab fa-instagram fw-normal"></i></a>
+                    {% endif %}
+                    {% if contact.linkedn %}
+                    <a class="btn btn-sm btn-outline-light btn-sm-square rounded-circle" href="{{ contact.linkedn }}" target="_blank" rel="noopener"><i class="fab fa-linkedin-in fw-normal"></i></a>
+                    {% endif %}
+                    {% if contact.youtube %}
+                    <a class="btn btn-sm btn-outline-light btn-sm-square rounded-circle" href="{{ contact.youtube }}" target="_blank" rel="noopener"><i class="fab fa-youtube fw-normal"></i></a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-lg-4 text-center text-lg-end">
+            <div class="d-inline-flex align-items-center lang-switcher" style="height: 45px;">
+                {% include 'partials/lang_switcher.html' %}
+            </div>
+        </div>
+    </div>
+</div>

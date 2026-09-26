@@ -1,0 +1,10 @@
+{% extends "admin/change_list.html" %}
+
+{% block content %}
+{% if admin_page_help %}
+<div class="g-admin-help">
+  {{ admin_page_help|safe }}
+</div>
+{% endif %}
+{{ block.super }}
+{% endblock %}

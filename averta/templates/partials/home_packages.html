@@ -1,0 +1,91 @@
+{% load i18n %}
+{% if packages %}
+<section id="packages" class="home-packages py-5">
+
+    <div class="container">
+        <div class="mx-auto text-center mb-5" style="max-width:700px;">
+            <h5 class="section-title px-3">{% trans "Paketlər" %}</h5>
+        </div>
+    </div>
+
+    <div class="pkg-slider-outer">
+        <button class="pkg-nav pkg-nav--prev" id="pkgPrev" aria-label="{% trans 'Əvvəlki' %}" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+
+        <div class="pkg-track" id="pkgTrack">
+            {% for package in packages %}
+            {% include 'partials/package_card.html' %}
+            {% endfor %}
+        </div>
+
+        <button class="pkg-nav pkg-nav--next" id="pkgNext" aria-label="{% trans 'Növbəti' %}" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+    </div>
+
+</section>
+
+<script>
+(function () {
+    var track   = document.getElementById('pkgTrack');
+    var btnPrev = document.getElementById('pkgPrev');
+    var btnNext = document.getElementById('pkgNext');
+    if (!track || !btnPrev || !btnNext) return;
+
+    function scrollAmount() {
+        if (window.matchMedia('(max-width: 575.98px)').matches) {
+            return track.clientWidth;
+        }
+        var card = track.querySelector('.pkg-card');
+        if (!card) return 420;
+        var gap = parseFloat(getComputedStyle(track).gap) || 24;
+        return card.offsetWidth + gap;
+    }
+
+    function overflows() {
+        return track.scrollWidth > track.clientWidth + 4;
+    }
+
+    var outer = track.closest('.pkg-slider-outer');
+
+    function updateLayout() {
+        var needed = overflows();
+        btnPrev.style.display = needed ? '' : 'none';
+        btnNext.style.display = needed ? '' : 'none';
+        track.classList.toggle('pkg-track--center', !needed);
+        if (outer) {
+            outer.classList.toggle('pkg-slider-outer--center', !needed);
+        }
+    }
+
+    function syncDisabled() {
+        if (!overflows()) {
+            btnPrev.classList.remove('pkg-nav--disabled');
+            btnNext.classList.remove('pkg-nav--disabled');
+            return;
+        }
+        btnPrev.classList.toggle('pkg-nav--disabled', track.scrollLeft <= 2);
+        btnNext.classList.toggle('pkg-nav--disabled',
+            track.scrollLeft >= track.scrollWidth - track.clientWidth - 2);
+    }
+
+    btnPrev.addEventListener('click', function () {
+        track.scrollBy({ left: -scrollAmount(), behavior: 'smooth' });
+    });
+    btnNext.addEventListener('click', function () {
+        track.scrollBy({ left: scrollAmount(), behavior: 'smooth' });
+    });
+
+    track.addEventListener('scroll', syncDisabled, { passive: true });
+
+    function init() {
+        updateLayout();
+        syncDisabled();
+    }
+
+    init();
+    window.addEventListener('resize', init, { passive: true });
+})();
+</script>
+{% endif %}

@@ -1,0 +1,63 @@
+.vscode/
+.pytest_cache/
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+*.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+docker/.env
+
+
+# Django
+*.sqlite3
+db.sqlite3
+media/
+cvs/
+images/
+staticfiles/
+static_root/
+
+# VSCode / IDE
+.vscode/
+.idea/
+
+# Byte-compiled / cache
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+
+# OS 
+.DS_Store
+Thumbs.db
+
+# Local development files (sensitive data)
+.env.local
+
+# Local development configuration files
+docker/docker-compose-local.yaml
+docker/docker-compose-local.bat
+docker/docker-compose-local.sh
+docker/Dockerfile-local
+docker/entrypoint-local.sh
+conco/conco/settings_local.py
+conco/conco/wsgi_local.py
+docker/conco/media
+docker/conco/staticfiles
+
+# Local database volumes (if created)
+postgres_data_local/
+
+# SSL certificates (do NOT commit)
+nginx/ssl/*
+!nginx/ssl/.gitkeep
+
+conco/gunicorn.ctl

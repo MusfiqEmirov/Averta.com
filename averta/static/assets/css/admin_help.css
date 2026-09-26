@@ -1,0 +1,21 @@
+/* Averta admin — ümumi kömək bloku */
+.g-admin-help {
+    margin: 0 0 1.25rem;
+    padding: 1rem 1.15rem;
+    border-radius: 10px;
+    border: 1px solid #c5d9e8;
+    background: linear-gradient(135deg, #f0f7fc 0%, #e8f2fa 100%);
+    color: #1a3a52;
+    font-size: 0.9rem;
+    line-height: 1.55;
+}
+
+.g-admin-help strong {
+    color: #13357b;
+}
+
+.g-admin-help em {
+    color: #417690;
+    font-style: normal;
+    font-weight: 600;
+}

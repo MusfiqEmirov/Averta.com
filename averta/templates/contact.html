@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static i18n averta_tags %}
+
+{% block seo_meta %}
+{% trans "Tur paketləri, viza dəstəyi, aviabiletlər və digər səyahət xidmətləri ilə bağlı suallarınız üçün Averta Travel komandası ilə əlaqə saxlayın." as seo_description %}
+{% seo_meta description=seo_description %}
+{% endblock %}
+
+{% block messages %}{% endblock %}
+
+{% block content %}
+{% include 'partials/page_header.html' %}
+
+<section class="contact-page">
+    <div class="container py-5" id="contact-section">
+        <div class="mx-auto text-center mb-5" style="max-width: 720px;">
+            <h5 class="section-title px-3">{% trans "Əlaqə" %}</h5>
+        </div>
+
+        <div class="row g-4 g-xl-5 align-items-stretch">
+            <div class="col-lg-6">
+                <div class="contact-info-panel contact-info-panel--card h-100">
+                    {% if contact %}
+                    {% if contact.address %}
+                    <div class="contact-info-card">
+                        <span class="contact-info-card__icon" aria-hidden="true"><i class="fas fa-map-marker-alt"></i></span>
+                        <div>
+                            <h3 class="contact-info-card__title">{% trans "Ünvan" %}</h3>
+                            <p class="mb-0">{{ contact.address }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if contact.phone %}
+                    <div class="contact-info-card">
+                        <span class="contact-info-card__icon" aria-hidden="true"><i class="fas fa-phone-alt"></i></span>
+                        <div>
+                            <h3 class="contact-info-card__title">{% trans "Telefon" %}</h3>
+                            <p class="mb-0"><a href="tel:{{ contact.phone }}">{{ contact.phone }}</a></p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if contact.whatsapp_url %}
+                    <a href="{{ contact.whatsapp_url }}" class="contact-info-card contact-info-card--link" target="_blank" rel="noopener noreferrer">
+                        <span class="contact-info-card__icon" aria-hidden="true"><i class="fab fa-whatsapp"></i></span>
+                        <div>
+                            <h3 class="contact-info-card__title">WhatsApp</h3>
+                            <p class="mb-0">{% if contact.whatsapp_number %}{{ contact.whatsapp_number }}{% else %}{% trans "Yazın" %}{% endif %}</p>
+                        </div>
+                    </a>
+                    {% endif %}
+                    {% if contact.email %}
+                    <div class="contact-info-card">
+                        <span class="contact-info-card__icon" aria-hidden="true"><i class="fas fa-envelope"></i></span>
+                        <div>
+                            <h3 class="contact-info-card__title">{% trans "E-poçt" %}</h3>
+                            <p class="mb-0"><a href="mailto:{{ contact.email }}">{{ contact.email }}</a></p>
+                            {% if contact.email_two %}
+                            <p class="mb-0 mt-1"><a href="mailto:{{ contact.email_two }}">{{ contact.email_two }}</a></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if contact.facebook or contact.instagram or contact.linkedn or contact.youtube or contact.tiktok %}
+                    <div class="contact-info-card contact-info-card--social">
+                        <div class="d-flex align-items-center justify-content-center flex-wrap contact-page-social">
+                            {% if contact.facebook %}
+                            <a class="btn-square btn btn-primary rounded-circle mx-1" href="{{ contact.facebook }}" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                            {% endif %}
+                            {% if contact.instagram %}
+                            <a class="btn-square btn btn-primary rounded-circle mx-1" href="{{ contact.instagram }}" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                            {% endif %}
+                            {% if contact.linkedn %}
+                            <a class="btn-square btn btn-primary rounded-circle mx-1" href="{{ contact.linkedn }}" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                            {% endif %}
+                            {% if contact.youtube %}
+                            <a class="btn-square btn btn-primary rounded-circle mx-1" href="{{ contact.youtube }}" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                            {% endif %}
+                            {% if contact.tiktok %}
+                            <a class="btn-square btn btn-primary rounded-circle mx-1" href="{{ contact.tiktok }}" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if contact.map_embed_url %}
+                    <div class="contact-info-card contact-info-card--map" id="contact-map">
+                        <div class="contact-map-wrap">
+                            <iframe
+                                class="contact-map-iframe"
+                                src="{{ contact.map_embed_url }}"
+                                loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade"
+                                title="{% trans 'Xəritə' %}"></iframe>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% else %}
+                    <p class="text-muted mb-0">{% trans "Əlaqə məlumatı admin paneldən əlavə edilir." %}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="contact-form-panel h-100">
+                    <h2 class="contact-form-panel__title">{% trans "Mesaj göndərin" %}</h2>
+                    {% if messages %}
+                        {% include 'partials/messages.html' %}
+                    {% endif %}
+                    <form method="post" action="{% url 'services:contact-page' %}" class="contact-form" data-ajax="1" data-feedback-auto-dismiss="2000">
+                        {% csrf_token %}
+                        {{ form.website }}
+                        <input type="hidden" name="subject" value="{% trans 'Əlaqə' %}">
+                        <input type="hidden" name="form_type" value="contact">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label contact-form-label" for="{{ form.full_name.id_for_label }}">{{ form.full_name.label }}</label>
+                                {{ form.full_name }}
+                                {% if form.full_name.errors %}<div class="text-danger small mt-1">{{ form.full_name.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label contact-form-label" for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                                {{ form.email }}
+                                {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label contact-form-label" for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
+                                {{ form.phone }}
+                                {% if form.phone.errors %}<div class="text-danger small mt-1">{{ form.phone.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label contact-form-label" for="{{ form.info.id_for_label }}">{{ form.info.label }}</label>
+                                {{ form.info }}
+                                {% if form.info.errors %}<div class="text-danger small mt-1">{{ form.info.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-12">
+                                {% include 'partials/turnstile_checkbox.html' with form=form %}
+                            </div>
+                            <div class="col-12">
+                                <button class="btn btn-primary btn-lg rounded-pill w-100 py-3" type="submit">{% trans "Göndər" %}</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

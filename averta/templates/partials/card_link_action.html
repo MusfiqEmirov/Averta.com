@@ -1,0 +1,5 @@
+{% load i18n %}
+<div class="card-link-action{% if compact %} card-link-action--compact{% endif %}">
+    <span class="card-link-action__label">{% if label %}{{ label }}{% else %}{% trans "Oxu" %}{% endif %}</span>
+    <span class="card-link-action__icon" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+</div>

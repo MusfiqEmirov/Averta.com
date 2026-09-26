@@ -1,0 +1,21 @@
+<section class="about-stats">
+    <div class="about-stats-bg" aria-hidden="true"></div>
+    <div class="container position-relative py-5">
+        <div class="row g-4 g-xl-5 justify-content-center">
+            {% for card in statistics.cards %}
+            <div class="col-6 col-md-6 col-lg-3">
+                <article class="about-stats-card h-100">
+                    <div class="about-stats-card-accent" aria-hidden="true"></div>
+                    <div class="about-stats-icon-wrap about-stats-icon-wrap--{{ card.variant }}">
+                        <i class="{{ card.icon }}" aria-hidden="true"></i>
+                    </div>
+                    <div class="about-stats-value" data-count="{{ card.value }}">0</div>
+                    {% if card.caption %}
+                    <p class="about-stats-caption">{{ card.caption }}</p>
+                    {% endif %}
+                </article>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>

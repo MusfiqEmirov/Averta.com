@@ -1,0 +1,28 @@
+<div class="home-faq-accordion" id="{{ accordion_id }}">
+    {% for faq in faqs %}
+    <article class="home-faq-item">
+        <h3 class="home-faq-item-header" id="{{ accordion_id }}-h-{{ faq.id }}">
+            <button
+                class="home-faq-question collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#{{ accordion_id }}-c-{{ faq.id }}"
+                aria-expanded="false"
+                aria-controls="{{ accordion_id }}-c-{{ faq.id }}">
+                <span class="home-faq-num" aria-hidden="true">{{ forloop.counter }}</span>
+                <span class="home-faq-question-text">{{ faq.question }}</span>
+                <span class="home-faq-icon" aria-hidden="true"><i class="fas fa-chevron-down"></i></span>
+            </button>
+        </h3>
+        <div
+            id="{{ accordion_id }}-c-{{ faq.id }}"
+            class="collapse"
+            aria-labelledby="{{ accordion_id }}-h-{{ faq.id }}"
+            data-bs-parent="#{{ accordion_id }}">
+            <div class="home-faq-answer">
+                <div class="home-faq-answer-inner">{{ faq.answer|linebreaks }}</div>
+            </div>
+        </div>
+    </article>
+    {% endfor %}
+</div>

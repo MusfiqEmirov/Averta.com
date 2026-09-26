@@ -1,0 +1,77 @@
+/* Sifarişlər — admin detail (Booking) */
+.booking-admin-page {
+    max-width: 100%;
+}
+
+.booking-admin-alert {
+    margin: 0 0 1rem;
+    padding: 0.85rem 1.1rem;
+    border-radius: 8px;
+    border-left: 4px solid #f0ad4e;
+    background: #fff8e6;
+    color: #6b4e00;
+    font-weight: 700;
+}
+
+.booking-admin-alert--danger {
+    border-left-color: #dc3545;
+    background: #fff1f2;
+    color: #7f1d1d;
+}
+
+.booking-admin-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 10px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+.booking-admin-meta__item label {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #64748b;
+    margin-bottom: 0.25rem;
+}
+
+.booking-admin-meta__item span {
+    font-weight: 700;
+    color: #13357b;
+}
+
+/* Make fieldsets clearer */
+.booking-admin-form-wrap fieldset.module h2 {
+    background: #13357b;
+    color: #fff;
+    border-radius: 6px 6px 0 0;
+}
+
+/* Emphasize status checkboxes */
+.booking-admin-form-wrap .form-row.field-is_read,
+.booking-admin-form-wrap .form-row.field-is_customer,
+.booking-admin-form-wrap .form-row.field-is_deleted {
+    background: #fff7e6;
+    border: 1px solid #ffe2a8;
+    border-radius: 10px;
+    padding: 12px 12px;
+}
+
+.booking-admin-form-wrap .form-row.field-is_read label,
+.booking-admin-form-wrap .form-row.field-is_customer label,
+.booking-admin-form-wrap .form-row.field-is_deleted label {
+    font-weight: 700;
+}
+
+/* Readonly blocks */
+.booking-admin-form-wrap .readonly {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 10px 12px;
+}
+

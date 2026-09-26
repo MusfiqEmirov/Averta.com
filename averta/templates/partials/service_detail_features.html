@@ -1,0 +1,16 @@
+{% load i18n %}
+{% if service.bullet_items %}
+<section class="sdp-features sdp-features--main" aria-labelledby="sdp-features-heading">
+    <div class="sdp-features__head">
+        <h2 id="sdp-features-heading" class="sdp-features__title">{% trans "Xidmətə daxildir" %}</h2>
+    </div>
+    <ul class="sdp-features__grid">
+        {% for item in service.bullet_items %}
+        <li class="sdp-features__chip">
+            <span class="sdp-features__chip-icon" aria-hidden="true"><i class="fas fa-check"></i></span>
+            <span class="sdp-features__chip-text">{{ item }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+</section>
+{% endif %}

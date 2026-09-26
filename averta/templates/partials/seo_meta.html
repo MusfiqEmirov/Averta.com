@@ -1,0 +1,77 @@
+{% load i18n %}
+{% trans "Averta Travel — Aviabilet, Tur, Viza və Otel Xidmətləri Azərbaycanda" as default_site_title %}
+{% trans "tur paketləri, xarici turlar, daxili turlar, aviabilet, aviabilet satışı, ucuz aviabiletlər, viza xidmətləri, viza dəstəyi, otel rezervasiyası, turizm agentliyi, turizm şirkəti, səyahət agentliyi, transfer xidməti, istirahət turları, yay turları, bayram turları, Dubay turları, Türkiyə turları, Avropa turları, Şengen vizası, Amerika vizası, İngiltərə vizası, qrup turları, fərdi turlar, balayı turları" as site_keywords %}
+<title>{% firstof page_title default_site_title %}</title>
+{% if seo_description %}
+<meta name="description" content="{{ seo_description }}">
+{% endif %}
+<meta name="keywords" content="{{ site_keywords }}">
+<link rel="canonical" href="{{ canonical_url }}">
+<meta name="google-site-verification" content="xPYVg5pvlcliIYbHYXdnB2heSMVzhWjCu0X1q92jrWU">
+
+<meta property="og:title" content="{% firstof page_title default_site_title %}">
+{% if seo_description %}
+<meta property="og:description" content="{{ seo_description }}">
+{% endif %}
+<meta property="og:image" content="{{ og_image }}">
+<meta property="og:image:secure_url" content="{{ og_image }}">
+<meta property="og:image:alt" content="{% firstof page_title default_site_title %}">
+<meta property="og:url" content="{{ canonical_url }}">
+<meta property="og:site_name" content="{{ site_name }}">
+<meta property="og:type" content="{{ og_type }}">
+<meta property="og:locale" content="{% if language == 'ru' %}ru_RU{% elif language == 'en' %}en_US{% else %}az_AZ{% endif %}">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{% firstof page_title default_site_title %}">
+{% if seo_description %}
+<meta name="twitter:description" content="{{ seo_description }}">
+{% endif %}
+<meta name="twitter:image" content="{{ og_image }}">
+<meta name="twitter:image:alt" content="{% firstof page_title default_site_title %}">
+
+{% if schema_type == 'article' %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "{{ article_headline|escapejs }}",
+  "description": "{{ seo_description|escapejs }}",
+  "image": "{{ og_image|escapejs }}",
+  "datePublished": "{{ article_date|escapejs }}",
+  "author": {
+    "@type": "Organization",
+    "name": "{{ site_name|escapejs }}"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "{{ site_name|escapejs }}",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "{{ seo_logo_url|escapejs }}"
+    }
+  }
+}
+</script>
+{% else %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "name": "{{ site_name|escapejs }}",
+      "url": "{{ site_url|escapejs }}"
+    },
+    {
+      "@type": "Organization",
+      "name": "{{ site_name|escapejs }}",
+      "url": "{{ site_url|escapejs }}",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "{{ seo_logo_url|escapejs }}"
+      }
+    }
+  ]
+}
+</script>
+{% endif %}

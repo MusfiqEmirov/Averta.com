@@ -1,0 +1,41 @@
+{% load i18n %}
+{% if about.video %}
+<div class="about-video-block">
+    <div class="about-video-poster position-relative rounded-3 overflow-hidden shadow"
+         role="button"
+         tabindex="0"
+         data-bs-toggle="modal"
+         data-bs-target="#aboutVideoModal"
+         aria-label="{% trans 'Videonu oxut' %}">
+        {% if about.video_poster %}
+        <img src="{{ about.video_poster }}" class="w-100 about-video-poster-img" alt="{{ about.main_title }}">
+        {% elif about.first_image %}
+        <img src="{{ about.first_image }}" class="w-100 about-video-poster-img" alt="{{ about.main_title }}">
+        {% else %}
+        <div class="about-video-poster-placeholder"></div>
+        {% endif %}
+        <div class="about-video-overlay"></div>
+        <div class="about-video-play" aria-hidden="true">
+            <span class="about-video-play-ring"></span>
+            <span class="about-video-play-ring about-video-play-ring--delayed"></span>
+            <span class="about-video-play-icon"><i class="fas fa-play"></i></span>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="aboutVideoModal" tabindex="-1" aria-labelledby="aboutVideoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content about-video-modal-content border-0">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title text-white" id="aboutVideoModalLabel">{{ about.main_title }}</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="{% trans 'Bağla' %}"></button>
+            </div>
+            <div class="modal-body p-2 pt-0">
+                <video id="aboutVideoPlayer" class="w-100 rounded" controls playsinline preload="metadata">
+                    <source src="{{ about.video }}">
+                </video>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
