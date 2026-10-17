@@ -7,9 +7,12 @@ from datetime import timedelta
 import json
 from services.models import AppealContact, Booking, Package, Review, Service
 from services.models.review_models import REVIEW_MESSAGE_MAX_LENGTH, REVIEW_NAME_MAX_LENGTH
-from services.utils import normalize_az_phone
+from services.utils.normalize_phone_number import parse_phone
 from services.utils.queries import get_localized_field_name, get_packages, get_services
 from services.utils.turnstile import verify_turnstile_response, is_turnstile_configured
+
+
+PHONE_ERROR = _('Düzgün mobil nömrə daxil edin. Nümunə: 50 123 45 67 və ya +90 532 123 45 67')
 
 
 class PackageBookingRadioSelect(forms.RadioSelect):
@@ -110,6 +113,8 @@ class AppealContactForm(TurnstileMixin, forms.ModelForm):
             'placeholder': _('Mobile number'),
             'inputmode': 'tel',
             'autocomplete': 'tel',
+            'pattern': r'[0-9]{9,17}',
+            'maxlength': '17',
         }),
         label=_('Mobile number'),
     )
@@ -167,10 +172,10 @@ class AppealContactForm(TurnstileMixin, forms.ModelForm):
         raw = (self.cleaned_data.get('phone') or '').strip()
         if not raw:
             return ''
-        # Accept broader phone formats (international / different spacing).
-        # Normalize Azerbaijan numbers if possible, otherwise keep user's input.
-        normalized = normalize_az_phone(raw)
-        return normalized or raw
+        value, ok = parse_phone(raw)
+        if not ok:
+            raise ValidationError(PHONE_ERROR)
+        return value
 
     def __init__(self, *args, lang='az', **kwargs):
         super().__init__(*args, **kwargs)
@@ -265,6 +270,8 @@ class BookingForm(forms.ModelForm):
             'placeholder': _('Mobil nömrə *'),
             'inputmode': 'tel',
             'autocomplete': 'tel',
+            'pattern': r'[0-9]{9,17}',
+            'maxlength': '17',
         }),
         label=_('Mobil nömrə'),
     )
@@ -528,8 +535,10 @@ class BookingForm(forms.ModelForm):
         raw = (self.cleaned_data.get('phone') or '').strip()
         if not raw:
             raise ValidationError(_('Mobil nömrə mütləqdir.'))
-        normalized = normalize_az_phone(raw)
-        return normalized or raw
+        value, ok = parse_phone(raw)
+        if not ok:
+            raise ValidationError(PHONE_ERROR)
+        return value
 
     def save(self, commit=True):
         booking_type = self.cleaned_data.get('booking_type') or self.BOOKING_TYPE_PACKAGE
@@ -676,7 +685,8 @@ class ReviewForm(forms.ModelForm):
         if not target:
             raise ValidationError(_('Aldığınız xidmət və ya paketi seçin.'))
 
-        prefix, _, pk_str = target.partition(':')
+        # `_` burada gettext-i gizlətməsin deyə `_sep` istifadə olunur
+        prefix, _sep, pk_str = target.partition(':')
         try:
             pk = int(pk_str)
         except (TypeError, ValueError):
