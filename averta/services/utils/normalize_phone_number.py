@@ -1,14 +1,24 @@
 import re
 
+# Azərbaycan mobil operator prefikslərı (0 olmadan)
 AZ_PREFIXES = {'10', '50', '51', '55', '70', '77', '99'}  # 60 (Naxtel) lazımdırsa əlavə et
+
+# False etsən yalnız Azərbaycan nömrələri qəbul olunar
+ALLOW_INTERNATIONAL = True
+
 ALLOWED_CHARS = re.compile(r'^[\d\s+\-().]+$')
 
 
 def parse_phone(raw: str):
     """
     Qaytarır: (normalized, is_valid)
-    AZ nömrə  -> 9 rəqəm (501234567)
-    Xarici    -> +905321234567
+
+    Qəbul olunan Azərbaycan formatları:
+        +994511234567 | 994511234567 | 051 1234567 | 0511234567 | 51 1234567 | 511234567
+    Nəticə həmişə 9 rəqəmdir: 511234567
+
+    Xarici nömrələr yalnız + (və ya 00) ilə başlayanda qəbul olunur,
+    nəticə +905321234567 şəklindədir.
     """
     raw = (raw or '').strip()
     if not raw or not ALLOWED_CHARS.match(raw):
@@ -34,7 +44,7 @@ def parse_phone(raw: str):
             return None, False
         return local, True
 
-    if has_plus and 8 <= len(digits) <= 15 and not digits.startswith('0'):
+    if ALLOW_INTERNATIONAL and has_plus and 8 <= len(digits) <= 15 and not digits.startswith('0'):
         return '+' + digits, True
 
     return None, False

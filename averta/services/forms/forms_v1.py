@@ -12,7 +12,7 @@ from services.utils.queries import get_localized_field_name, get_packages, get_s
 from services.utils.turnstile import verify_turnstile_response, is_turnstile_configured
 
 
-PHONE_ERROR = _('Düzgün mobil nömrə daxil edin. Nümunə: 50 123 45 67 və ya +90 532 123 45 67')
+PHONE_ERROR = _('Düzgün mobil nömrə daxil edin. Nümunələr: +994511234567, 994511234567, 051 1234567, 51 1234567')
 
 
 class PackageBookingRadioSelect(forms.RadioSelect):
@@ -113,8 +113,8 @@ class AppealContactForm(TurnstileMixin, forms.ModelForm):
             'placeholder': _('Mobile number'),
             'inputmode': 'tel',
             'autocomplete': 'tel',
-            'pattern': r'[0-9]{9,17}',
-            'maxlength': '17',
+            'pattern': r'\+?[0-9 ]{9,20}',
+            'maxlength': '20',
         }),
         label=_('Mobile number'),
     )
@@ -270,8 +270,8 @@ class BookingForm(forms.ModelForm):
             'placeholder': _('Mobil nömrə *'),
             'inputmode': 'tel',
             'autocomplete': 'tel',
-            'pattern': r'[0-9]{9,17}',
-            'maxlength': '17',
+            'pattern': r'\+?[0-9 ]{9,20}',
+            'maxlength': '20',
         }),
         label=_('Mobil nömrə'),
     )
